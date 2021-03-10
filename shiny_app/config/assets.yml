@@ -1,0 +1,37 @@
+colors:
+  purple: "#313373"
+  green: "#93c3a0"
+  gray: "#494c50"
+  red: "#ea786a"
+  brown: "#bc8421"
+  lightgray: "#f1f1f1"
+  blue: "#358CFF"
+  pink: "#F40096"
+  lightgreen: "#B2EFC5"
+  darkblue: "#2A3073"
+  yellow: "#FFDE59"
+  black: "#000000"
+
+textcolors:
+    title: magenta
+    header: magenta
+    subtitle: blue
+    subtitle_alt: green
+    text: navy
+
+typography:
+  title: Now
+  header: Now
+  subtitle: Lato
+  normal: HK
+  alt: "Grotesk Light"
+  numbers: Glacial
+  numbers_alt: Indifference
+
+fonts:
+  - rufina
+  - monserrat
+  - mont
+
+images:
+  favicon: "favicon.ico"
