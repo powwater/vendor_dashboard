@@ -4,7 +4,9 @@ server <- function(input, output, session) {
 
     list(
       vendor_uid = "c401b531-719d-4cad-82e7-71db3ffba166",
-      vendor_name = "Dutch Water"
+      vendor_name = "Dutch Water",
+      place_id = "ChIJrToahpQJQBgRZ6ukvDc1LO4",
+      region_id = "ChIJ5b0LA6wOQBgRe0sIruEoRCc"
     )
 
   })

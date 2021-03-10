@@ -47,8 +47,8 @@ pacman::p_load(
 
 # data --------------------------------------------------------------------
 
-customer_locations <- qs::qread("data/customer_locations")
-vendor_locations <- qs::qread("data/vendor_locations")
+# customer_locations <- qs::qread("data/customer_locations")
+# vendor_locations <- qs::qread("data/vendor_locations")
 
 # customer_location_details <- qs::qread("data/customer_location_details")
 
@@ -67,8 +67,8 @@ options(dplyr.summarise.inform = FALSE)
 
 # load config yaml file
 app_config <- config::get()
-# key <- app_config$gcp$gmaps_api_key
-# set_key(key = key)
+key <- app_config$gcp$gmaps_api_key
+set_key(key = key)
 
 # setup polished ----------------------------------------------------------
 
