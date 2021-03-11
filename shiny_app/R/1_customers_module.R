@@ -9,10 +9,20 @@ customers_module_ui <- function(id) {
         title = 'Customers',
         DT::DTOutput(ns('customers_table')) %>%
           shinycustomloader::withLoader(),
-        br(),
-        googleway::google_mapOutput(ns("customer_locations")),
-        br(),
-        uiOutput(ns("vendor_region"))
+        hr(),
+        h3("Maps"),
+        fluidRow(
+          column(
+            6,
+            h5("Region:"),
+            uiOutput(ns("vendor_region"))
+          ),
+          column(
+            6,
+            h5("Customer Locations:"),
+            googleway::google_mapOutput(ns("customer_locations"), height = "450px")
+          )
+        )
       )
     )
   )
@@ -129,6 +139,7 @@ customers_module <- function(input, output, session, vendor_info) {
         title = paste0(customer_name, ": ", customer_location_name),
         info = paste0(
           "<div id='bodyContent'>",
+          "<h4>", title, "</h4><hr>",
           "<iframe width='450px' height='250px'",
           "frameborder='0' style = 'border:0'",
           "src=",
@@ -157,24 +168,28 @@ customers_module <- function(input, output, session, vendor_info) {
                scale_control = TRUE,
                rotate_control = TRUE,
                fullscreen_control = TRUE,
-               event_return_type = c("list", "json")
+               event_return_type = "list"
     ) %>%
       add_markers(
+        data = dat,
+        id = "customer_uid",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
-        # label = "customer_location_name",
-        layer_id = "customer_locations",
+        # mouse_over_group =
+        # label = "customer_name",
+        # layer_id = "customer_location_name",
         info_window = "info",
-        mouse_over = "customer_location_address",
+        # mouse_over = "customer_location_address",
+        # close_info_window = TRUE,
         # cluster = TRUE,
         update_map_view = TRUE
       )
   })
 
-  # observeEvent(input$vendor_locations_marker_click, {
-  #   print(input$vendor_locations_map_marker_click)
-  # })
+  observeEvent(input$customer_locations_marker_click, {
+    print(input$customer_locations_map_marker_click)
+  })
 
   output$vendor_region <- renderUI({
     HTML(
