@@ -55,6 +55,11 @@ sidebar <- dashboardSidebar(
         text = 'Orders',
         tabName = 'orders_tab',
         icon = icon('money')
+      ),
+      menuItem(
+        text = 'Tests',
+        tabName = 'tests_tab',
+        icon = icon("hand-holding-water")
       )
     )
   )
@@ -77,6 +82,10 @@ body <- dashboardBody(
     tabItem(
       tabName = 'orders_tab',
       orders_module_ui('orders_module')
+    ),
+    tabItem(
+      tabName = "tests_tab",
+      tests_module_ui("tests_module")
     )
   )
 )

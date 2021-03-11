@@ -34,6 +34,11 @@ server <- function(input, output, session) {
     vendor_info = logged_in_vendor_info
   )
 
+  callModule(
+    tests_module,
+    "tests_module",
+    vendor_info = logged_in_vendor_info
+  )
 }
 
 polished::secure_server(

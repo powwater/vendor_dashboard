@@ -41,7 +41,8 @@ pacman::p_load(
   rlang,
   tidyselect,
   attempt,
-  googleway
+  googleway,
+  shinyFiles
 )
 
 
