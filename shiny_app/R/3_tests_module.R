@@ -101,10 +101,11 @@ tests_module <- function(input, output, session, vendor_info){
       extensions = c("Buttons"),
       filter = "top",
       options = list(
-        scrollX = TRUE,
+        autoWidth = TRUE,
+        # scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
-          list(targets = 0, orderable = FALSE),
+          list(targets = 0, orderable = FALSE, width = "105px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
         buttons = dt_bttns(out, "tests-table", esc_cols),
