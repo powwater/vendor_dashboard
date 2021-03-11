@@ -5,6 +5,7 @@ orders_module_ui <- function(id){
       box(
         width = 12,
         title = 'Orders',
+        uiOutput(ns("ratings_ui"), inline = TRUE),
         DT::DTOutput(ns('orders_table')) %>%
           shinycustomloader::withLoader(),
         hr(),
@@ -14,13 +15,13 @@ orders_module_ui <- function(id){
             6,
             h5("Order Deliveries:")#,
             # googleway::google_mapOutput(ns("deliveries"), height = "450px")%>%
-              # shinycustomloader::withLoader()
+            # shinycustomloader::withLoader()
           ),
           column(
             6,
             h5("Delivery Details:")#,
             # DT::DTOutput(ns('delivery_details')) %>%
-              # shinycustomloader::withLoader()
+            # shinycustomloader::withLoader()
           )
         )
       )
@@ -150,6 +151,28 @@ orders_module <- function(input, output, session, vendor_info){
     ) %>%
       formatStyle("status", color = "green")
 
+  })
+
+  avg_rating <- reactive({
+    mean(orders()$vendor_rating, na.rm = TRUE)
+  })
+
+  num_ratings <- reactive({
+    orders() %>%
+      filter(vendor_rating > 0, !is.na(vendor_rating), !is.null(vendor_rating)) %>%
+      nrow()
+  })
+
+  output$ratings_ui <- renderUI({
+    fluidRow(
+      column(width = 12,
+             div(
+             h3(paste0(vendor_info()$vendor_name, " Average Rating: ",
+                       formattable::comma(avg_rating(), 3), " Stars ")),
+             rating_stars(avg_rating()),
+             h3(paste0(" (", formattable::comma(num_ratings(), 0), " Reviews)")),
+             hr()))
+    )
   })
 
   # output$customer_locations <- renderGoogle_map({
