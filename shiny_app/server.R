@@ -17,8 +17,8 @@ server <- function(input, output, session) {
   )
 
   output$user_panel <- renderUI({
-    sidebarUserPanel(name = session$userData$user()$email,
-                     subtitle = Sys.Date(),
+    sidebarUserPanel(name = paste0("Vendor: ", logged_in_vendor_info()$vendor_name), #session$userData$user()$email,
+                     subtitle = tags$span("Current Status: ", shinydashboardPlus::dashboardBadge("Online", color = "green")),
                      image = NULL)
   })
 

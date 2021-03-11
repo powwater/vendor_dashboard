@@ -40,8 +40,10 @@ sidebar <- dashboardSidebar(
 
   tagList(
 
-    uiOutput("user_panel"),
-
+    div(
+      class = "text-center",
+      uiOutput("user_panel")
+    ),
     sidebarMenu(
       id = 'sidebar_menu',
       menuItem(
