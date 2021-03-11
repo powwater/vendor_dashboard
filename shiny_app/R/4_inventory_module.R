@@ -6,6 +6,16 @@ inventory_module_ui <- function(id){
         width = 12,
         title = 'Inventory and Sales Mix',
         uiOutput(ns("vendor_info_ui"), inline = TRUE),
+        hr(),
+        shiny::actionButton(
+          ns("add_offering"),
+          "Add New Offering",
+          class = "btn-success",
+          style = "color: #fff; margin-botton: -30px;",
+          icon = shiny::icon("plus")
+        ),
+        br(),
+        br(),
         DT::DTOutput(ns('inventory_table')) %>%
           shinycustomloader::withLoader()
       )
