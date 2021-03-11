@@ -10,7 +10,6 @@ customers_module_ui <- function(id) {
         DT::DTOutput(ns('customers_table')) %>%
           shinycustomloader::withLoader(),
         hr(),
-        h3("Maps"),
         fluidRow(
           column(
             6,

@@ -21,7 +21,7 @@ header <- dashboardHeaderPlus(
   left_menu = tagList(
     htmltools::h4(
       style = "margin-top: 5px;",
-      "Powwater Vendor Dashboard | Version: ",
+      "Vendor Dashboard | Version: ",
       shinydashboardPlus::dashboardBadge("Alpha"),
       "| Last Updated on: ",
       shinydashboardPlus::dashboardBadge(get_last_updated_date(), color = "green")
