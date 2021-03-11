@@ -45,6 +45,7 @@ orders_module <- function(input, output, session, vendor_info){
       out <- conn %>%
         dplyr::tbl("orders") %>%
         dplyr::filter(vendor_uid == vend) %>%
+        select(uid, order_number, customer_name, rider_name, order_time:vendor_rating, payment_total) %>%
         dplyr::collect()
 
     }, error = function(err) {
@@ -73,13 +74,12 @@ orders_module <- function(input, output, session, vendor_info){
     })
 
     orders() %>%
-      select(-c(contains("uid"), contains("malicious"), created_at, created_by, modified_at, modified_by)) %>%
+      select(-uid) %>%
       mutate(
         delivery_fee = paste0(formattable::currency(delivery_fee, "", sep = "", big.mark = ","), " KES"),
         total_price = paste0(formattable::currency(total_price, "", sep = "", big.mark = ","), " KES"),
         vendor_prep_time = paste0(vendor_prep_time, " Minutes")
       ) %>%
-      mutate_if(is.logical, formattable::formattable, formatter = true_false_formatter.malicious) %>%
       # add action bttns
       tibble::add_column(" " = actions, .before = 1)
   })
@@ -90,13 +90,12 @@ orders_module <- function(input, output, session, vendor_info){
 
     factor_cols <- c(
       "customer_name",
-      "vendor_name",
       "order_type",
       "status",
       "payment_type"
     )
 
-    rating_cols <- c("vendor_rating", "rider_rating", "order_rating")
+    rating_cols <- c("vendor_rating")
 
     out <- orders_prep() %>%
       mutate_at(vars(tidyselect::all_of(factor_cols)), as.factor) %>%
@@ -105,7 +104,7 @@ orders_module <- function(input, output, session, vendor_info){
     n_row <- nrow(out)
     n_col <- ncol(out)
     cols <- snakecase::to_title_case(colnames(out))
-    esc_cols <- c(-1, -13, -14, -15)
+    esc_cols <- c(-1, -12)
     id <- session$ns("orders_table")
 
     dt_js <- paste0(
