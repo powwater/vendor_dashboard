@@ -75,8 +75,8 @@ body <- dashboardBody(
       customers_module_ui("customers_module")
     ),
     tabItem(
-      tabName = 'orders_tab'#,
-      # orders_module_ui('orders_module')
+      tabName = 'orders_tab',
+      orders_module_ui('orders_module')
     )
   )
 )

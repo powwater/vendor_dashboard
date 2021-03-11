@@ -80,3 +80,195 @@ dt_bttns <- function(data, filename = "data", escape_cols = NULL) {
 notify <- function(msg, id = NULL) {
   showNotification(msg, id = id, duration = NULL, closeButton = FALSE, type = "message")
 }
+
+true_false_formatter <- formattable::formatter("span",
+                                               style = x ~ formattable::style(
+                                                 font.weight = "bold",
+                                                 color = ifelse(
+                                                   x == TRUE,
+                                                   "forestgreen",
+                                                   ifelse(x == FALSE, "red", "black")
+                                                 )
+                                               ))
+
+true_false_formatter.malicious <- formattable::formatter("span",
+                                                         style = x ~ formattable::style(
+                                                           font.weight = "bold",
+                                                           color = ifelse(
+                                                             x == TRUE,
+                                                             "red",
+                                                             "forestgreen"
+                                                           )
+                                                         ))
+
+pull_unique <- function(data, var, sort = TRUE,
+                        decreasing = FALSE, names = TRUE) {
+
+  hold <- data %>%
+    dplyr::pull(!!rlang::sym(var)) %>%
+    unique()
+
+  if (sort) hold <- hold %>% sort(decreasing = decreasing)
+  if (names) hold <- hold %>% purrr::set_names()
+
+  return(hold)
+
+}
+
+format_round_dollar <- function(value) {
+  "$" %>%
+    paste0(value %>%
+             round() %>%
+             prettyNum(big.mark = ","))
+}
+
+format_round <- function(value, digs = 0) {
+  value %>% round(digits = digs) %>% prettyNum(big.mark = ",")
+}
+
+action_bttns <- function(id_) {
+  paste0(
+    '<div class="btn-group" style="width: 75px;" role="group" aria-label="Basic example">
+          <button class="btn btn-primary btn-sm edit_btn" data-toggle="tooltip" data-placement="top" title="Edit" id="', id_,'" style="margin: 0"><i class="fa fa-pencil-square-o"></i></button>
+          <button class="btn btn-danger btn-sm delete_btn" data-toggle="tooltip" data-placement="top" title="Delete" id="', id_,'" style="margin: 0"><i class="fa fa-trash-o"></i></button>
+        </div>'
+  )
+}
+
+rating_stars <- function(rating, max_rating = 5) {
+  star_icon <- function(empty = FALSE) {
+    tagAppendAttributes(shiny::icon("star"),
+                        style = paste("color:", if (empty) "#edf0f2" else "orange"),
+                        "aria-hidden" = "true"
+    )
+  }
+  rounded_rating <- floor(rating + 0.5)  # always round up
+  stars <- lapply(seq_len(max_rating), function(i) {
+    if (i <= rounded_rating) star_icon() else star_icon(empty = TRUE)
+  })
+  label <- sprintf("%s out of %s", rating, max_rating)
+  div(title = label, "aria-label" = label, role = "img", stars)
+}
+
+ratings_to_stars <- function(dat, cols = c("rating")) {
+
+
+
+  mutate_at(dat, vars(tidyselect::all_of(cols)), function(rating) {
+    rating = case_when(
+      is.na(rating) || is.null(rating) ~ paste0(tags$span(shiny::icon('star'))),
+      rating == 0 ~ paste0(tags$span(shiny::icon('star'))),
+      rating == 0.5 ~ paste0(tags$span(
+        shiny::icon('star-half') %>% shiny::tagAppendAttributes(style = "color: orange;")
+      )),
+      rating == 1 ~ paste0(tags$span(
+        shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+      )),
+      rating == 1.5 ~ paste0(tagList(
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star-half') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        )
+      )),
+      rating == 2 ~ paste0(tagList(
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        )
+      )),
+      rating == 2.5 ~ paste0(tagList(
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star-half') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        )
+      )),
+      rating == 3 ~ paste0(tagList(
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        )
+      )),
+      rating == 3.5 ~ paste0(tagList(
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star-half') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        )
+      )),
+      rating == 4 ~ paste0(tagList(
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        ),
+        tags$span(
+          shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+        )
+      )),
+      rating == 4.5 ~ paste0(
+        tagList(
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star-half') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          )
+        )
+      ),
+      rating == 5 ~ paste0(
+        tagList(
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          ),
+          tags$span(
+            shiny::icon('star') %>% shiny::tagAppendAttributes(style = "color: orange;")
+          )
+        )
+      )
+    )
+  }
+  )
+}

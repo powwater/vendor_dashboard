@@ -27,11 +27,12 @@ server <- function(input, output, session) {
     "customers_module",
     vendor_info = logged_in_vendor_info
   )
-  #
-  # callModule(
-  #   orders_module,
-  #   "orders_module"
-  # )
+
+  callModule(
+    orders_module,
+    "orders_module",
+    vendor_info = logged_in_vendor_info
+  )
 
 }
 
