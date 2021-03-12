@@ -25,7 +25,9 @@ orders_module_ui <- function(id){
           )
         )
       )
-    )
+    ),
+    htmltools::tags$script(src = "orders_module.js"),
+    htmltools::tags$script(paste0("orders_table_module_js('", ns(''), "')")),
   )
 }
 
@@ -79,7 +81,13 @@ orders_module <- function(input, output, session, vendor_info){
       mutate(
         delivery_fee = paste0(formattable::currency(delivery_fee, "", sep = "", big.mark = ","), " KES"),
         total_price = paste0(formattable::currency(total_price, "", sep = "", big.mark = ","), " KES"),
-        vendor_prep_time = paste0(vendor_prep_time, " Minutes")
+        vendor_prep_time = paste0(vendor_prep_time, " Minutes"),
+        payment_total = paste0(formattable::currency(payment_total, "", sep = "", big.mark = ","), " KES"),
+        order_type = ifelse(order_type == "Refill", "Swap", order_type)
+      ) %>%
+      select(
+        order_number:status, delivery_fee, total_price_of_water = total_price, total_transaction_payment = payment_total,
+        payment_type, vendor_prep_time, vendor_rating
       ) %>%
       # add action bttns
       tibble::add_column(" " = actions, .before = 1)
@@ -105,7 +113,7 @@ orders_module <- function(input, output, session, vendor_info){
     n_row <- nrow(out)
     n_col <- ncol(out)
     cols <- snakecase::to_title_case(colnames(out))
-    esc_cols <- c(-1, -12)
+    esc_cols <- c(-1, -13)
     id <- session$ns("orders_table")
 
     dt_js <- paste0(
@@ -126,7 +134,7 @@ orders_module <- function(input, output, session, vendor_info){
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'dt-center stripe cell-border display compact nowrap',
+      class = 'dt-center stripe cell-border display compact',
       # Escape the HTML
       escape = esc_cols,
       extensions = c("Buttons"),
@@ -168,13 +176,27 @@ orders_module <- function(input, output, session, vendor_info){
     fluidRow(
       column(width = 12,
              div(
-             h3(paste0(vendor_info()$vendor_name, " Average Rating: ",
-                       formattable::comma(avg_rating(), 3), " Stars ")),
-             rating_stars(avg_rating()),
-             h3(paste0(" (", formattable::comma(num_ratings(), 0), " Reviews)")),
-             hr()))
+               h3(paste0(vendor_info()$vendor_name, " Average Rating: ",
+                         formattable::comma(avg_rating(), 3), " Stars ")),
+               rating_stars(avg_rating()),
+               h3(paste0(" (", formattable::comma(num_ratings(), 0), " Reviews)")),
+               hr()))
     )
   })
+
+  order_to_info <- eventReactive(input$order_id_to_info, {
+    orders() %>%
+      filter(uid == input$order_id_to_info)
+  })
+
+#   shiny::callModule(
+#     order_info_module,
+#     "edit_offering",
+#     vendor_inventory_to_edit = vendor_inventory_to_edit,
+#     trigger = reactive({input$vendor_inventory_id_to_edit}),
+#     vendor_info = vendor_info
+#   )
+
 
   # output$customer_locations <- renderGoogle_map({
   #
@@ -249,6 +271,25 @@ orders_module <- function(input, output, session, vendor_info){
 
 }
 
+
+# order_info_module <- function(input, output, session,
+#                               order_id_to_info,
+#                               trigger = order_id_to_info,
+#                               vendor_info) {
+#
+#   ns <- session$ns
+#
+#   shiny::observeEvent(trigger(), {
+#
+#     hold <- order_id_to_info()
+#
+#     details_data <- conn %>%
+#
+#
+#     shiny::showModal(
+#       shiny::modalDialog(
+#
+# }
 # Copy in UI
 #orders_module_u("orders_module_ui")
 
