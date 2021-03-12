@@ -11,7 +11,7 @@ polished:
   GithubUsername: tychobra
   GithubRepo: polished
   GithubRef: HEAD
-  GithubSHA1: 98d7112418c1bbe61add9e4aec2fc6e5a6593e41
+  GithubSHA1: ca514d8d10c6fb9de03a358ba9381184e5d7f210
 attempt:
   Package: attempt
   Repository: CRAN

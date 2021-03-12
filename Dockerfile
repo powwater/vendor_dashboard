@@ -41,7 +41,7 @@ RUN R -e "remotes::install_version('yaml', version = '2.2.1', upgrade = 'never')
 
 
 # GitHub R packages 
-RUN R -e "remotes::install_github('tychobra/polished', ref = '98d7112418c1bbe61add9e4aec2fc6e5a6593e41', upgrade='never')" 
+RUN R -e "remotes::install_github('tychobra/polished', ref = 'ca514d8d10c6fb9de03a358ba9381184e5d7f210', upgrade='never')" 
 RUN R -e "remotes::install_github('thomasp85/shinyFiles', ref = '07797c5aa4d447d2a7234c36ed80ce855fea6b1c', upgrade='never')" 
 RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b413363174f1115a0b34d9ae3f8616e5b76', upgrade='never')"
 
