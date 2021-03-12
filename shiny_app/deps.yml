@@ -1,0 +1,110 @@
+pacman:
+  Package: pacman
+  Repository: CRAN
+  Version: 0.5.1
+config:
+  Package: config
+  Repository: CRAN
+  Version: 0.3.1
+polished:
+  Package: polished
+  GithubUsername: tychobra
+  GithubRepo: polished
+  GithubRef: HEAD
+  GithubSHA1: 98d7112418c1bbe61add9e4aec2fc6e5a6593e41
+attempt:
+  Package: attempt
+  Repository: CRAN
+  Version: 0.3.1
+DBI:
+  Package: DBI
+  Repository: CRAN
+  Version: 1.1.1
+RPostgres:
+  Package: RPostgres
+  Repository: CRAN
+  Version: 1.3.1
+yaml:
+  Package: yaml
+  Repository: CRAN
+  Version: 2.2.1
+shiny:
+  Package: shiny
+  Repository: CRAN
+  Version: 1.6.0
+fs:
+  Package: fs
+  Repository: CRAN
+  Version: 1.5.0
+tibble:
+  Package: tibble
+  Repository: CRAN
+  Version: 3.1.0
+dplyr:
+  Package: dplyr
+  Repository: CRAN
+  Version: 1.0.5
+DT:
+  Package: DT
+  Repository: CRAN
+  Version: '0.17'
+shinycustomloader:
+  Package: shinycustomloader
+  Repository: CRAN
+  Version: 0.9.0
+googleway:
+  Package: googleway
+  Repository: CRAN
+  Version: 2.7.3
+shinyFeedback:
+  Package: shinyFeedback
+  Repository: CRAN
+  Version: 0.3.0
+snakecase:
+  Package: snakecase
+  Repository: CRAN
+  Version: 0.11.0
+htmltools:
+  Package: htmltools
+  Repository: CRAN
+  Version: 0.5.1.1
+purrr:
+  Package: purrr
+  Repository: CRAN
+  Version: 0.3.4
+formattable:
+  Package: formattable
+  Repository: CRAN
+  Version: 0.2.1
+tidyselect:
+  Package: tidyselect
+  Repository: CRAN
+  Version: 1.1.0
+shinyWidgets:
+  Package: shinyWidgets
+  Repository: CRAN
+  Version: 0.5.7
+shinyjs:
+  Package: shinyjs
+  Repository: CRAN
+  Version: 2.0.0
+tychobratools:
+  Package: tychobratools
+  GithubUsername: tychobra
+  GithubRepo: tychobratools
+  GithubRef: HEAD
+  GithubSHA1: c1a24b413363174f1115a0b34d9ae3f8616e5b76
+rlang:
+  Package: rlang
+  Repository: CRAN
+  Version: 0.4.10
+shinydashboardPlus:
+  Package: shinydashboardPlus
+  Repository: CRAN
+  Version: 0.7.5
+shinyFiles:
+  Package: shinyFiles
+  GithubUsername: thomasp85
+  GithubRepo: shinyFiles
+  GithubRef: HEAD
+  GithubSHA1: 07797c5aa4d447d2a7234c36ed80ce855fea6b1c
