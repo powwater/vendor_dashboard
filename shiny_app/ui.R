@@ -66,6 +66,13 @@ sidebar <- dashboardSidebar(
         tabName = 'inventory_tab',
         icon = icon("warehouse")
       )
+    ),
+    br(),
+    br(),
+    br(),
+    div(
+      # style = "vertical-align:bottom; position:absolute; bottom:35px;",
+      shinyFiles::shinyFilesButton("document", "Upload Documents", "Please select a document to upload.", FALSE)
     )
   )
 )

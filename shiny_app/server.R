@@ -45,6 +45,26 @@ server <- function(input, output, session) {
     "inventory_module",
     vendor_info = logged_in_vendor_info
   )
+
+  volumes <- c(Home = fs::path_home(), shinyFiles::getVolumes(exclude = "wd")())
+
+  shinyFileChoose(input, "document", roots = volumes, session = session, defaultRoot = "Home")
+
+  ## print to console to see how the value of the shinyFiles
+  ## button changes after clicking and selection
+  observe({
+    cat("\ninput$document value:\n\n")
+    print(input$document)
+  })
+
+  ## print to browser
+  output$filepaths <- renderPrint({
+    if (is.integer(input$document)) {
+      cat("No files have been selected (shinyFileChoose)")
+    } else {
+      parseFilePaths(volumes, input$document)
+    }
+  })
 }
 
 polished::secure_server(
