@@ -61,6 +61,7 @@ tests_module <- function(input, output, session, vendor_info){
 
     tests() %>%
       select(-uid, -vendor_uid, -c(created_at:modified_by)) %>%
+      select(test_date, ph_value, tds, test_date_tbc, tbc) %>%
       # add action bttns
       tibble::add_column(" " = actions, .before = 1)
   })
@@ -73,7 +74,7 @@ tests_module <- function(input, output, session, vendor_info){
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- snakecase::to_title_case(colnames(out))
+    cols <- c(" ", "Test Date", "PH Value", "TDS", "Test Date TDC", "TBC")
     esc_cols <- c(-1)
     id <- session$ns("tests_table")
 
@@ -118,7 +119,8 @@ tests_module <- function(input, output, session, vendor_info){
           emptyTable = "No Tests for Selected Filters"
         )
       )
-    )
+    ) %>%
+      DT::formatRound("ph_value", digits = 2)
 
   })
 
