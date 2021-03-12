@@ -25,14 +25,14 @@ system("docker push gcr.io/powwater/powwater_vendorsdashboard")
 # deploy to cloud run - no traffic dry run
 system(
   paste0(
-    "gcloud run deploy powwater --memory=8192Mi --platform=managed --cpu=4 --image=gcr.io/powwater/powwater_adminportal
+    "gcloud run deploy powwater --memory=8192Mi --platform=managed --cpu=4 --image=gcr.io/powwater/powwater_vendorsdashboard
   --max-instances='default' min-instances=0 --port=8080 --no-traffic --allow-unauthenticated --region=", `<gcp_region>`, ""
   )
 )
 
 # dev deployment (with revision suffix) and tag deployment
 system(
-  paste0("gcloud run deploy powwater --memory=8192Mi --platform=managed --cpu=4 --image=gcr.io/powwater/powwater_adminportal",
+  paste0("gcloud run deploy powwater --memory=8192Mi --platform=managed --cpu=4 --image=gcr.io/powwater/powwater_vendorsdashboard",
          "--max-instances='default' min-instances=0 --port=8080 --tag", `<deployment_tag>`, "--allow-unauthenticated --revision-suffix=",
          `<revision_suffix>`, "--region=asia-east1 --add-cloudsql-instances powwater:asia-south1:powwater --concurrency=80")
 )
