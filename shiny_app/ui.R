@@ -84,7 +84,6 @@ body <- dashboardBody(
     includeCSS("www/stars.css"),
     includeCSS("www/styles.css"),
     intlTelInputDependencies()
-    # shinylogs::use_tracking()
   ),
   tabItems(
     tabItem(
