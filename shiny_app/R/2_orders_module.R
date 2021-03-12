@@ -13,15 +13,20 @@ orders_module_ui <- function(id){
         fluidRow(
           column(
             6,
-            h5("Order Deliveries:")#,
+            h4("Delivery Route Map:"),
+            pickerInput(ns("selected_order"),
+                        "Select an Order to View:",
+                        choices = ""),
+            uiOutput(ns("directions_iframe")) %>%
+              shinycustomloader::withLoader()
             # googleway::google_mapOutput(ns("deliveries"), height = "450px")%>%
             # shinycustomloader::withLoader()
           ),
           column(
             6,
-            h5("Delivery Details:")#,
-            # DT::DTOutput(ns('delivery_details')) %>%
-            # shinycustomloader::withLoader()
+            h4("Delivery Details:"),
+            DT::DTOutput(ns('delivery_details')) %>%
+              shinycustomloader::withLoader()
           )
         )
       )
@@ -61,6 +66,12 @@ orders_module <- function(input, output, session, vendor_info){
     out
 
   })
+
+  observeEvent(orders(), {
+    order_choices <- orders()$uid
+    names(order_choices) <- paste0("Order #", orders()$order_number)
+    updatePickerInput(session, "selected_order", choices = order_choices)
+  }, once = TRUE)
 
   orders_prep <- reactive({
     req(orders())
@@ -184,115 +195,114 @@ orders_module <- function(input, output, session, vendor_info){
     )
   })
 
+  selected_order_for_view <- reactiveVal(NULL)
+
   order_to_info <- eventReactive(input$order_id_to_info, {
     orders() %>%
       filter(uid == input$order_id_to_info)
   })
 
-#   shiny::callModule(
-#     order_info_module,
-#     "edit_offering",
-#     vendor_inventory_to_edit = vendor_inventory_to_edit,
-#     trigger = reactive({input$vendor_inventory_id_to_edit}),
-#     vendor_info = vendor_info
-#   )
+  observeEvent(order_to_info(), {
+    sel <- order_to_info()
+    updatePickerInput(session, "selected_order", selected = sel$uid)
+    selected_order_for_view(sel)
+  })
 
+  routes <- reactive({
 
-  # output$customer_locations <- renderGoogle_map({
-  #
-  #   # browser()
-  #
-  #   dat <- customers() %>%
-  #     mutate(
-  #       title = paste0(customer_name, ": ", customer_location_name),
-  #       info = paste0(
-  #         "<div id='bodyContent'>",
-  #         "<h4>", title, "</h4><hr>",
-  #         "<iframe width='450px' height='250px'",
-  #         "frameborder='0' style = 'border:0'",
-  #         "src=",
-  #         paste0(
-  #           "https://www.google.com/maps/embed/v1/place?q=place_id:",
-  #           customer_location_place_id,
-  #           "&key=",
-  #           key
-  #         ),
-  #         "></iframe></div>"
-  #       )
-  #     )
-  #
-  #   # set_key(key)
-  #
-  #   google_map(dat,
-  #              key = key,
-  #              location = c(dat$customer_location_lat, dat$customer_location_lon),
-  #              zoom = 12,
-  #              search_box = TRUE,
-  #              update_map_view = TRUE,
-  #              geolocation = TRUE,
-  #              map_type_control = TRUE,
-  #              zoom_control = TRUE,
-  #              # street_view_control = TRUE,
-  #              scale_control = TRUE,
-  #              rotate_control = TRUE,
-  #              fullscreen_control = TRUE,
-  #              event_return_type = "list"
-  #   ) %>%
-  #     add_markers(
-  #       data = dat,
-  #       id = "customer_uid",
-  #       lat = "customer_location_lat",
-  #       lon = "customer_location_lon",
-  #       title = "title",
-  #       # mouse_over_group =
-  #       # label = "customer_name",
-  #       # layer_id = "customer_location_name",
-  #       info_window = "info",
-  #       # mouse_over = "customer_location_address",
-  #       # close_info_window = TRUE,
-  #       # cluster = TRUE,
-  #       update_map_view = TRUE
-  #     )
-  # })
-  #
-  # observeEvent(input$customer_locations_marker_click, {
-  #   print(input$customer_locations_map_marker_click)
-  # })
-  #
-  # output$vendor_region <- renderUI({
-  #   HTML(
-  #     paste0(
-  #       '<iframe width="100%" height="450" style="border:0" loading="lazy" allowfullscreen
-  #     src="https://www.google.com/maps/embed/v1/place?q=place_id:',
-  #     vendor_info()$region_id, '&key=', key, '"></iframe>'
-  #     )
-  #   )
-  # })
+    id <- notify("Loading Routes from Database...")
+    on.exit(removeNotification(id), add = TRUE)
+
+    vend <- vendor_info()$vendor_location_uid
+
+    out <- NULL
+
+    tryCatch({
+
+      out <- conn %>%
+        dplyr::tbl("order_routes") %>%
+        dplyr::filter(vendor_location_uid == vend) %>%
+        left_join(
+          conn %>%
+            tbl('vendor_locations') %>%
+            select(vendor_location_uid = uid,
+                   vendor_uid,
+                   vendor_location_lat,
+                   vendor_location_lon,
+                   vendor_location_name,
+                   vendor_location_address,
+                   vendor_location_place_id),
+          by = "vendor_location_uid"
+        ) %>%
+        left_join(
+          conn %>%
+            tbl('customer_locations') %>%
+            select(customer_location_uid = uid,
+                   customer_uid,
+                   customer_location_lat,
+                   customer_location_lon,
+                   customer_location_name,
+                   customer_location_address,
+                   customer_location_place_id),
+          by = "customer_location_uid"
+        ) %>%
+        dplyr::collect()
+
+    }, error = function(err) {
+      msg <- 'Error collecting data from database.'
+      print(msg)
+      print(err)
+      shinyFeedback::showToast('error', msg)
+    })
+
+    out
+
+  })
+
+  routes_filt <- reactive({
+    req(routes())
+    routes() %>% filter(order_uid == input$selected_order)
+  })
+
+  output$directions_iframe <- renderUI({
+    vendor_place_id <- vendor_info()$place_id
+    customer_place_id <- routes_filt()$customer_location_place_id
+    HTML(create_directions_iframe(key = key, start = vendor_place_id, stop = customer_place_id))
+  })
+
+  output$delivery_details <- DT::renderDT({
+    req(routes_filt())
+
+    hold <- routes_filt()
+
+    out <- tibble::tibble(
+      " " = c("Location", "Address", "Coordinates"),
+      "Start (Vendor)" = c(hold$vendor_location_name, hold$vendor_location_address, paste0("(", round(hold$vendor_location_lat, 3), ", ", round(hold$vendor_location_lon, 3), ")")),
+      "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
+    )
+
+    # "Order #" = orders()$order_number[match(input$selected_order, orders()$uid)],
+    # "Delivery Start" = paste0(orders()$date, " - ", orders()$order_time),
+    # # "Delivery End" = ,
+    # ""
+
+    n_row <- nrow(out)
+    n_col <- ncol(out)
+    id <- session$ns("delivery_details_table")
+
+    datatable(
+      out,
+      class = "row-border nowrap",
+      rownames = FALSE,
+      selection = "none",
+      options = list(
+        dom = "t",
+        columnDefs = list(
+          list(className = "dt-center dt-col", targets = "_all")
+        )
+      )
+    )
+
+  })
 
 }
-
-
-# order_info_module <- function(input, output, session,
-#                               order_id_to_info,
-#                               trigger = order_id_to_info,
-#                               vendor_info) {
-#
-#   ns <- session$ns
-#
-#   shiny::observeEvent(trigger(), {
-#
-#     hold <- order_id_to_info()
-#
-#     details_data <- conn %>%
-#
-#
-#     shiny::showModal(
-#       shiny::modalDialog(
-#
-# }
-# Copy in UI
-#orders_module_u("orders_module_ui")
-
-# Copy in server
-#callModule(orders_module_, "orders_module_ui")
-

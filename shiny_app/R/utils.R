@@ -1,3 +1,12 @@
+create_directions_iframe <- function(key, start, stop, type = "place_id") {
+
+  paste0(
+    '<div style="max-width:100%;list-style:none; transition: none;overflow:hidden;width:100%;height:500px;"><div id="display-googlemap" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/directions?origin=place_id:',
+    start, '&destination=place_id:', stop,
+    '&key=', key, '"></iframe></div><a class="googlehtml" href="https://changing.hosting" id="authorizemaps-data">changing.hosting</a><style>#display-googlemap .text-marker{}.map-generator{max-width: 100%; max-height: 100%; background: none;</style></div>')
+
+}
+
 get_last_updated_date <- function(path = ".") {
   fs::dir_info(path) %>%
     tibble::as_tibble() %>%
