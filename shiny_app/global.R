@@ -115,3 +115,19 @@ get_last_updated_date <- function(path = ".") {
     dplyr::pull("modification_time") %>%
     max(na.rm = TRUE)
 }
+
+
+# choices -----------------------------------------------------------------
+
+choices <- list(
+  inventory = list(
+    capacity = c(
+      "1.5 Liters" = 1.5,
+      "10 Liters" = 10,
+      "20 Liters" = 20
+    ),
+    offer_type = c(
+      "New", "Swap"
+    )
+  )
+)

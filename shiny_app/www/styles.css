@@ -3,6 +3,13 @@
   display: none;
 }
 
+.danger {
+  color: red;
+  font-size: 14px;
+  font-style: bold;
+  text-align: center;
+}
+
 /* DT Datatables Styles */
 
 

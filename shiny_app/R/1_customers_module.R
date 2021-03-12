@@ -101,7 +101,8 @@ customers_module <- function(input, output, session, vendor_info) {
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- snakecase::to_title_case(colnames(out))
+    cols <- snakecase::to_title_case(colnames(out[c(1:(ncol(out) - 1))]),
+                                     "Latitude", "Longitude")
     esc_cols <- c(-1 * match("customer_location", colnames(out)))
     id <- session$ns("customers_table")
 
@@ -125,7 +126,8 @@ customers_module <- function(input, output, session, vendor_info) {
         ),
         buttons = dt_bttns(out, "customers-table", esc_cols)
       )
-    )
+    ) %>%
+      DT::formatRound(c("customer_location_lat", "customer_location_lon"), digits = 2)
 
   })
 

@@ -60,7 +60,19 @@ sidebar <- dashboardSidebar(
         text = 'Tests',
         tabName = 'tests_tab',
         icon = icon("hand-holding-water")
+      ),
+      menuItem(
+        text = 'Inventory',
+        tabName = 'inventory_tab',
+        icon = icon("warehouse")
       )
+    ),
+    br(),
+    br(),
+    br(),
+    div(
+      # style = "vertical-align:bottom; position:absolute; bottom:35px;",
+      shinyFiles::shinyFilesButton("document", "Upload Documents", "Please select a document to upload.", FALSE)
     )
   )
 )
@@ -86,6 +98,10 @@ body <- dashboardBody(
     tabItem(
       tabName = "tests_tab",
       tests_module_ui("tests_module")
+    ),
+    tabItem(
+      tabName = "inventory_tab",
+      inventory_module_ui("inventory_module")
     )
   )
 )
