@@ -21,7 +21,7 @@ inventory_module_ui <- function(id){
       )
     ),
     htmltools::tags$script(src = "inventory_module.js"),
-    htmltools::tags$script(paste0("inventory_module_js('", ns(''), "')")),
+    htmltools::tags$script(paste0("inventory_module_js('", ns(''), "')"))
   )
 }
 
@@ -45,7 +45,7 @@ inventory_module <- function(input, output, session, vendor_info) {
     tryCatch({
 
       out <- conn %>%
-        dplyr::tbl("vendor_offerings") %>%
+        dplyr::tbl("vendor_inventory") %>%
         dplyr::filter(vendor_uid == vend) %>%
         dplyr::collect()
 
@@ -166,12 +166,20 @@ inventory_module <- function(input, output, session, vendor_info) {
 
   inventory_table_proxy <- DT::dataTableProxy("inventory_table")
 
+  offerings <- reactive({
+    inventory() %>%
+      select(capacity, offer_type) %>%
+      mutate(offering = paste0(offer_type, ": ", capacity, " Liters")) %>%
+      pull(offering)
+  })
+
   shiny::callModule(
     inventory_edit_module,
     "add_offering",
     vendor_inventory_to_edit = function() NULL,
     trigger = shiny::reactive({input$add_offering}),
-    vendor_info = vendor_info
+    vendor_info = vendor_info,
+    offerings = offerings
   )
 
   # vendor to edit (triggered by DT edit button)
@@ -215,7 +223,8 @@ inventory_module <- function(input, output, session, vendor_info) {
 inventory_edit_module <- function(input, output, session,
                                   vendor_inventory_to_edit,
                                   trigger = vendor_inventory_to_edit,
-                                  vendor_info) {
+                                  vendor_info,
+                                  offerings) {
 
   ns <- session$ns
 
@@ -226,7 +235,7 @@ inventory_edit_module <- function(input, output, session,
     shiny::showModal(
       shiny::modalDialog(
         title = "Add/Edit Vendor Inventory and Offerings:",
-        size = 'l',
+        size = 's',
         footer = list(
           shiny::modalButton('Cancel'),
           shiny::actionButton(
@@ -239,14 +248,100 @@ inventory_edit_module <- function(input, output, session,
         fluidRow(
           column(
             width = 12,
-            shinyWidgets::textInputAddon(ns("capacity"), "Capacity in Liters:", value = if (is.null(hold)) "10L" else paste0(hold$capacity, "L"), placeholder = "1.5L, 10L, 20L", addon = icon("box")),
-            shinyWidgets::radioGroupButtons(ns("offer_type"), "Order Type:", choices = c("New", "Swap"), selected = if (is.null(hold)) "New" else hold$offer_type),
-            shinyWidgets::currencyInput(ns("price_per_unit"), "Price per Unit:", value = if (is.null(hold)) 100 else hold$price_per_unit,
-                                        format = "dotDecimalCharCommaSeparator")
-          )
+            shinyWidgets::pickerInput(ns("capacity"),
+                                      icon_text("box", "Capacity in Liters:"),
+                                      choices = choices$inventory$capacity,
+                                      selected = if (is.null(hold)) 10 else hold$capacity),
+            shinyWidgets::pickerInput(ns("offer_type"),
+                                      icon_text("archive", "Order Type Offered:"),
+                                      choices = choices$inventory$offer_type,
+                                      selected = if (is.null(hold)) "New" else hold$offer_type),
+            shiny::numericInput(ns("price_per_unit"),
+                                icon_text("money", "Price per Unit (KES):"),
+                                value = if (is.null(hold)) "" else hold$price_per_unit,
+                                min = 1,
+                                step = 25),
+            shiny::numericInput(ns("quantity"),
+                                icon_text("sort-amount-up-alt", "Quantity:"),
+                                value = if (is.null(hold)) "" else hold$quantity,
+                                min = 0,
+                                step = 1)
+          ),
+          div(
+            id = ns("danger"),
+            class = "danger",
+            span(icon("exclamation-circle"), p("Offering already available."))
+          ) %>% shinyjs::hidden()
         )
       )
     )
+
+    observeEvent(input$capacity, {
+      if (input$capacity == "") {
+        shinyFeedback::showFeedbackDanger(
+          "capacity",
+          text = "Capacity cannot be blank."
+        )
+        shinyjs::disable("submit")
+      } else {
+        shinyFeedback::hideFeedback("capacity")
+        shinyjs::enable("submit")
+      }
+    })
+
+    observeEvent(input$offer_type, {
+
+      if (input$offer_type == "") {
+        shinyFeedback::showFeedbackDanger(
+          "offer_type",
+          text = "Offer Type cannot be blank."
+        )
+        shinyjs::disable("submit")
+      } else {
+        shinyFeedback::hideFeedback("offer_type")
+        shinyjs::enable("submit")
+      }
+    })
+
+    observeEvent(input$price_per_unit, {
+      if (is.na(input$price_per_unit) || input$price_per_unit <= 0) {
+        shinyFeedback::showFeedbackDanger(
+          "price_per_unit",
+          text =  "Price cannot be blank."
+        )
+        shinyjs::disable("submit")
+      }  else {
+        shinyFeedback::hideFeedback("price_per_unit")
+        shinyjs::enable("submit")
+      }
+    })
+
+    observeEvent(input$quantity, {
+      if (is.na(input$quantity)) {
+        shinyFeedback::showFeedbackDanger(
+          "quantity",
+          text = "Quantity cannot be blank."
+        )
+        shinyjs::disable("submit")
+      } else {
+        shinyFeedback::hideFeedback("quantity")
+        shinyjs::enable("submit")
+      }
+    })
+
+    observe({
+      req(is.null(hold), input$capacity, input$offer_type)
+      # browser()
+      offer <- paste0(input$offer_type, ": ", input$capacity, " Liters")
+      if (offer %in% offerings()) {
+        shinyjs::show("danger")
+        shinyjs::disable("submit")
+      } else {
+        shinyjs::hide("danger")
+        shinyjs::enable("submit")
+      }
+    })
+
   })
 
   edit_inventory_dat <- reactive({
@@ -257,9 +352,10 @@ inventory_edit_module <- function(input, output, session,
       uid = if (is.null(hold)) NA else hold$uid,
       data = list(
         vendor_uid = vendor_info()$vendor_uid,
-        capacity = as.numeric(substr(input$capacity, 1L, nchar(input$capacity) - 1)),
+        capacity = input$capacity,
         offer_type = input$offer_type,
-        price_per_unit = input$price_per_unit
+        price_per_unit = input$price_per_unit,
+        quantity = input$quantity
       )
     )
 
@@ -279,9 +375,7 @@ inventory_edit_module <- function(input, output, session,
 
   validate_edit <- eventReactive(input$submit, {
     dat <- edit_inventory_dat()
-
     # TODO: add validation to inputs
-
     dat
   })
 
@@ -292,49 +386,46 @@ inventory_edit_module <- function(input, output, session,
     tryCatch({
 
       if (is.na(dat$uid)) {
-        # creating a new car
-
         dbExecute(
           conn,
-          'INSERT INTO vendor_offerings (
+          'INSERT INTO vendor_inventory (
             vendor_uid,
             capacity,
             offer_type,
             price_per_unit,
+            quantity,
             created_at,
             created_by,
             modified_at,
             modified_by)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
           params = c(
             unname(dat$data)
           )
         )
       } else {
-        # editing an existing car
         dbExecute(
           conn,
-          "UPDATE vendor_offerings SET
+          "UPDATE vendor_inventory SET
             vendor_uid=$1,
             capacity=$2,
             offer_type=$3,
             price_per_unit=$4,
-            created_at=$5,
-            created_by=$6,
-            modified_at=$7,
-            modified_by=$8 WHERE uid=$9",
+            quantity = $5,
+            created_at=$6,
+            created_by=$7,
+            modified_at=$8,
+            modified_by=$9 WHERE uid=$10",
           params = c(
             unname(dat$data),
             list(dat$uid)
           )
         )
       }
-
       session$userData$inventory_trigger(session$userData$inventory_trigger() + 1)
       vendor_name <- vendor_info()$vendor_name
       msg <- paste0("Vendor ", vendor_name, " inventory successfully edited!")
       shinyFeedback::showToast("success", msg)
-
     }, error = function(err) {
       msg <- 'Error updating vendor_offerings database'
       print(msg)
