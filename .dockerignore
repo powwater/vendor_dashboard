@@ -1,0 +1,3 @@
+shiny_app/logs/*
+shiny_app/deps.yaml
+shiny_app/README.md

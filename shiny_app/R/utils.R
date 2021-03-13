@@ -1,3 +1,14 @@
+create_coords_string <- function(lat, lon) {
+
+  lat <- round(lat, 3)
+  lon <- round(lon, 3)
+
+  paste0(
+    "(", lat, ", ", lon, ")"
+  )
+
+}
+
 create_directions_iframe <- function(key, start, stop, type = "place_id") {
 
   paste0(

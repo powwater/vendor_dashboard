@@ -79,7 +79,8 @@ customers_module <- function(input, output, session, vendor_info) {
 
     customers() %>%
       mutate(
-        customer_location = Vectorize(create_link)(customer_location_url, customer_location_name)
+        customer_location = Vectorize(create_link)(customer_location_url, customer_location_name),
+        customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon)
       ) %>%
       select(
         # customer_number,
@@ -88,8 +89,7 @@ customers_module <- function(input, output, session, vendor_info) {
         customer_location,
         customer_location_address,
         customer_location_vicinity,
-        customer_location_lat,
-        customer_location_lon
+        customer_coordinates
       )
   })
 
@@ -101,8 +101,7 @@ customers_module <- function(input, output, session, vendor_info) {
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- snakecase::to_title_case(colnames(out[c(1:(ncol(out) - 1))]),
-                                     "Latitude", "Longitude")
+    cols <- c("Name", "Phone Number", "Location", "Address", "Vicinity", "Coordinates")
     esc_cols <- c(-1 * match("customer_location", colnames(out)))
     id <- session$ns("customers_table")
 
@@ -126,8 +125,7 @@ customers_module <- function(input, output, session, vendor_info) {
         ),
         buttons = dt_bttns(out, "customers-table", esc_cols)
       )
-    ) %>%
-      DT::formatRound(c("customer_location_lat", "customer_location_lon"), digits = 2)
+    )
 
   })
 
