@@ -25,7 +25,7 @@ system("docker push docker.pkg.github.com/powwater/vendor_dashboard/powwater_ven
 # tag and push to dockerhub
 system("docker tag powwater_vendorsdashboard jimbrig2011/powwater_vendorsdashboard:alpha")
 system("docker build -t jimbrig2011/powwater_vendor_dashboard:alpha .")
-system("docker push")
+system("docker push jimbrig2011/powwater_vendor_dashboard:alpha")
 
 # build production, tag, and push to GCR
 system("gcloud auth configure-docker")
