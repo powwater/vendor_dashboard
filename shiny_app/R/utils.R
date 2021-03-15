@@ -18,6 +18,53 @@ create_directions_iframe <- function(key, start, stop, type = "place_id") {
 
 }
 
+
+#' Function to format a date (usually) for printing.
+#'
+#' @param date Optional, a date to be formatted.
+#' @param time_zone Should the time zone be printed with the date?
+#' @param fractional_seconds Should fractional seconds be included when printing
+#' the date?
+#'
+#' @return Character vector.
+#'
+#' @export
+str_date_formatted <- function(date = NA, time_zone = TRUE,
+                               fractional_seconds = TRUE) {
+
+  # Get date if not supplied
+  if (is.na(date)[1]) date <- lubridate::now(tz = Sys.timezone())
+
+  # Format string
+  format_date <- ifelse(
+    fractional_seconds,
+    "%Y-%m-%d %H:%M:%OS3",
+    "%Y-%m-%d %H:%M:%S"
+  )
+
+  # Format
+  x <- format(date, format = format_date, usetz = time_zone)
+
+  return(x)
+
+}
+
+parse_unix_time <- function(x, tz = "UTC", origin = "1970-01-01") {
+  as.POSIXct(x, tz = tz, origin = origin)
+}
+
+time_zone <- function(date) attr(date, "tzone")
+
+#' Function to get a formatted date string used to prefix messages.
+#'
+#' @return Character vector.
+#'
+#' @export
+date_message <- function() stringr::str_c(str_date_formatted(), ": ")
+
+#' @importFrom dplyr pull
+#' @importFrom fs dir_info
+#' @importFrom tibble as_tibble
 get_last_updated_date <- function(path = ".") {
   fs::dir_info(path) %>%
     tibble::as_tibble() %>%
@@ -121,6 +168,9 @@ true_false_formatter.malicious <- formattable::formatter("span",
                                                            )
                                                          ))
 
+#' @importFrom dplyr pull
+#' @importFrom purrr set_names
+#' @importFrom rlang sym
 pull_unique <- function(data, var, sort = TRUE,
                         decreasing = FALSE, names = TRUE) {
 
@@ -155,6 +205,7 @@ action_bttns <- function(id_) {
   )
 }
 
+#' @importFrom shiny icon
 rating_stars <- function(rating, max_rating = 5) {
   star_icon <- function(empty = FALSE) {
     tagAppendAttributes(shiny::icon("star"),
@@ -170,6 +221,8 @@ rating_stars <- function(rating, max_rating = 5) {
   div(title = label, "aria-label" = label, role = "img", stars)
 }
 
+#' @importFrom shiny icon tagAppendAttributes
+#' @importFrom tidyselect all_of
 ratings_to_stars <- function(dat, cols = c("rating")) {
 
 
@@ -307,6 +360,7 @@ ratings_to_stars <- function(dat, cols = c("rating")) {
 #' @examples
 #' icon_text("table", "Table")
 #'
+#' @importFrom shiny icon tagList
 #' @importFrom shiny icon tagList
 icon_text <- function(icon, text) {
 
