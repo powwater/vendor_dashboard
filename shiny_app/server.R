@@ -13,7 +13,7 @@ server <- function(input, output, session) {
   })
 
   callModule(
-    profile_module,
+    powpolished::profile_module,
     'polished_profile'
   )
 
@@ -68,7 +68,7 @@ server <- function(input, output, session) {
   })
 }
 
-polished::secure_server(
+powpolished::secure_server(
   server,
   custom_sign_in_server = sign_in_module_2
 )

@@ -33,7 +33,7 @@ header <- dashboardHeaderPlus(
     contact_item("Jimmy Briggs", "Developer", "678-491-4856", "jimmy.briggs@tychobra.com"),
     contact_item("Patrick Howard", "Developer", "404-408-2500", "patrick.howard@tychobra.com")
   )),
-  polished::profile_module_ui("polished_profile")
+  powpolished::profile_module_ui("polished_profile")
 )
 
 sidebar <- dashboardSidebar(
@@ -115,7 +115,7 @@ ui <- shinydashboardPlus::dashboardPagePlus(
   loading_duration = 2
 )
 
-polished::secure_ui(
+powpolished::secure_ui(
   ui,
   sign_in_ui_default(
     sign_in_module = sign_in_module_2_ui('sign_in'),
