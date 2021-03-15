@@ -2,7 +2,7 @@
 
 get_config <- function() {
 
-  if (!file.exists("config.yml") || !file.exists("shiny_app/config.yml")) {
+  if (!file.exists("config.yml") && !file.exists("shiny_app/config.yml")) {
 
     download <- usethis::ui_yeah("No configuration file detected. Download from GDrive?")
 

@@ -32,7 +32,7 @@ orders_module_ui <- function(id){
       )
     ),
     htmltools::tags$script(src = "orders_module.js"),
-    htmltools::tags$script(paste0("orders_table_module_js('", ns(''), "')")),
+    htmltools::tags$script(paste0("orders_table_module_js('", ns(''), "')"))
   )
 }
 

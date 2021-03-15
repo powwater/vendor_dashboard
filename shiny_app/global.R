@@ -22,7 +22,7 @@ pacman::p_load(
   dplyr,
   DT,
   formattable,
-  polished,
+  powpolished,
   snakecase,
   tychobratools,
   RPostgres,
@@ -67,15 +67,19 @@ options(dplyr.summarise.inform = FALSE)
 # if (is_dev && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 
 # load config yaml file
-app_config <- config::get()
+attempt::attempt({
+  app_config <- config::get()
+}, msg = "Error loading configuration. Run `get_config()` to retrieve config.yml from Google Drive and re-try.")
+
 key <- app_config$gcp$gmaps_api_key
 set_key(key = key)
 
 # setup polished ----------------------------------------------------------
 
-polished::global_sessions_config(
-  app_name = app_config$app_name,
-  api_key = app_config$polished$api_key,
+powpolished::global_sessions_config(
+  api_url = app_config$powpolished$api_url,
+  app_name = app_config$powpolished$app_name,
+  api_key = app_config$powpolished$api_key,
   sign_in_providers = 'email'
 )
 
@@ -94,7 +98,6 @@ attempt::attempt({
 # assets ---------------------------------------
 
 assets <- yaml::read_yaml("config/assets.yml")
-
 pow_colors <- assets$colors
 
 # choices -----------------------------------------------------------------
