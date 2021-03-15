@@ -142,6 +142,8 @@ customers_module <- function(input, output, session, vendor_info) {
     n_col <- ncol(out)
     cols <- c(" ", "Name", "Phone Number", "Location", "Address", "Vicinity", "Coordinates")
     esc_cols <- c(-1, -1 * match("customer_location", colnames(out)))
+    cols <- c("Name", "Phone Number", "Location", "Address", "Vicinity", "Coordinates")
+    esc_cols <- c(-1 * match("customer_location", colnames(out)))
     id <- session$ns("customers_table")
 
     dt_js <- paste0(
