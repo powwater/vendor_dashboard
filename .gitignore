@@ -46,3 +46,7 @@ shiny_app/config/powwater_vendorsdashboard.yml
 
 
 config/config_last_modified
+
+.vscode/
+
+config/powwater_vendorsdashboard.yml
