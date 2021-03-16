@@ -40,8 +40,6 @@ vignettes/*.pdf
 
 config.yml
 
-gitdown/
-
 shiny_app/config/powwater_vendorsdashboard.yml
 
 
