@@ -18,9 +18,56 @@ server <- function(input, output, session) {
   )
 
   output$user_panel <- renderUI({
-    sidebarUserPanel(name = paste0("Vendor: ", logged_in_vendor_info()$vendor_name), #session$userData$user()$email,
-                     subtitle = tags$span("Current Status: ", shinydashboardPlus::dashboardBadge("Online", color = "green")),
-                     image = NULL)
+    tagList(
+      br(),
+      hr(),
+      div(
+        id = "user_panel",
+        sidebarUserPanel(
+          name = paste0("Vendor: ", logged_in_vendor_info()$vendor_name),
+          subtitle = tags$span("Current Status: ", shinydashboardPlus::dashboardBadge("Online", color = "green")),
+          image = "images/no_picture.png"
+        ),
+        div(
+          id = "edit_user_div",
+          style = "text-align: center;",
+          actionLink("edit_user", "Edit", icon = icon("edit"))
+        ) %>% shinyjs::hidden()
+      ),
+      hr(),
+      br()
+    )
+  })
+
+  observeEvent(input$waiter_trigger == '1', {
+    req(input$waiter_trigger == '1')
+    waiter_hide()
+  })
+
+  shinyjs::onevent("mouseenter", "user_panel", shinyjs::show("edit_user_div", anim = TRUE))
+
+  observeEvent(input$edit_user, {
+    shiny::showModal(
+      shiny::modalDialog(
+        title = "Edit Vendor Profile:",
+        size = 'l',
+        footer = list(
+          shiny::modalButton('Cancel'),
+          shiny::actionButton(
+            'submit',
+            'Submit',
+            class = "btn btn-primary",
+            style = "color: white"
+          )
+        ),
+        fluidRow(
+          column(
+            width = 12,
+            h3("Coming soon!")
+          )
+        )
+      )
+    )
   })
 
   callModule(
