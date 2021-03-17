@@ -42,7 +42,8 @@ pacman::p_load(
   tidyselect,
   attempt,
   googleway,
-  shinyFiles
+  shinyFiles,
+  waiter
 )
 
 

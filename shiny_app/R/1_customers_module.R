@@ -155,6 +155,9 @@ customers_module <- function(input, output, session, vendor_info) {
             filters.eq(i - 1).css('visibility', 'hidden');
           filters.eq(i - 1).css('position', 'static');
         }
+      Shiny.setInputValue('waiter_trigger', '1', {
+        priority: 'event',
+      });
       }")
 
     DT::datatable(

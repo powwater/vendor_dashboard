@@ -1,3 +1,8 @@
+waiting_screen <- tagList(
+  spin_chasing_dots(),
+  span("Loading...", style = "color:white;")
+)
+
 header <- dashboardHeaderPlus(
 
   title = tagList(
@@ -37,13 +42,8 @@ header <- dashboardHeaderPlus(
 )
 
 sidebar <- dashboardSidebar(
-
   tagList(
-
-    div(
-      class = "text-center",
-      uiOutput("user_panel")
-    ),
+    uiOutput("user_panel"),
     sidebarMenu(
       id = 'sidebar_menu',
       menuItem(
@@ -78,6 +78,8 @@ sidebar <- dashboardSidebar(
 )
 
 body <- dashboardBody(
+  waiter::use_waiter(),
+  waiter::waiter_show_on_load(waiting_screen),
   tags$head(
     shinyjs::useShinyjs(),
     shinyFeedback::useShinyFeedback(),
@@ -110,9 +112,7 @@ ui <- shinydashboardPlus::dashboardPagePlus(
   sidebar,
   body,
   title = 'Powwater Vendor Dashboard',
-  skin = 'black',
-  enable_preloader = TRUE,
-  loading_duration = 2
+  skin = 'black'
 )
 
 powpolished::secure_ui(

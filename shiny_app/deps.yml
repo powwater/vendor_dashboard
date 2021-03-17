@@ -2,20 +2,20 @@ pacman:
   Package: pacman
   Repository: CRAN
   Version: 0.5.1
-config:
-  Package: config
-  Repository: CRAN
-  Version: 0.3.1
-polished:
-  Package: polished
-  GithubUsername: tychobra
-  GithubRepo: polished
-  GithubRef: HEAD
-  GithubSHA1: ca514d8d10c6fb9de03a358ba9381184e5d7f210
 attempt:
   Package: attempt
   Repository: CRAN
   Version: 0.3.1
+config:
+  Package: config
+  Repository: CRAN
+  Version: 0.3.1
+powpolished:
+  Package: powpolished
+  GithubUsername: powwater
+  GithubRepo: powpolished
+  GithubRef: HEAD
+  GithubSHA1: faa4f0d8ea4c92d8d16c73f95b17db09f6ebc963
 DBI:
   Package: DBI
   Repository: CRAN
@@ -52,22 +52,22 @@ shinycustomloader:
   Package: shinycustomloader
   Repository: CRAN
   Version: 0.9.0
+shinyjs:
+  Package: shinyjs
+  Repository: CRAN
+  Version: 2.0.0
 googleway:
   Package: googleway
   Repository: CRAN
   Version: 2.7.3
-shinyFeedback:
-  Package: shinyFeedback
-  Repository: CRAN
-  Version: 0.3.0
-snakecase:
-  Package: snakecase
-  Repository: CRAN
-  Version: 0.11.0
 htmltools:
   Package: htmltools
   Repository: CRAN
   Version: 0.5.1.1
+shinyFeedback:
+  Package: shinyFeedback
+  Repository: CRAN
+  Version: 0.3.0
 purrr:
   Package: purrr
   Repository: CRAN
@@ -80,20 +80,36 @@ tidyselect:
   Package: tidyselect
   Repository: CRAN
   Version: 1.1.0
+snakecase:
+  Package: snakecase
+  Repository: CRAN
+  Version: 0.11.0
 shinyWidgets:
   Package: shinyWidgets
   Repository: CRAN
   Version: 0.5.7
-shinyjs:
-  Package: shinyjs
-  Repository: CRAN
-  Version: 2.0.0
 tychobratools:
   Package: tychobratools
   GithubUsername: tychobra
   GithubRepo: tychobratools
   GithubRef: HEAD
   GithubSHA1: c1a24b413363174f1115a0b34d9ae3f8616e5b76
+usethis:
+  Package: usethis
+  Repository: CRAN
+  Version: 2.0.1
+googledrive:
+  Package: googledrive
+  Repository: CRAN
+  Version: 1.0.1
+lubridate:
+  Package: lubridate
+  Repository: CRAN
+  Version: 1.7.10
+stringr:
+  Package: stringr
+  Repository: CRAN
+  Version: 1.4.0
 rlang:
   Package: rlang
   Repository: CRAN
@@ -108,3 +124,7 @@ shinyFiles:
   GithubRepo: shinyFiles
   GithubRef: HEAD
   GithubSHA1: 07797c5aa4d447d2a7234c36ed80ce855fea6b1c
+waiter:
+  Package: waiter
+  Repository: CRAN
+  Version: 0.2.0
