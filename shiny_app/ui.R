@@ -4,52 +4,29 @@ waiting_screen <- tagList(
 )
 
 header <- dashboardHeaderPlus(
-
-  title = tagList(
-    tags$span(
-      class = "logo-lg",
-      tags$a(
-        htmltools::tags$img(
-          style = "margin-top: -5px",
-          src = "images/primary_logo.png",
-          width = 200
-        ),
-        href = "https://powwater.com",
-        target = "_blank"
-      )
-    ),
-    tags$img(
-      style = "height: 38px; width: 25px;",
-      src = "images/logo_droplet.png"
-    )
-  ),
-  left_menu = tagList(
-    htmltools::h4(
-      style = "margin-top: 5px;",
-      "Vendor Dashboard | Version: ",
-      shinydashboardPlus::dashboardBadge("Alpha"),
-      "| Last Updated on: ",
-      shinydashboardPlus::dashboardBadge(get_last_updated_date(), color = "green")
-    )
-  ),
-  # about_bttn(),
-  contact_menu(c(
-    contact_item("Andy Merlino", "Developer", "404-514-6417", "andy.merlino@tychobra.com"),
-    contact_item("Jimmy Briggs", "Developer", "678-491-4856", "jimmy.briggs@tychobra.com"),
-    contact_item("Patrick Howard", "Developer", "404-408-2500", "patrick.howard@tychobra.com")
-  )),
-  powpolished::profile_module_ui("polished_profile")
+  title = header_title(),
+  left_menu = header_left_menu("Vendor Dashboard", app_config$app_version),
+  header_contact_menu(),
+  powpolished::profile_module_ui("polished_profile"),
+  enable_rightsidebar = TRUE,
+  rightSidebarIcon = "cogs"
 )
 
 sidebar <- dashboardSidebar(
   tagList(
-    uiOutput("user_panel"),
+    user_module_ui("user_panel"),
     sidebarMenu(
       id = 'sidebar_menu',
       menuItem(
+        text = "Dashboard",
+        tabName = "vendor_dashboard",
+        icon = icon("dashboard")
+      ),
+      menuItem(
         text = 'Customers',
         tabName = 'customers_tab',
-        icon = icon('users')
+        icon = icon('users'),
+        selected = TRUE
       ),
       menuItem(
         text = 'Orders',
@@ -66,13 +43,6 @@ sidebar <- dashboardSidebar(
         tabName = 'inventory_tab',
         icon = icon("warehouse")
       )
-    ),
-    br(),
-    br(),
-    br(),
-    div(
-      # style = "vertical-align:bottom; position:absolute; bottom:35px;",
-      shinyFiles::shinyFilesButton("document", "Upload Documents", "Please select a document to upload.", FALSE)
     )
   )
 )
@@ -88,6 +58,10 @@ body <- dashboardBody(
     intlTelInputDependencies()
   ),
   tabItems(
+    tabItem(
+      tabName = "vendor_dashboard"#,
+      # vendor_dashboard_ui("vendor_dashboard_module")
+    ),
     tabItem(
       tabName = 'customers_tab',
       customers_module_ui("customers_module")
@@ -111,6 +85,7 @@ ui <- shinydashboardPlus::dashboardPagePlus(
   header,
   sidebar,
   body,
+  rightsidebar = right_sidebar_module_ui("rightbar"),
   title = 'Powwater Vendor Dashboard',
   skin = 'black'
 )

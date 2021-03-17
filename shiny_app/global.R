@@ -8,10 +8,11 @@
 #  ------------------------------------------------------------------------
 
 # NOTE
-# For config.yml source R/utils.R or dev/get_config.R and run get_config().
+# For config.yml source R/get_config.R and run get_config() OR pull directly from
+# GCP secret manager via dev/gcloud_secret.(ps1|.sh)
 
 # clear global environment ------------------------------------------------
-# rm(list = ls())
+rm(list = ls())
 
 # library packages --------------------------------------------------------
 require(pacman)
@@ -49,23 +50,17 @@ pacman::p_load(
 
 # data --------------------------------------------------------------------
 
-# customer_locations <- qs::qread("data/customer_locations")
-# vendor_locations <- qs::qread("data/vendor_locations")
-
-# customer_location_details <- qs::qread("data/customer_location_details")
-
 # set default options -----------------------------------------------------
-# options(tinytex.verbose = TRUE)
 options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
 
 # load configuration ------------------------------------------------------
 
 # tell app if in development or not
-# is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
+is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
 
 # enable shiny devmode
-# if (is_dev && packageVersion("shiny") >= "1.6.0") shiny::devmode()
+if (is_dev && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 
 # load config yaml file
 attempt::attempt({
@@ -102,8 +97,8 @@ assets <- yaml::read_yaml("config/assets.yml")
 pow_colors <- assets$colors
 
 # choices -----------------------------------------------------------------
-
-# choices <- yaml::read_yaml("config/choices.yml")
+choices <- yaml::read_yaml("config/choices.yml") %>%
+  purrr::map(unlist)
 
 # disconnect --------------------------------------------------------------
 shiny::onStop({
@@ -119,19 +114,3 @@ get_last_updated_date <- function(path = ".") {
     dplyr::pull("modification_time") %>%
     max(na.rm = TRUE)
 }
-
-
-# choices -----------------------------------------------------------------
-
-choices <- list(
-  inventory = list(
-    capacity = c(
-      "1.5 Liters" = 1.5,
-      "10 Liters" = 10,
-      "20 Liters" = 20
-    ),
-    offer_type = c(
-      "New", "Swap"
-    )
-  )
-)

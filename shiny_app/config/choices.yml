@@ -7,4 +7,25 @@ vendors:
   "Water Kiosk - Bamburi": "9e04f3d0-88f6-4856-aa17-0fc124a416ae"
   "Water Kiosk - Mwtapa": "c236ebbd-255d-41b5-bb30-1a4fb83b823f"
   "GivePower": "552f6c33-8a62-4fde-b21c-0d7defabb35c"
-
+currency:
+  "Kenyan Shillings (KES)": "kes"
+  "US Dollars (USD)": "usd"
+timezone:
+  "Auto-Detect": "auto"
+  "East Africa Time (EAT)": "UTC +3"
+  "Eastern Daylight Time (EDT)": "UTC -4"
+  "Central Daylight Time (CDT)": "UTC -5"
+  "Mountain Daylight Time (MDT)": "UTC -6"
+  "Pacific Daylight Time (PDT)": "UTC -7"
+  "Mountain Standard Time (MST)": "UTC -7"
+payment_types:
+  "MPesa": "mpesa"
+  "Credit Card": "credit_card"
+  "Paypal": "paypal"
+inventory_capacity:
+  "1.5L": 1.5
+  "10L": 10.0
+  "20L": 20.0
+inventory_offer_type:
+  "New": "new"
+  "Swap": "swap"
