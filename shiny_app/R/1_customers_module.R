@@ -45,13 +45,10 @@ customers_module_ui <- function(id) {
 }
 
 customers_module <- function(input, output, session, vendor_info) {
+
   ns <- session$ns
 
-  # customers <- reactiveVal(NULL)
-
   customers <- reactive({
-
-    # browser()
 
     id <- notify("Loading Customers from Database...")
     on.exit(removeNotification(id), add = TRUE)
@@ -122,12 +119,8 @@ customers_module <- function(input, output, session, vendor_info) {
       tibble::add_column(" " = actions, .before = 1)
 
     if (is.null(customers_prep())) {
-      # loading data into the table for the first time, so we render the entire table
-      # rather than using a DT proxy
       customers_prep(out)
     } else {
-      # table has already rendered, so use DT proxy to update the data in the
-      # table without re-rendering the entire table
       replaceData(customers_table_proxy, out, resetPaging = FALSE, rownames = FALSE)
     }
   })
@@ -165,14 +158,14 @@ customers_module <- function(input, output, session, vendor_info) {
       rownames = FALSE,
       colnames = cols,
       class = 'dt-center stripe cell-border display',
-      # Escape the HTML
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
+      elementId = session$ns("customers_table"),
       options = list(
         autoWidth = TRUE,
-        # scrollX = TRUE,
+        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
@@ -196,17 +189,18 @@ customers_module <- function(input, output, session, vendor_info) {
 
   map_data <- reactiveVal(NULL)
 
-  output$customer_locations <- renderGoogle_map({
-
-    # browser()
+  observeEvent(customers(), {
 
     dat <- customers() %>%
       mutate(
+        colour = "red",
+        # polyline =
         title = paste0(customer_name, ": ", customer_location_name),
         info = paste0(
           "<div id='bodyContent'>",
-          "<h4>", title, "</h4><hr>",
-          "<iframe width='450px' height='250px'",
+          "<h4>", customer_name, "</h4><br>",
+          "<h5>", customer_location_name, "<h5><hr>",
+          "<iframe width='400px' height='250px'",
           "frameborder='0' style = 'border:0'",
           "src=",
           paste0(
@@ -217,16 +211,29 @@ customers_module <- function(input, output, session, vendor_info) {
           ),
           "></iframe></div>"
         )
+      ) %>%
+      rename(
+        id = customer_uid,
+        lat = customer_location_lat,
+        lon = customer_location_lon,
+
       )
 
     map_data(dat)
+
+  })
+
+  output$customer_locations <- renderGoogle_map({
+    req(map_data())
+
+    dat <- map_data()
 
     # set_key(key)
 
     google_map(dat,
                key = key,
                # location = c(dat$customer_location_lat, dat$customer_location_lon),
-               zoom = 12,
+               # zoom = 12,
                search_box = TRUE,
                update_map_view = TRUE,
                geolocation = TRUE,
@@ -241,6 +248,7 @@ customers_module <- function(input, output, session, vendor_info) {
       add_markers(
         data = dat,
         id = "customer_uid",
+        # colour
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",

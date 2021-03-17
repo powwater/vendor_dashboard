@@ -9,6 +9,8 @@ create_coords_string <- function(lat, lon) {
 
 }
 
+
+
 create_directions_iframe <- function(key, start, stop, type = "place_id") {
 
   paste0(
@@ -367,6 +369,6 @@ icon_text <- function(icon, text) {
   i <- shiny::icon(icon)
   t <- paste0(" ", text)
 
-  shiny::tagList(div(i, t))
+  tags$span(i, t)
 
 }
