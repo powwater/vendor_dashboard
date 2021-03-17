@@ -162,7 +162,7 @@ customers_module <- function(input, output, session, vendor_info) {
       extensions = c("Buttons"),
       filter = "top",
       selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
-      elementId = session$ns("customers_table"),
+      # elementId = session$ns("customers_table"),
       options = list(
         autoWidth = TRUE,
         scrollX = TRUE,
