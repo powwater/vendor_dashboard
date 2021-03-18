@@ -1,5 +1,15 @@
 waiting_screen <- tagList(
+  tags$div(
+    style = 'width: 100%; margin-top: 25px; margin-bottom: 40px;',
+    tags$img(
+      src = "images/powwater_alt.png",
+      alt = 'POWWATER Logo',
+      width = '30%'
+    )
+  ),
+  br(),
   spin_chasing_dots(),
+  br(),
   span("Loading...", style = "color:white;")
 )
 
@@ -50,9 +60,10 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   waiter::use_waiter(),
   waiter::waiter_show_on_load(waiting_screen),
+  shinyscroll::use_shinyscroll(),
+  shinyjs::useShinyjs(),
+  shinyFeedback::useShinyFeedback(),
   tags$head(
-    shinyjs::useShinyjs(),
-    shinyFeedback::useShinyFeedback(),
     includeCSS("www/stars.css"),
     includeCSS("www/styles.css"),
     intlTelInputDependencies()

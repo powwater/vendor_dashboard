@@ -6,7 +6,6 @@ server <- function(input, output, session) {
   })
 
   logged_in_vendor_info <- reactive({
-
     list(
       vendor_uid = "c401b531-719d-4cad-82e7-71db3ffba166",
       vendor_location_uid = "702e0732-db29-479a-a2a0-2595392e7280",
@@ -14,7 +13,6 @@ server <- function(input, output, session) {
       place_id = "ChIJrToahpQJQBgRZ6ukvDc1LO4",
       region_id = "ChIJ5b0LA6wOQBgRe0sIruEoRCc"
     )
-
   })
 
   callModule(

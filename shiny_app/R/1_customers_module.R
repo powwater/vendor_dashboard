@@ -272,6 +272,7 @@ customers_module <- function(input, output, session, vendor_info) {
   title_txt <- reactiveVal(NULL)
 
   observeEvent(customer_to_map(), {
+    scroll(session$ns("customer_locations"))
     sel <- customer_to_map()
     res <- google_directions(
       origin = paste0("place_id:",
@@ -304,7 +305,6 @@ customers_module <- function(input, output, session, vendor_info) {
         focus_layer = TRUE
       ) %>%
       add_polylines(polyline = "poly")
-    shinyjs::show("map_title")
     shinyjs::show("map_bttn")
   })
 
