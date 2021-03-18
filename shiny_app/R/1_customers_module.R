@@ -162,7 +162,7 @@ customers_module <- function(input, output, session, vendor_info) {
       extensions = c("Buttons"),
       filter = "top",
       selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
-      elementId = session$ns("customers_table"),
+      # elementId = session$ns("customers_table"),
       options = list(
         autoWidth = TRUE,
         scrollX = TRUE,
@@ -211,13 +211,13 @@ customers_module <- function(input, output, session, vendor_info) {
           ),
           "></iframe></div>"
         )
-      ) %>%
-      rename(
-        id = customer_uid,
-        lat = customer_location_lat,
-        lon = customer_location_lon,
+      )# %>%
+      # rename(
+      #   id = customer_uid,
+      #   lat = customer_location_lat,
+      #   lon = customer_location_lon,
 
-      )
+      # )
 
     map_data(dat)
 
@@ -352,15 +352,15 @@ customers_module <- function(input, output, session, vendor_info) {
     selectRows(customers_table_proxy, selected = row)
   })
 
-  output$map_title <- renderUI({
-    req(title_txt())
-
-    div(
-      h4(
-        title_txt()
-      )
-    )
-  })
+  # output$map_title <- renderUI({
+  #   req(title_txt())
+  #
+  #   div(
+  #     h4(
+  #       title_txt()
+  #     )
+  #   )
+  # })
 
   output$vendor_region <- renderUI({
     HTML(
