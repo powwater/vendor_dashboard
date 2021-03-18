@@ -70,8 +70,8 @@ body <- dashboardBody(
   ),
   tabItems(
     tabItem(
-      tabName = "vendor_dashboard"#,
-      # vendor_dashboard_ui("vendor_dashboard_module")
+      tabName = "vendor_dash",
+      vendor_dashboard_ui("vendor_dashboard_module")
     ),
     tabItem(
       tabName = 'customers_tab',
