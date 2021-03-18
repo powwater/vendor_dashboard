@@ -2,8 +2,9 @@
 <a href="https://powwater.org"><img align="center" src="https://github.com/powwater/adminportal/blob/main/docs/images/powwater_logo_transparent.png"/></a>
 </p>
 
-# Powwater Vendors Dashboard
-> Repository for the [Powwater](https://powwater.com) Vendors Shiny Web Application Dashboard
+# Powwater Vendors Dashboard 
+
+> Repository for the [Vendors Shiny Web Application Dashboard](https://vendorsdashboard.powwater.org/) build for [Powwater](https://powwater.com) by [Tychobra](https://tychobra.com)
 
 <!-- badges: start -->
 [![Lifecycle:Maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
