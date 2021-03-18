@@ -18,32 +18,19 @@ user_module_ui <- function(id) {
 
 user_module <- function(input, output, session, vendor_info) {
 
-  volumes <- c(Home = fs::path_home(), shinyFiles::getVolumes()())
-  shinyFileChoose(input,
-                  "document",
-                  roots = volumes,
-                  session = session,
-                  defaultRoot = "Home")
-
-  observe({
-    cat("\ninput$file value:\n\n")
-    print(input$file)
-  })
-
-  output$filepaths <- renderPrint({
-    if (is.integer(input$document)) {
-      cat("No files have been selected")
-    } else {
-      parseFilePaths(volumes, input$document)
-    }
-  })
-
   image_path <- reactive({
-    vend <- vendor_info()$vendor_name
-    out <- switch(tolower(vend),
-                  "dutch water" = "images/profiles/dutch_water.png",
-                  "images/profiles/no_picture.png")
-    out
+
+    # hold <- paste0(
+    #   "images/profiles/",
+    #   snakecase::to_snake_case(tolower(vendor_info()$vendor_name)),
+    #   ".png"
+    # )
+    #
+    # out <- if (file.exists(hold)) hold else "images/profiles/no_picture.png"
+
+    "images/profiles/dutch_water.png"
+
+    # out
   })
 
   output$user_panel <- renderUI({
@@ -100,17 +87,12 @@ user_module <- function(input, output, session, vendor_info) {
               title = span(icon("info"), "Operation Description"),
               description = "Dutch Water"
             )
-          )
-        ),
-        span(
+          ),
+
           shinyFiles::shinyFilesButton(session$ns("document"),
                                        "Upload Documents",
                                        "Please select a document to upload.",
-                                       multiple = TRUE,
-                                       viewtype = "detail"),
-
-          verbatimTextOutput(session$ns("filepaths"))
-
+                                       FALSE)
         )
       )
     )
@@ -120,13 +102,16 @@ user_module <- function(input, output, session, vendor_info) {
     removeModal()
   })
 
+  volumes <- c(Home = fs::path_home(), shinyFiles::getVolumes(exclude = "wd")())
+
+  shinyFileChoose(input, session$ns("document"), roots = volumes, session = session, defaultRoot = "Home")
+
   ## print to browser
   output$filepaths <- renderPrint({
     if (is.integer(input$document)) {
-      cat("")
+      cat("No files have been selected (shinyFileChoose)")
     } else {
-      hold <- parseFilePaths(volumes, input$document)
-      paste0("Selected: ", hold$datapath)
+      parseFilePaths(volumes, input$document)
     }
   })
 

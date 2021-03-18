@@ -44,8 +44,7 @@ pacman::p_load(
   attempt,
   googleway,
   shinyFiles,
-  waiter,
-  shinyscroll
+  waiter
 )
 
 

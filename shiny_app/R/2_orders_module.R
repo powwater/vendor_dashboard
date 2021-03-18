@@ -203,7 +203,6 @@ orders_module <- function(input, output, session, vendor_info){
   })
 
   observeEvent(order_to_info(), {
-    scroll(session$ns("directions_iframe"))
     sel <- order_to_info()
     updatePickerInput(session, "selected_order", selected = sel$uid)
     selected_order_for_view(sel)
@@ -282,12 +281,10 @@ orders_module <- function(input, output, session, vendor_info){
       "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
     )
 
-    cap <- paste0(
-      "Order #",
-      orders()$order_number[match(input$selected_order, orders()$uid)][1],
-      " - Order placed on: ",
-      paste0(orders()$date[1], " ", orders()$order_time[1])
-    )
+    # "Order #" = orders()$order_number[match(input$selected_order, orders()$uid)],
+    # "Delivery Start" = paste0(orders()$date, " - ", orders()$order_time),
+    # # "Delivery End" = ,
+    # ""
 
     n_row <- nrow(out)
     n_col <- ncol(out)
@@ -295,7 +292,6 @@ orders_module <- function(input, output, session, vendor_info){
 
     datatable(
       out,
-      caption = cap,
       class = "row-border nowrap",
       rownames = FALSE,
       selection = "none",
