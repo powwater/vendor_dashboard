@@ -2,6 +2,10 @@ pacman:
   Package: pacman
   Repository: CRAN
   Version: 0.5.1
+shiny:
+  Package: shiny
+  Repository: CRAN
+  Version: 1.6.0
 attempt:
   Package: attempt
   Repository: CRAN
@@ -28,10 +32,10 @@ yaml:
   Package: yaml
   Repository: CRAN
   Version: 2.2.1
-shiny:
-  Package: shiny
+purrr:
+  Package: purrr
   Repository: CRAN
-  Version: 1.6.0
+  Version: 0.3.4
 fs:
   Package: fs
   Repository: CRAN
@@ -68,10 +72,6 @@ shinyFeedback:
   Package: shinyFeedback
   Repository: CRAN
   Version: 0.3.0
-purrr:
-  Package: purrr
-  Repository: CRAN
-  Version: 0.3.4
 formattable:
   Package: formattable
   Repository: CRAN
@@ -102,6 +102,16 @@ googledrive:
   Package: googledrive
   Repository: CRAN
   Version: 1.0.1
+shinydashboardPlus:
+  Package: shinydashboardPlus
+  Repository: CRAN
+  Version: 0.7.5
+shinyFiles:
+  Package: shinyFiles
+  GithubUsername: thomasp85
+  GithubRepo: shinyFiles
+  GithubRef: HEAD
+  GithubSHA1: 07797c5aa4d447d2a7234c36ed80ce855fea6b1c
 lubridate:
   Package: lubridate
   Repository: CRAN
@@ -114,16 +124,6 @@ rlang:
   Package: rlang
   Repository: CRAN
   Version: 0.4.10
-shinydashboardPlus:
-  Package: shinydashboardPlus
-  Repository: CRAN
-  Version: 0.7.5
-shinyFiles:
-  Package: shinyFiles
-  GithubUsername: thomasp85
-  GithubRepo: shinyFiles
-  GithubRef: HEAD
-  GithubSHA1: 07797c5aa4d447d2a7234c36ed80ce855fea6b1c
 waiter:
   Package: waiter
   Repository: CRAN
