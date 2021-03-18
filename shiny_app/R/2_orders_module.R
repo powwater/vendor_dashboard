@@ -284,9 +284,9 @@ orders_module <- function(input, output, session, vendor_info){
 
     cap <- paste0(
       "Order #",
-      orders()$order_number[match(input$selected_order, orders()$uid)],
+      orders()$order_number[match(input$selected_order, orders()$uid)][1],
       " - Order placed on: ",
-      paste0(orders()$date, " ", orders()$order_time)
+      paste0(orders()$date[1], " ", orders()$order_time[1])
     )
 
     n_row <- nrow(out)
