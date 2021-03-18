@@ -66,7 +66,7 @@ orders_module <- function(input, output, session, vendor_info){
   })
 
   observeEvent(orders(), {
-    order_choices <- orders()$uid
+    order_choices <- orders()$order_uid
     names(order_choices) <- paste0("Order #", orders()$order_number)
     updatePickerInput(session, "selected_order", choices = order_choices)
   }, once = TRUE)
@@ -74,7 +74,7 @@ orders_module <- function(input, output, session, vendor_info){
   orders_prep <- reactive({
     req(orders())
 
-    ids <- orders()$uid
+    ids <- orders()$order_uid
 
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
@@ -86,7 +86,6 @@ orders_module <- function(input, output, session, vendor_info){
     })
 
     orders() %>%
-      select(-uid) %>%
       mutate(
         delivery_fee = paste0(formattable::currency(delivery_fee, "", sep = "", big.mark = ","), " KES"),
         total_price = paste0(formattable::currency(total_price, "", sep = "", big.mark = ","), " KES"),
@@ -95,8 +94,17 @@ orders_module <- function(input, output, session, vendor_info){
         order_type = ifelse(order_type == "Refill", "Swap", order_type)
       ) %>%
       select(
-        order_number:status, delivery_fee, total_price_of_water = total_price, total_transaction_payment = payment_total,
-        payment_type, vendor_prep_time, vendor_rating
+        order_number,
+        customer_name,
+        rider_name,
+        order_time,
+        status,
+        delivery_fee,
+        total_price_of_water = total_price,
+        total_transaction_payment = payment_total,
+        payment_type,
+        vendor_prep_time,
+        vendor_rating
       ) %>%
       # add action bttns
       tibble::add_column(" " = actions, .before = 1)
