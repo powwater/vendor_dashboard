@@ -50,10 +50,8 @@ orders_module <- function(input, output, session, vendor_info){
 
     tryCatch({
 
-      out <- conn %>%
-        dplyr::tbl("orders") %>%
+      out <- orders_query %>%
         dplyr::filter(vendor_uid == vend) %>%
-        select(uid, order_number, customer_name, rider_name, order_time:vendor_rating, payment_total) %>%
         dplyr::collect()
 
     }, error = function(err) {
