@@ -73,8 +73,7 @@
 - [PostgreSQL](https://www.postgresql.org/)
 - [Expo](https://expo.io/tools) | [Github](https://github.com/expo/expo)
 - [Docker](https://www.docker.com/)
-
-- [Google Container Registry]()
+- [Google Container Registry](https://github.com/orgs/powwater/packages)
 - [Github Container Registry](https://github.com/powwater/vendor_dashboard/packages/)
 
 ### External APIs
