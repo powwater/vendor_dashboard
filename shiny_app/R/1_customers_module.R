@@ -14,8 +14,8 @@ customers_module_ui <- function(id) {
           column(
             width = 6,
             offset = 6,
-            fluidRow(
-              uiOutput(ns("map_title")) %>% shinyjs::hidden(),
+            span(
+              uiOutput(ns("map_title")),
               actionButton(ns("map_bttn"),
                            "View All",
                            icon = icon("map")) %>%
@@ -59,20 +59,8 @@ customers_module <- function(input, output, session, vendor_info) {
 
     tryCatch({
 
-      out <- conn %>%
-        dplyr::tbl("orders") %>%
+      out <- customers_query %>%
         dplyr::filter(vendor_uid == vend) %>%
-        dplyr::distinct(customer_uid, customer_name) %>%
-        dplyr::left_join(
-          conn %>% dplyr::tbl("customer_locations") %>% dplyr::select(-uid, -c(created_at:modified_by)),
-          by = c("customer_uid")
-        ) %>%
-        dplyr::left_join(
-          conn %>% dplyr::tbl("customers"),
-          by = c("customer_uid" = "uid", "customer_name")
-        ) %>%
-        dplyr::rename(customer_location_url = customer_location_url.x, customer_location_url_full = customer_location_url.y) %>%
-        dplyr::select(-customer_location) %>%
         dplyr::collect()
 
     }, error = function(err) {
@@ -211,24 +199,27 @@ customers_module <- function(input, output, session, vendor_info) {
           ),
           "></iframe></div>"
         )
-      )# %>%
-      # rename(
-      #   id = customer_uid,
-      #   lat = customer_location_lat,
-      #   lon = customer_location_lon,
-
-      # )
+      )
 
     map_data(dat)
 
   })
 
   output$customer_locations <- renderGoogle_map({
-    req(map_data())
+    req(map_data(), customers())
 
     dat <- map_data()
 
-    # set_key(key)
+    vend_dat <- tibble(
+      lat = customers()$vendor_location_lat[[1]],
+      lon = customers()$vendor_location_lon[[1]],
+      address = customers()$vendor_location_address[[1]],
+      place_id = vendor_info()$place_id,
+      name = vendor_info()$name,
+      distance = customers()$estimated_distance[[1]],
+      duration = customers()$estimated_duration[[1]],
+      colour = "blue"
+    )
 
     google_map(dat,
                key = key,
@@ -256,10 +247,22 @@ customers_module <- function(input, output, session, vendor_info) {
         # label = "customer_name",
         layer_id = "customer_locations",
         info_window = "info",
-        # mouse_over = "customer_location_address",
+        mouse_over = "customer_location_address",
         close_info_window = TRUE,
         focus_layer = TRUE,
         # cluster = TRUE,
+        update_map_view = TRUE
+      ) %>%
+      add_markers(
+        dat = vend_dat,
+        lat = "lat",
+        lon = "lon",
+        id = "place_id",
+        layer_id = "vendor",
+        colour = "colour",
+        # title = "name",
+        mouse_over = "name",
+        focus_layer = TRUE,
         update_map_view = TRUE
       )
   })
@@ -324,7 +327,7 @@ customers_module <- function(input, output, session, vendor_info) {
         update_map_view = TRUE
       )
     selectRows(customers_table_proxy, selected = NULL)
-    shinyjs::hide("map_title")
+    title_txt("All Customer Locations")
     shinyjs::hide("map_bttn")
   })
 
@@ -352,15 +355,10 @@ customers_module <- function(input, output, session, vendor_info) {
     selectRows(customers_table_proxy, selected = row)
   })
 
-  # output$map_title <- renderUI({
-  #   req(title_txt())
-  #
-  #   div(
-  #     h4(
-  #       title_txt()
-  #     )
-  #   )
-  # })
+  output$map_title <- renderUI({
+    req(title_txt())
+    div(h4(title_txt()))
+  })
 
   output$vendor_region <- renderUI({
     HTML(

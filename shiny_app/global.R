@@ -48,9 +48,6 @@ pacman::p_load(
   shinyscroll
 )
 
-
-# data --------------------------------------------------------------------
-
 # set default options -----------------------------------------------------
 options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
@@ -71,15 +68,6 @@ attempt::attempt({
 key <- app_config$gcp$gmaps_api_key
 set_key(key = key)
 
-# setup polished ----------------------------------------------------------
-
-powpolished::global_sessions_config(
-  api_url = app_config$powpolished$api_url,
-  app_name = app_config$powpolished$app_name,
-  api_key = app_config$powpolished$api_key,
-  sign_in_providers = 'email'
-)
-
 # setup database connection -----------------------------------------------
 
 attempt::attempt({
@@ -91,6 +79,45 @@ attempt::attempt({
     host = app_config$db$host
   )
 }, msg = "Error connecting to database..")
+
+# data --------------------------------------------------------------------
+
+customers_query <- conn %>%
+  dplyr::tbl("orders") %>%
+  dplyr::distinct(customer_uid, customer_name) %>%
+  dplyr::left_join(
+    conn %>% dplyr::tbl("customer_locations") %>%
+      dplyr::select(-c(created_at:modified_by)) %>%
+      rename(customer_location_uid = uid),
+    by = c("customer_uid")
+  ) %>%
+  dplyr::left_join(
+    conn %>% dplyr::tbl("customers"),
+    by = c("customer_uid" = "uid", "customer_name")
+  ) %>%
+  dplyr::rename(customer_location_url = customer_location_url.x, customer_location_url_full = customer_location_url.y) %>%
+  dplyr::select(-customer_location) %>%
+  left_join(
+    conn %>% dplyr::tbl("order_routes") %>% dplyr::select(-uid, -order_uid, -c(created_at:modified_by)),
+    by = c("customer_location_uid")
+  ) %>%
+  left_join(
+    conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
+    by = c("vendor_location_uid" = "uid")
+  )
+
+orders_query <- conn %>%
+  dplyr::tbl("orders") %>%
+  rename(order_uid = uid)
+
+# setup polished ----------------------------------------------------------
+
+powpolished::global_sessions_config(
+  api_url = app_config$powpolished$api_url,
+  app_name = app_config$powpolished$app_name,
+  api_key = app_config$powpolished$api_key,
+  sign_in_providers = 'email'
+)
 
 # assets ---------------------------------------
 
