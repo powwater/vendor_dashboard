@@ -29,7 +29,7 @@ sidebar <- dashboardSidebar(
       id = 'sidebar_menu',
       menuItem(
         text = "Dashboard",
-        tabName = "vendor_dashboard",
+        tabName = "vendor_dash",
         icon = icon("dashboard")
       ),
       menuItem(

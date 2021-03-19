@@ -33,8 +33,8 @@ server <- function(input, output, session) {
   )
 
   callModule(
-    vendors_dashboard,
-    "vendors_dash",
+    vendor_dashboard,
+    "vendor_dashboard_module",
     vendor_info = logged_in_vendor_info
   )
 
