@@ -157,7 +157,8 @@ customers_module <- function(input, output, session, vendor_info) {
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
-      selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
+      selection = "none",
+      # selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
         scrollX = TRUE,
         dom = '<Bf>tip',
@@ -188,11 +189,10 @@ customers_module <- function(input, output, session, vendor_info) {
     dat <- customers() %>%
       mutate(
         colour = "red",
-        # polyline =
         title = paste0(customer_name, ": ", customer_location_name),
         info = paste0(
           "<div id='bodyContent'>",
-          "<h4>", customer_name, "</h4><br>",
+          "<h4>", customer_name, "</h4>",
           "<h5>", customer_location_name, "<h5><hr>",
           "<iframe width='450px' height='250px'",
           "frameborder='0' style = 'border:0'",
@@ -216,22 +216,38 @@ customers_module <- function(input, output, session, vendor_info) {
 
     dat <- map_data()
 
+    key <- googleway::google_keys()$google$default
+
     vend_dat <- tibble(
       lat = customers()$vendor_location_lat[[1]],
       lon = customers()$vendor_location_lon[[1]],
       address = customers()$vendor_location_address[[1]],
       place_id = vendor_info()$place_id,
-      name = vendor_info()$name,
-      distance = customers()$estimated_distance[[1]],
-      duration = customers()$estimated_duration[[1]],
+      name = vendor_info()$vendor_name,
       colour = "blue"
-    )
+    ) %>%
+      mutate(title = paste0(name, ": ", address),
+             info = paste0(
+               "<div id='bodyContent'>",
+               "<h4>", name, "</h4>",
+               "<h5>", address, "<h5><hr>",
+               "<iframe width='450px' height='250px'",
+               "frameborder='0' style = 'border:0'",
+               "src=",
+               paste0(
+                 "https://www.google.com/maps/embed/v1/place?q=place_id:",
+                 place_id,
+                 "&key=",
+                 key
+               ),
+               "></iframe></div>"
+             ))
 
     google_map(dat,
                key = key,
-               # location = c(dat$customer_location_lat, dat$customer_location_lon),
+               # location = c(vend_dat$lat, vend_dat$lon),
                # zoom = 12,
-               search_box = TRUE,
+               # search_box = TRUE,
                update_map_view = TRUE,
                geolocation = TRUE,
                map_type_control = TRUE,
@@ -245,31 +261,28 @@ customers_module <- function(input, output, session, vendor_info) {
       add_markers(
         data = dat,
         id = "customer_uid",
-        # colour
+        # colour = "colour",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
-        # mouse_over_group =
-        # label = "customer_name",
         layer_id = "customer_locations",
         info_window = "info",
-        mouse_over = "customer_location_address",
         close_info_window = TRUE,
         focus_layer = TRUE,
-        # cluster = TRUE,
         update_map_view = TRUE
       ) %>%
       add_markers(
-        dat = vend_dat,
+        data = vend_dat,
+        id = "place_id",
         lat = "lat",
         lon = "lon",
-        id = "place_id",
+        title = "title",
+        info_window = "info",
+        close_info_window = TRUE,
         layer_id = "vendor",
         colour = "colour",
-        # title = "name",
-        mouse_over = "name",
-        focus_layer = TRUE,
-        update_map_view = TRUE
+        update_map_view = TRUE,
+        focus_layer = TRUE
       )
   })
 
@@ -310,7 +323,6 @@ customers_module <- function(input, output, session, vendor_info) {
         info_window = "info",
         layer_id = "single_customer",
         update_map_view = TRUE,
-        close_info_window = TRUE,
         focus_layer = TRUE
       ) %>%
       add_polylines(polyline = "poly")
@@ -332,7 +344,7 @@ customers_module <- function(input, output, session, vendor_info) {
         layer_id = "customer_locations",
         update_map_view = TRUE
       )
-    selectRows(customers_table_proxy, selected = NULL)
+    # selectRows(customers_table_proxy, selected = NULL)
     title_txt("All Customer Locations")
     shinyjs::hide("map_bttn")
   })
@@ -340,6 +352,7 @@ customers_module <- function(input, output, session, vendor_info) {
   observeEvent(input$customer_locations_marker_click, {
     print(input$customer_locations_marker_click)
     id <- input$customer_locations_marker_click$id
+    if (id == vendor_info()$place_id) return(NULL)
     sel <- customers() %>%
       mutate(row = row_number()) %>%
       filter(customer_uid == id)
@@ -358,7 +371,7 @@ customers_module <- function(input, output, session, vendor_info) {
                       duration_txt)
     title_txt(txt_out)
     shinyjs::show("map_title")
-    selectRows(customers_table_proxy, selected = row)
+    # selectRows(customers_table_proxy, selected = row)
   })
 
   output$map_title <- renderUI({

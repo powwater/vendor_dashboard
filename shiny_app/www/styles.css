@@ -29,24 +29,24 @@
 
 /* nowrap for column widths */
 /* from https://stackoverflow.com/questions/55208855/how-to-set-column-width-in-r-shiny-data-table */
-.nowrap {
+/*.nowrap {
   white-space: nowrap;
-}
+}*/
 
-.datatables th {
+/*.datatables th {
   text-align: center !important;
-}
+}*/
 
 /*.dt-col {
   min-width: 85px;
 }*/
 
-.dataTables_length {
+/*.dataTables_length {
   display: inline-block;
   vertical-align: middle;
   text-align: right;
   float: right;
-}
+}*/
 
 
 
