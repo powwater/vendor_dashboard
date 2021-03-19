@@ -8,9 +8,17 @@ tests_module_ui <- function(id){
         footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
-        DT::DTOutput(ns('tests_table')) %>%
-          shinycustomloader::withLoader(),
-        hr()
+        br(),
+        br(),
+        fluidRow(
+          column(
+            offset = 3,
+            width = 6,
+            DT::DTOutput(ns('tests_table')) %>%
+              shinycustomloader::withLoader(),
+            hr()
+          )
+        )
       )
     )
   )
@@ -64,7 +72,7 @@ tests_module <- function(input, output, session, vendor_info){
       select(-uid, -vendor_uid, -c(created_at:modified_by)) %>%
       mutate(test_date_tbc = test_date, tbc = TRUE) %>%
       select(test_date, ph_value, tds, test_date_tbc, tbc) %>%
-      mutate(tbc = formattable::formattable(tbc)) %>%
+      mutate(tbc = ifelse(tbc == TRUE || tbc == "true", "TRUE", "FALSE")) %>%
       tibble::add_column(" " = actions, .before = 1)
   })
 
@@ -121,7 +129,10 @@ tests_module <- function(input, output, session, vendor_info){
         )
       )
     ) %>%
-      DT::formatRound("ph_value", digits = 2)
+      DT::formatRound("ph_value", digits = 2) %>%
+      DT::formatStyle("tbc",
+                      target = "cell",
+                      color = styleEqual(levels = c("TRUE", "FALSE"), values = c("green", "red")))
 
   })
 

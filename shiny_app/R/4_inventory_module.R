@@ -146,7 +146,7 @@ inventory_module <- function(input, output, session, vendor_info) {
       class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
-      filter = "top",
+      filter = "none",
       options = list(
         scrollX = TRUE,
         dom = '<Bf>tip',

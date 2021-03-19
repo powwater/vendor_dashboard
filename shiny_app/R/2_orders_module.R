@@ -313,6 +313,7 @@ orders_module <- function(input, output, session, vendor_info){
     datatable(
       out,
       caption = cap,
+      style = "bootstrap",
       class = "row-border nowrap",
       rownames = FALSE,
       selection = "none",
