@@ -7,9 +7,14 @@ customers_module_ui <- function(id) {
       box(
         width = 12,
         title = 'Customers',
-        DT::DTOutput(ns('customers_table')) %>%
-          shinycustomloader::withLoader(),
-        hr(),
+        fluidRow(
+          column(
+            12,
+            DT::DTOutput(ns('customers_table')) %>%
+              shinycustomloader::withLoader(),
+            hr()
+          )
+        ),
         fluidRow(
           column(
             width = 6,
@@ -148,7 +153,6 @@ customers_module <- function(input, output, session, vendor_info) {
       extensions = c("Buttons"),
       filter = "top",
       selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
-      # elementId = session$ns("customers_table"),
       options = list(
         autoWidth = TRUE,
         scrollX = TRUE,
@@ -186,7 +190,7 @@ customers_module <- function(input, output, session, vendor_info) {
           "<div id='bodyContent'>",
           "<h4>", customer_name, "</h4><br>",
           "<h5>", customer_location_name, "<h5><hr>",
-          "<iframe width='400px' height='250px'",
+          "<iframe width='450px' height='250px'",
           "frameborder='0' style = 'border:0'",
           "src=",
           paste0(
@@ -361,7 +365,7 @@ customers_module <- function(input, output, session, vendor_info) {
   output$vendor_region <- renderUI({
     HTML(
       paste0(
-        '<iframe width="100%" height="450" style="border:0" loading="lazy" allowfullscreen
+        '<iframe width="100%" height="400px" style="border:0" loading="lazy" allowfullscreen
       src="https://www.google.com/maps/embed/v1/place?q=place_id:',
       vendor_info()$region_id, '&key=', key, '"></iframe>'
       )
