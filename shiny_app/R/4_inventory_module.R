@@ -142,14 +142,13 @@ inventory_module <- function(input, output, session, vendor_info) {
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'dt-center stripe cell-border display',
-      # Escape the HTML
+      style = "bootstrap",
+      class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       options = list(
-        autowidth = TRUE,
-        # scrollX = TRUE,
+        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "45px"),

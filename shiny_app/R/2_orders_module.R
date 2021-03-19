@@ -170,7 +170,7 @@ orders_module <- function(input, output, session, vendor_info){
           list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
-        buttons = dt_bttns(out, "vendors-table", esc_cols),
+        buttons = dt_bttns(out, "orders-table", esc_cols),
         initComplete = DT::JS(dt_js),
         drawCallback = JS("function(settings) {
           // removes any lingering tooltips
