@@ -100,6 +100,7 @@ orders_module <- function(input, output, session, vendor_info){
         delivery_fee,
         total_price_of_water = total_price,
         total_transaction_payment = payment_total,
+        order_type,
         payment_type,
         vendor_prep_time,
         vendor_rating
@@ -203,13 +204,13 @@ orders_module <- function(input, output, session, vendor_info){
 
   order_to_info <- eventReactive(input$order_id_to_info, {
     orders() %>%
-      filter(uid == input$order_id_to_info)
+      filter(order_uid == input$order_id_to_info)
   })
 
   observeEvent(order_to_info(), {
     scroll(session$ns("directions_iframe"))
     sel <- order_to_info()
-    updatePickerInput(session, "selected_order", selected = sel$uid)
+    updatePickerInput(session, "selected_order", selected = sel$order_uid)
     selected_order_for_view(sel)
   })
 
@@ -288,7 +289,7 @@ orders_module <- function(input, output, session, vendor_info){
 
     cap <- paste0(
       "Order #",
-      orders()$order_number[match(input$selected_order, orders()$uid)][1],
+      orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
       " - Order placed on: ",
       paste0(orders()$date[1], " ", orders()$order_time[1])
     )
