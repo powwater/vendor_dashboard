@@ -123,8 +123,13 @@ orders_module <- function(input, output, session, vendor_info){
     rating_cols <- c("vendor_rating")
 
     out <- orders_prep() %>%
-      mutate_at(vars(tidyselect::all_of(factor_cols)), as.factor) %>%
+      # mutate_at(vars(tidyselect::all_of(factor_cols)), as.factor) %>%
       ratings_to_stars(cols = rating_cols)
+
+    out$status[2] <- "Out for Delivery"
+    out$status[3] <- "Pending"
+    out$status[4] <- "Cancelled"
+
 
     n_row <- nrow(out)
     n_col <- ncol(out)
@@ -174,7 +179,12 @@ orders_module <- function(input, output, session, vendor_info){
         )
       )
     ) %>%
-      formatStyle("status", color = "green")
+      formatStyle("status",
+                  target = "cell",
+                  fontWeight = "bold",
+                  color = styleEqual(levels = choices$order_status,
+                                     values = assets$order_status_colors,
+                                     default = "black"))
 
   })
 
