@@ -82,33 +82,6 @@ attempt::attempt({
 
 # data --------------------------------------------------------------------
 
-customers_query <- conn %>%
-  dplyr::tbl("orders") %>%
-  dplyr::distinct(customer_uid, customer_name) %>%
-  dplyr::left_join(
-    conn %>% dplyr::tbl("customer_locations") %>%
-      dplyr::select(-c(created_at:modified_by)) %>%
-      rename(customer_location_uid = uid),
-    by = c("customer_uid")
-  ) %>%
-  dplyr::left_join(
-    conn %>% dplyr::tbl("customers"),
-    by = c("customer_uid" = "uid", "customer_name")
-  ) %>%
-  dplyr::rename(customer_location_url = customer_location_url.x, customer_location_url_full = customer_location_url.y) %>%
-  dplyr::select(-customer_location) %>%
-  left_join(
-    conn %>% dplyr::tbl("order_routes") %>% dplyr::select(-uid, -order_uid, -c(created_at:modified_by)),
-    by = c("customer_location_uid")
-  ) %>%
-  left_join(
-    conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
-    by = c("vendor_location_uid" = "uid")
-  )
-
-orders_query <- conn %>%
-  dplyr::tbl("orders") %>%
-  rename(order_uid = uid)
 
 # setup polished ----------------------------------------------------------
 

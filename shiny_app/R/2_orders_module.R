@@ -50,9 +50,7 @@ orders_module <- function(input, output, session, vendor_info){
 
     tryCatch({
 
-      out <- orders_query %>%
-        dplyr::filter(vendor_uid == vend) %>%
-        dplyr::collect()
+      out <- get_orders_by_vendor(vend, conn)
 
     }, error = function(err) {
       msg <- 'Error collecting data from database.'

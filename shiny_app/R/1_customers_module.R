@@ -59,9 +59,7 @@ customers_module <- function(input, output, session, vendor_info) {
 
     tryCatch({
 
-      out <- customers_query %>%
-        dplyr::filter(vendor_uid == vend) %>%
-        dplyr::collect()
+      out <- get_customer_locations_by_vendor(vend, conn)
 
     }, error = function(err) {
       msg <- 'Error collecting data from database.'
