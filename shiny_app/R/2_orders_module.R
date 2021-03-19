@@ -4,7 +4,10 @@ orders_module_ui <- function(id){
     fluidRow(
       box(
         width = 12,
-        title = 'Orders',
+        title = icon_text("folder-open", 'Orders'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
         uiOutput(ns("ratings_ui"), inline = TRUE),
         DT::DTOutput(ns('orders_table')) %>%
           shinycustomloader::withLoader(),
@@ -152,17 +155,16 @@ orders_module <- function(input, output, session, vendor_info){
 
     DT::datatable(
       out,
+      style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'dt-center stripe cell-border display compact',
-      # Escape the HTML
+      class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       options = list(
-        autoWidth = TRUE,
-        # scrollX = TRUE,
+        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),

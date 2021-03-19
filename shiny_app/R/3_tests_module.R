@@ -4,7 +4,10 @@ tests_module_ui <- function(id){
     fluidRow(
       box(
         width = 12,
-        title = 'Water Quality Tests',
+        title = icon_text("vial", 'Water Quality Tests'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
         DT::DTOutput(ns('tests_table')) %>%
           shinycustomloader::withLoader(),
         hr()

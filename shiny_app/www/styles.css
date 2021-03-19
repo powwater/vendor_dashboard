@@ -3,6 +3,16 @@
   display: none;
 }
 
+.box.box-solid.box-primary>.box-header {
+    color: #fff;
+    background: #333;
+    background-color: #333;
+}
+
+.box.box-solid.box-primary {
+    border: 1px solid #333;
+}
+
 .danger {
   color: red;
   font-size: 14px;

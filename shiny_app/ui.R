@@ -66,6 +66,9 @@ body <- dashboardBody(
   tags$head(
     includeCSS("www/stars.css"),
     includeCSS("www/styles.css"),
+    includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"),
+    includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
+    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js"),
     intlTelInputDependencies()
   ),
   tabItems(

@@ -63,33 +63,37 @@ if (is_dev && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 # load config yaml file
 attempt::attempt({
   app_config <- config::get()
-}, msg = "Error loading configuration. Run `get_config()` to retrieve config.yml from Google Drive and re-try.")
+}, msg = "Error loading configuration. Run `get_config()` to
+          retrieve config.yml from Google Drive and re-try.")
 
+# setup google maps API key for googleway
 key <- app_config$gcp$gmaps_api_key
 set_key(key = key)
 
 # setup database connection -----------------------------------------------
 
-attempt::attempt({
-  conn <- DBI::dbConnect(
-    RPostgres::Postgres(),
-    user = app_config$db$user,
-    dbname = app_config$db$dbname,
-    password = app_config$db$password,
-    host = app_config$db$host
-  )
-}, msg = "Error connecting to database..")
+conn <- dbx::dbxConnect(app_config$db$url)
 
-# data --------------------------------------------------------------------
+# disconnect --------------------------------------------------------------
+shiny::onStop({
+  function() dbx::dbxDisconnect(conn)
+})
 
-
-# setup polished ----------------------------------------------------------
+# setup powpolished -------------------------------------------------------
 
 powpolished::global_sessions_config(
   api_url = app_config$powpolished$api_url,
   app_name = app_config$powpolished$app_name,
   api_key = app_config$powpolished$api_key,
-  sign_in_providers = 'email'
+  firebase_config = list(
+    apiKey = app_config$firebase$api_key,
+    authDomain = app_config$firebase$auth_domain,
+    projectId = app_config$firebase$project_id
+  ),
+  sign_in_providers = c("google",
+                        "microsoft",
+                        "facebook",
+                        "email")
 )
 
 # assets ---------------------------------------
@@ -100,18 +104,3 @@ pow_colors <- assets$colors
 # choices -----------------------------------------------------------------
 choices <- yaml::read_yaml("config/choices.yml") %>%
   purrr::map(unlist)
-
-# disconnect --------------------------------------------------------------
-shiny::onStop({
-  function() DBI::dbDisconnect(conn)
-})
-
-
-# utils -------------------------------------------------------------------
-
-get_last_updated_date <- function(path = ".") {
-  fs::dir_info(path) %>%
-    tibble::as_tibble() %>%
-    dplyr::pull("modification_time") %>%
-    max(na.rm = TRUE)
-}

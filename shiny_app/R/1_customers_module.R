@@ -6,7 +6,11 @@ customers_module_ui <- function(id) {
     fluidRow(
       box(
         width = 12,
-        title = 'Customers',
+        title = icon_text("user-friends", 'Customers'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        height = NULL,
         fluidRow(
           column(
             12,
@@ -146,15 +150,15 @@ customers_module <- function(input, output, session, vendor_info) {
 
     DT::datatable(
       out,
+      style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
-      class = 'dt-center stripe cell-border display',
+      class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
-        autoWidth = TRUE,
         scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(

@@ -81,6 +81,8 @@ create_link <- function(val, txt = NA) {
 
 dt_bttns <- function(data, filename = "data", escape_cols = NULL) {
 
+  colvis_cols <- c(1:(ncol(data) - 1))
+
   export_cols <- c(1:(length(data) - 1))
 
   if (!is.null(escape_cols)) {
@@ -135,7 +137,8 @@ dt_bttns <- function(data, filename = "data", escape_cols = NULL) {
     list(
       extend = "colvis",
       text = '<i class = "fa fa-filter"></i>',
-      titleAttr = "Column Visibility"
+      titleAttr = "Column Visibility",
+      columns =  colvis_cols
     ),
     list(
       extend = "pageLength",
@@ -372,4 +375,11 @@ icon_text <- function(icon, text) {
 
   tags$span(i, t)
 
+}
+
+get_last_updated_date <- function(path = ".") {
+  fs::dir_info(path) %>%
+    tibble::as_tibble() %>%
+    dplyr::pull("modification_time") %>%
+    max(na.rm = TRUE)
 }
