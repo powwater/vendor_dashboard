@@ -42,7 +42,7 @@ orders_module <- function(input, output, session, vendor_info){
   orders <- reactive({
 
     id <- notify("Loading Orders from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
@@ -217,7 +217,7 @@ orders_module <- function(input, output, session, vendor_info){
   routes <- reactive({
 
     id <- notify("Loading Routes from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_location_uid
 

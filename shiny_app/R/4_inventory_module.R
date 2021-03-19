@@ -34,7 +34,7 @@ inventory_module <- function(input, output, session, vendor_info) {
   inventory <- reactive({
 
     id <- notify("Loading Inventory from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     session$userData$inventory_trigger()
 

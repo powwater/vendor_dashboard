@@ -147,7 +147,8 @@ dt_bttns <- function(data, filename = "data", escape_cols = NULL) {
 }
 
 notify <- function(msg, id = NULL) {
-  showNotification(msg, id = id, duration = NULL, closeButton = FALSE, type = "message")
+  shinyFeedback::showToast("info", msg, title = "Please Wait")
+  # showNotification(msg, id = id, duration = NULL, closeButton = FALSE, type = "message")
 }
 
 true_false_formatter <- formattable::formatter("span",

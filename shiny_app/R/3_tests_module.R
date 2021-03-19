@@ -19,7 +19,7 @@ tests_module <- function(input, output, session, vendor_info){
   tests <- reactive({
 
     id <- notify("Loading Tests from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
