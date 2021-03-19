@@ -51,9 +51,7 @@ tests_module <- function(input, output, session, vendor_info){
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
       paste0(
-        '<div class="btn-group" style="width: 105px;" role="group" aria-label="Tests Buttons">
-          <button class="btn btn-primary btn-sm edit_btn" data-toggle="tooltip" data-placement="top" title="Edit" id="', id_,'" style="margin: 0"><i class="fa fa-pencil-square-o"></i></button>
-          <button class="btn btn-danger btn-sm delete_btn" data-toggle="tooltip" data-placement="top" title="Delete" id="', id_,'" style="margin: 0"><i class="fa fa-trash-o"></i></button>
+        '<div class="btn-group" style="width: 35px;" role="group" aria-label="Tests Buttons">
           <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top" title="View Test" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
         </div>'
       )
@@ -61,8 +59,9 @@ tests_module <- function(input, output, session, vendor_info){
 
     tests() %>%
       select(-uid, -vendor_uid, -c(created_at:modified_by)) %>%
+      mutate(test_date_tbc = test_date, tbc = TRUE) %>%
       select(test_date, ph_value, tds, test_date_tbc, tbc) %>%
-      # add action bttns
+      mutate(tbc = formattable::formattable(tbc)) %>%
       tibble::add_column(" " = actions, .before = 1)
   })
 
@@ -74,8 +73,8 @@ tests_module <- function(input, output, session, vendor_info){
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- c(" ", "Test Date", "PH Value", "TDS", "Test Date TDC", "TBC")
-    esc_cols <- c(-1)
+    cols <- c(" ", "Test Date", "PH Value", "TDS", "Test Date TBC", "Total Bacterial Count (TBC)")
+    esc_cols <- c(-1, -6)
     id <- session$ns("tests_table")
 
     dt_js <- paste0(
@@ -106,7 +105,7 @@ tests_module <- function(input, output, session, vendor_info){
         # scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
-          list(targets = 0, orderable = FALSE, width = "105px"),
+          list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
         buttons = dt_bttns(out, "tests-table", esc_cols),
