@@ -126,8 +126,8 @@ customers_module <- function(input, output, session, vendor_info, configs) {
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- c(" ", "Name", "Phone Number", "Location", "Address", "Vicinity", "Coordinates")
-    esc_cols <- c(-1, -1 * match("customer_location", colnames(out)))
+    cols <- c(" ",  "Number", "Name", "Phone Number", "Location", "Address", "Region", "Coordinates")
+    esc_cols <- c(-1, -1 * match("customer_location", colnames(out)), -1 * match("customer_region", colnames(out)))
     id <- session$ns("customers_table")
 
     dt_js <- paste0(
@@ -141,9 +141,6 @@ customers_module <- function(input, output, session, vendor_info, configs) {
             filters.eq(i - 1).css('visibility', 'hidden');
           filters.eq(i - 1).css('position', 'static');
         }
-      Shiny.setInputValue('waiter_trigger', '1', {
-        priority: 'event',
-      });
       }")
 
     DT::datatable(
@@ -156,16 +153,18 @@ customers_module <- function(input, output, session, vendor_info, configs) {
       extensions = c("Buttons"),
       filter = "top",
       selection = "none",
+      callback = DT::JS('Shiny.setInputValue("waiter_trigger", "1", {
+                          priority: "event"
+                        });'),
       # selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
-        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
         buttons = dt_bttns(out, "customers-table", esc_cols),
-        initComplete = DT::JS(dt_js),
+        initComplete = JS(dt_js),
         drawCallback = JS("function(settings) {
           // removes any lingering tooltips
           $('.tooltip').remove()
