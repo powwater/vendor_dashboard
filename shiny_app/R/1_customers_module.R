@@ -48,7 +48,7 @@ customers_module_ui <- function(id) {
 
 }
 
-customers_module <- function(input, output, session, vendor_info) {
+customers_module <- function(input, output, session, vendor_info, configs) {
 
   ns <- session$ns
 
@@ -78,7 +78,7 @@ customers_module <- function(input, output, session, vendor_info) {
 
   customers_prep <- reactiveVal(NULL)
 
-  observeEvent(customers(), {
+  observeEvent(list(customers(), configs()), {
     req(customers())
 
     ids <- customers()$customer_uid
@@ -93,16 +93,19 @@ customers_module <- function(input, output, session, vendor_info) {
 
     out <- customers() %>%
       mutate(
+        customer_number = row_number(),
         customer_location = Vectorize(create_link)(customer_location_url, customer_location_name),
-        customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon)
+        customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon),
+        customer_phone_number = format_phone_number(customer_phone_number, type = configs()$phone_number_format, region = "KE"),
+        customer_region = Vectorize(create_link)(vendor_region_url, vendor_region_name)
       ) %>%
       select(
-        # customer_number,
+        customer_number,
         customer_name,
         customer_phone_number,
         customer_location,
         customer_location_address,
-        customer_location_vicinity,
+        customer_region,
         customer_coordinates
       ) %>%
       # add action bttns
