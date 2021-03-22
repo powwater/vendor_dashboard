@@ -28,6 +28,17 @@ right_sidebar_module_ui <- function(id) {
           selected = "auto"
         ),
         br(),
+        awesomeRadio(
+          inputId = ns("phone_number_format"),
+          label = "Select Phone Number Format:",
+          choices = choices$phone_number_format,
+          selected = choices$phone_number_format[1],
+          inline = TRUE,
+          checkbox = TRUE
+        ),
+        shiny::helpText("Example National: 712121974"),
+        shiny::helpText("Example International: +254712121974"),
+        br(),
         shinyWidgets::awesomeCheckboxGroup(
           ns("payment_types"),
           icon_text("wallet", "Select Available Payment Types: "),
@@ -121,6 +132,11 @@ right_sidebar_module_ui <- function(id) {
 right_sidebar_module <- function(input, output, session, vendor_info) {
 
 
+  # output$phone_number_example <- renderText({
+  #   req(input$phone_number_format)
+  #   switch(input$phone_number_format,
+  #          )
+  # })
 
 
   observeEvent(input$provide_discount, {
