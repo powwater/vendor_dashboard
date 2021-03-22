@@ -195,7 +195,8 @@ inventory_module <- function(input, output, session, vendor_info) {
     "edit_offering",
     vendor_inventory_to_edit = vendor_inventory_to_edit,
     trigger = reactive({input$vendor_inventory_id_to_edit}),
-    vendor_info = vendor_info
+    vendor_info = vendor_info,
+    offerings = offerings
   )
 
   vendor_inventory_to_delete <- eventReactive(input$vendor_inventory_id_to_delete, {
@@ -334,7 +335,8 @@ inventory_edit_module <- function(input, output, session,
     observe({
       req(is.null(hold), input$capacity, input$offer_type)
       # browser()
-      offer <- paste0(input$offer_type, ": ", input$capacity, " Liters")
+      offer <- paste0(input$offer_type, ": ", input$capacity, " Liters") %>%
+        stringr::str_to_title()
       if (offer %in% offerings()) {
         shinyjs::show("danger")
         shinyjs::disable("submit")
