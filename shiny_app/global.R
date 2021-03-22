@@ -15,41 +15,43 @@
 rm(list = ls())
 
 # library packages --------------------------------------------------------
-require(pacman)
-
-pacman::p_load(
-  DBI,
-  dbplyr,
-  dplyr,
-  DT,
-  formattable,
-  powpolished,
-  snakecase,
-  tychobratools,
-  RPostgres,
-  htmltools,
-  shiny,
-  shinycustomloader,
-  shinydashboard,
-  shinydashboardPlus,
-  shinyFeedback,
-  shinyjs,
-  shinyWidgets,
-  markdown,
-  yaml,
-  lubridate,
-  purrr,
-  rlang,
-  tidyselect,
-  attempt,
-  googleway,
-  shinyFiles,
-  waiter,
-  shinyscroll,
-  dialr
-)
+suppressWarnings({
+  library(DBI)
+  library(RPostgres)
+  library(dbx)
+  library(urltools)
+  library(dbplyr)
+  library(dplyr)
+  library(DT)
+  # library(highcharter)
+  library(formattable)
+  library(powpolished)
+  library(snakecase)
+  library(tychobratools)
+  library(htmltools)
+  library(shiny)
+  library(shinycustomloader)
+  library(shinydashboard)
+  library(shinydashboardPlus)
+  library(shinyFeedback)
+  library(shinyjs)
+  library(shinyWidgets)
+  # library(markdown)
+  library(yaml)
+  library(lubridate)
+  library(purrr)
+  library(rlang)
+  library(tidyselect)
+  library(attempt)
+  library(googleway)
+  library(shinyFiles)
+  library(waiter)
+  library(shinyscroll)
+  library(dialr)
+})
 
 # set default options -----------------------------------------------------
+options(shiny.trace = FALSE) # set to T to print full shiny operations.
 options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
 
@@ -57,9 +59,10 @@ options(dplyr.summarise.inform = FALSE)
 
 # tell app if in development or not
 is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
+is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # enable shiny devmode
-if (is_dev && packageVersion("shiny") >= "1.6.0") shiny::devmode()
+if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 
 # load config yaml file
 attempt::attempt({
@@ -86,11 +89,11 @@ powpolished::global_sessions_config(
   api_url = app_config$powpolished$api_url,
   app_name = app_config$powpolished$app_name,
   api_key = app_config$powpolished$api_key,
-  firebase_config = list(
-    apiKey = app_config$firebase$api_key,
-    authDomain = app_config$firebase$auth_domain,
-    projectId = app_config$firebase$project_id
-  ),
+  # firebase_config = list(
+  #   apiKey = app_config$firebase$api_key,
+  #   authDomain = app_config$firebase$auth_domain,
+  #   projectId = app_config$firebase$project_id
+  # ),
   sign_in_providers = c("google",
                         "microsoft",
                         "facebook",
