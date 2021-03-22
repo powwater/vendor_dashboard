@@ -20,11 +20,13 @@ server <- function(input, output, session) {
     'polished_profile'
   )
 
-  callModule(
+  configs <- callModule(
     right_sidebar_module,
     "rightbar",
     vendor_info = logged_in_vendor_info
   )
+
+  observeEvent(configs(), print(list(configs = configs())))
 
   callModule(
     user_module,
@@ -41,7 +43,8 @@ server <- function(input, output, session) {
   callModule(
     customers_module,
     "customers_module",
-    vendor_info = logged_in_vendor_info
+    vendor_info = logged_in_vendor_info,
+    configs = configs
   )
 
   callModule(

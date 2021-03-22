@@ -11,14 +11,9 @@ customers_module_ui <- function(id) {
         status = "primary",
         solidHeader = TRUE,
         height = NULL,
-        fluidRow(
-          column(
-            12,
-            DT::DTOutput(ns('customers_table')) %>%
-              shinycustomloader::withLoader(),
-            hr()
-          )
-        ),
+        DT::DTOutput(ns('customers_table')) %>%
+          shinycustomloader::withLoader(),
+        hr(),
         fluidRow(
           column(
             width = 6,
@@ -53,7 +48,7 @@ customers_module_ui <- function(id) {
 
 }
 
-customers_module <- function(input, output, session, vendor_info) {
+customers_module <- function(input, output, session, vendor_info, configs) {
 
   ns <- session$ns
 
@@ -83,7 +78,7 @@ customers_module <- function(input, output, session, vendor_info) {
 
   customers_prep <- reactiveVal(NULL)
 
-  observeEvent(customers(), {
+  observeEvent(list(customers(), configs()), {
     req(customers())
 
     ids <- customers()$customer_uid
@@ -98,16 +93,19 @@ customers_module <- function(input, output, session, vendor_info) {
 
     out <- customers() %>%
       mutate(
+        customer_number = row_number(),
         customer_location = Vectorize(create_link)(customer_location_url, customer_location_name),
-        customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon)
+        customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon),
+        customer_phone_number = format_phone_number(customer_phone_number, type = configs()$phone_number_format, region = "KE"),
+        customer_region = Vectorize(create_link)(vendor_region_url, vendor_region_name)
       ) %>%
       select(
-        # customer_number,
+        customer_number,
         customer_name,
         customer_phone_number,
         customer_location,
         customer_location_address,
-        customer_location_vicinity,
+        customer_region,
         customer_coordinates
       ) %>%
       # add action bttns
@@ -128,8 +126,8 @@ customers_module <- function(input, output, session, vendor_info) {
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- c(" ", "Name", "Phone Number", "Location", "Address", "Vicinity", "Coordinates")
-    esc_cols <- c(-1, -1 * match("customer_location", colnames(out)))
+    cols <- c(" ",  "Number", "Name", "Phone Number", "Location", "Address", "Region", "Coordinates")
+    esc_cols <- c(-1, -1 * match("customer_location", colnames(out)), -1 * match("customer_region", colnames(out)))
     id <- session$ns("customers_table")
 
     dt_js <- paste0(
@@ -143,9 +141,6 @@ customers_module <- function(input, output, session, vendor_info) {
             filters.eq(i - 1).css('visibility', 'hidden');
           filters.eq(i - 1).css('position', 'static');
         }
-      Shiny.setInputValue('waiter_trigger', '1', {
-        priority: 'event',
-      });
       }")
 
     DT::datatable(
@@ -158,16 +153,18 @@ customers_module <- function(input, output, session, vendor_info) {
       extensions = c("Buttons"),
       filter = "top",
       selection = "none",
+      callback = DT::JS('Shiny.setInputValue("waiter_trigger", "1", {
+                          priority: "event"
+                        });'),
       # selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
-        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
         buttons = dt_bttns(out, "customers-table", esc_cols),
-        initComplete = DT::JS(dt_js),
+        initComplete = JS(dt_js),
         drawCallback = JS("function(settings) {
           // removes any lingering tooltips
           $('.tooltip').remove()

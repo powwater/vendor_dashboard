@@ -38,3 +38,6 @@ order_payment_status:
   "Pending": "payment_pending"
   "Confirmed": "awaiting_vendor_response"
   "Declined": "declined"
+phone_number_format:
+  "National": "national"
+  "International": "international"

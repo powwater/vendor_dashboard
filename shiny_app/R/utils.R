@@ -20,6 +20,25 @@ create_directions_iframe <- function(key, start, stop, type = "place_id") {
 
 }
 
+format_phone_number <- function(string,
+                                type = c("national", "international"),
+                                region = c("KE", "US")) {
+
+  phone_region <- switch(type,
+                         "national" = region,
+                         "international" = NA)
+
+  phone <- dialr::phone(string, region)
+
+  format(phone,
+         format = toupper(type),
+         home = if (type == "national") toupper(region) else NULL,
+         clean = TRUE,
+         strict = TRUE) %>%
+    as.character()
+}
+
+# format_phone_number("(254) 744-097-230", "international", "KE")
 
 #' Function to format a date (usually) for printing.
 #'
