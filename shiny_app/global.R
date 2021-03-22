@@ -45,7 +45,8 @@ pacman::p_load(
   googleway,
   shinyFiles,
   waiter,
-  shinyscroll
+  shinyscroll,
+  dialr
 )
 
 # set default options -----------------------------------------------------
