@@ -147,4 +147,20 @@ right_sidebar_module <- function(input, output, session, vendor_info) {
     }
   })
 
+  configs <- reactive({
+    list(
+      currency = input$currency,
+      timezone = input$timezone,
+      phone_number_format = input$phone_number_format,
+      payment_types = input$payment_types,
+      vendor_commision = input$vendor_commission,
+      rider_commision = input$rider_commission,
+      provide_discount = input$provide_discount,
+      discount_minimum = input$discount_minimum,
+      discount_percentage = input$discount_percentage
+    )
+  })
+
+  configs
+
 }
