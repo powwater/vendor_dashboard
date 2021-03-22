@@ -1,5 +1,15 @@
 waiting_screen <- tagList(
+  tags$div(
+    style = 'width: 100%; margin-top: 25px; margin-bottom: 40px;',
+    tags$img(
+      src = "images/powwater_alt.png",
+      alt = 'POWWATER Logo',
+      width = '30%'
+    )
+  ),
+  br(),
   spin_chasing_dots(),
+  br(),
   span("Loading...", style = "color:white;")
 )
 
@@ -19,7 +29,7 @@ sidebar <- dashboardSidebar(
       id = 'sidebar_menu',
       menuItem(
         text = "Dashboard",
-        tabName = "vendor_dashboard",
+        tabName = "vendor_dash",
         icon = icon("dashboard")
       ),
       menuItem(
@@ -50,17 +60,21 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   waiter::use_waiter(),
   waiter::waiter_show_on_load(waiting_screen),
+  shinyscroll::use_shinyscroll(),
+  shinyjs::useShinyjs(),
+  shinyFeedback::useShinyFeedback(),
   tags$head(
-    shinyjs::useShinyjs(),
-    shinyFeedback::useShinyFeedback(),
     includeCSS("www/stars.css"),
     includeCSS("www/styles.css"),
+    includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"),
+    includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
+    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js"),
     intlTelInputDependencies()
   ),
   tabItems(
     tabItem(
-      tabName = "vendor_dashboard"#,
-      # vendor_dashboard_ui("vendor_dashboard_module")
+      tabName = "vendor_dash",
+      vendor_dashboard_ui("vendor_dashboard_module")
     ),
     tabItem(
       tabName = 'customers_tab',

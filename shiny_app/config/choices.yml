@@ -29,3 +29,12 @@ inventory_capacity:
 inventory_offer_type:
   "New": "new"
   "Swap": "swap"
+order_status:
+  "Completed": "Completed"
+  "Out for Delivery": "Out for Delivery"
+  "Pending": "Pending"
+  "Cancelled": "Cancelled"
+order_payment_status:
+  "Pending": "payment_pending"
+  "Confirmed": "awaiting_vendor_response"
+  "Declined": "declined"

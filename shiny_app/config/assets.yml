@@ -12,6 +12,12 @@ colors:
   yellow: "#FFDE59"
   black: "#000000"
 
+order_status_colors:
+  Completed: "green"
+  Out for Delivery: "orange"
+  Pending: "orange"
+  Cancelled: "red"
+
 textcolors:
     title: magenta
     header: magenta

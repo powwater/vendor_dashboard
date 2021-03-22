@@ -4,10 +4,21 @@ tests_module_ui <- function(id){
     fluidRow(
       box(
         width = 12,
-        title = 'Water Quality Tests',
-        DT::DTOutput(ns('tests_table')) %>%
-          shinycustomloader::withLoader(),
-        hr()
+        title = icon_text("vial", 'Water Quality Tests'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        br(),
+        br(),
+        fluidRow(
+          column(
+            offset = 3,
+            width = 6,
+            DT::DTOutput(ns('tests_table')) %>%
+              shinycustomloader::withLoader(),
+            hr()
+          )
+        )
       )
     )
   )
@@ -19,7 +30,7 @@ tests_module <- function(input, output, session, vendor_info){
   tests <- reactive({
 
     id <- notify("Loading Tests from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
@@ -51,9 +62,7 @@ tests_module <- function(input, output, session, vendor_info){
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
       paste0(
-        '<div class="btn-group" style="width: 105px;" role="group" aria-label="Tests Buttons">
-          <button class="btn btn-primary btn-sm edit_btn" data-toggle="tooltip" data-placement="top" title="Edit" id="', id_,'" style="margin: 0"><i class="fa fa-pencil-square-o"></i></button>
-          <button class="btn btn-danger btn-sm delete_btn" data-toggle="tooltip" data-placement="top" title="Delete" id="', id_,'" style="margin: 0"><i class="fa fa-trash-o"></i></button>
+        '<div class="btn-group" style="width: 35px;" role="group" aria-label="Tests Buttons">
           <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top" title="View Test" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
         </div>'
       )
@@ -61,8 +70,9 @@ tests_module <- function(input, output, session, vendor_info){
 
     tests() %>%
       select(-uid, -vendor_uid, -c(created_at:modified_by)) %>%
+      mutate(test_date_tbc = test_date, tbc = TRUE) %>%
       select(test_date, ph_value, tds, test_date_tbc, tbc) %>%
-      # add action bttns
+      mutate(tbc = ifelse(tbc == TRUE || tbc == "true", "TRUE", "FALSE")) %>%
       tibble::add_column(" " = actions, .before = 1)
   })
 
@@ -74,8 +84,8 @@ tests_module <- function(input, output, session, vendor_info){
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- c(" ", "Test Date", "PH Value", "TDS", "Test Date TDC", "TBC")
-    esc_cols <- c(-1)
+    cols <- c(" ", "Test Date", "PH Value", "TDS", "Test Date TBC", "Total Bacterial Count (TBC)")
+    esc_cols <- c(-1, -6)
     id <- session$ns("tests_table")
 
     dt_js <- paste0(
@@ -96,17 +106,16 @@ tests_module <- function(input, output, session, vendor_info){
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'dt-center stripe cell-border display compact nowrap',
-      # Escape the HTML
+      style = "bootstrap",
+      class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       options = list(
-        autoWidth = TRUE,
-        # scrollX = TRUE,
+        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
-          list(targets = 0, orderable = FALSE, width = "105px"),
+          list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
         buttons = dt_bttns(out, "tests-table", esc_cols),
@@ -120,7 +129,10 @@ tests_module <- function(input, output, session, vendor_info){
         )
       )
     ) %>%
-      DT::formatRound("ph_value", digits = 2)
+      DT::formatRound("ph_value", digits = 2) %>%
+      DT::formatStyle("tbc",
+                      target = "cell",
+                      color = styleEqual(levels = c("TRUE", "FALSE"), values = c("green", "red")))
 
   })
 

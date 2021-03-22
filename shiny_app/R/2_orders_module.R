@@ -4,7 +4,10 @@ orders_module_ui <- function(id){
     fluidRow(
       box(
         width = 12,
-        title = 'Orders',
+        title = icon_text("folder-open", 'Orders'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
         uiOutput(ns("ratings_ui"), inline = TRUE),
         DT::DTOutput(ns('orders_table')) %>%
           shinycustomloader::withLoader(),
@@ -42,7 +45,7 @@ orders_module <- function(input, output, session, vendor_info){
   orders <- reactive({
 
     id <- notify("Loading Orders from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
@@ -50,11 +53,7 @@ orders_module <- function(input, output, session, vendor_info){
 
     tryCatch({
 
-      out <- conn %>%
-        dplyr::tbl("orders") %>%
-        dplyr::filter(vendor_uid == vend) %>%
-        select(uid, order_number, customer_name, rider_name, order_time:vendor_rating, payment_total) %>%
-        dplyr::collect()
+      out <- get_orders_by_vendor(vend, conn)
 
     }, error = function(err) {
       msg <- 'Error collecting data from database.'
@@ -68,7 +67,7 @@ orders_module <- function(input, output, session, vendor_info){
   })
 
   observeEvent(orders(), {
-    order_choices <- orders()$uid
+    order_choices <- orders()$order_uid
     names(order_choices) <- paste0("Order #", orders()$order_number)
     updatePickerInput(session, "selected_order", choices = order_choices)
   }, once = TRUE)
@@ -76,7 +75,7 @@ orders_module <- function(input, output, session, vendor_info){
   orders_prep <- reactive({
     req(orders())
 
-    ids <- orders()$uid
+    ids <- orders()$order_uid
 
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
@@ -88,7 +87,6 @@ orders_module <- function(input, output, session, vendor_info){
     })
 
     orders() %>%
-      select(-uid) %>%
       mutate(
         delivery_fee = paste0(formattable::currency(delivery_fee, "", sep = "", big.mark = ","), " KES"),
         total_price = paste0(formattable::currency(total_price, "", sep = "", big.mark = ","), " KES"),
@@ -97,8 +95,18 @@ orders_module <- function(input, output, session, vendor_info){
         order_type = ifelse(order_type == "Refill", "Swap", order_type)
       ) %>%
       select(
-        order_number:status, delivery_fee, total_price_of_water = total_price, total_transaction_payment = payment_total,
-        payment_type, vendor_prep_time, vendor_rating
+        order_number,
+        customer_name,
+        rider_name,
+        order_time,
+        status,
+        delivery_fee,
+        total_price_of_water = total_price,
+        total_transaction_payment = payment_total,
+        order_type,
+        payment_type,
+        vendor_prep_time,
+        vendor_rating
       ) %>%
       # add action bttns
       tibble::add_column(" " = actions, .before = 1)
@@ -118,8 +126,13 @@ orders_module <- function(input, output, session, vendor_info){
     rating_cols <- c("vendor_rating")
 
     out <- orders_prep() %>%
-      mutate_at(vars(tidyselect::all_of(factor_cols)), as.factor) %>%
+      # mutate_at(vars(tidyselect::all_of(factor_cols)), as.factor) %>%
       ratings_to_stars(cols = rating_cols)
+
+    out$status[2] <- "Out for Delivery"
+    out$status[3] <- "Pending"
+    out$status[4] <- "Cancelled"
+
 
     n_row <- nrow(out)
     n_col <- ncol(out)
@@ -142,23 +155,22 @@ orders_module <- function(input, output, session, vendor_info){
 
     DT::datatable(
       out,
+      style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'dt-center stripe cell-border display compact',
-      # Escape the HTML
+      class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       options = list(
-        autoWidth = TRUE,
-        # scrollX = TRUE,
+        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
         ),
-        buttons = dt_bttns(out, "vendors-table", esc_cols),
+        buttons = dt_bttns(out, "orders-table", esc_cols),
         initComplete = DT::JS(dt_js),
         drawCallback = JS("function(settings) {
           // removes any lingering tooltips
@@ -169,7 +181,12 @@ orders_module <- function(input, output, session, vendor_info){
         )
       )
     ) %>%
-      formatStyle("status", color = "green")
+      formatStyle("status",
+                  target = "cell",
+                  fontWeight = "bold",
+                  color = styleEqual(levels = choices$order_status,
+                                     values = assets$order_status_colors,
+                                     default = "black"))
 
   })
 
@@ -199,19 +216,20 @@ orders_module <- function(input, output, session, vendor_info){
 
   order_to_info <- eventReactive(input$order_id_to_info, {
     orders() %>%
-      filter(uid == input$order_id_to_info)
+      filter(order_uid == input$order_id_to_info)
   })
 
   observeEvent(order_to_info(), {
+    scroll(session$ns("directions_iframe"))
     sel <- order_to_info()
-    updatePickerInput(session, "selected_order", selected = sel$uid)
+    updatePickerInput(session, "selected_order", selected = sel$order_uid)
     selected_order_for_view(sel)
   })
 
   routes <- reactive({
 
     id <- notify("Loading Routes from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_location_uid
 
@@ -281,10 +299,12 @@ orders_module <- function(input, output, session, vendor_info){
       "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
     )
 
-    # "Order #" = orders()$order_number[match(input$selected_order, orders()$uid)],
-    # "Delivery Start" = paste0(orders()$date, " - ", orders()$order_time),
-    # # "Delivery End" = ,
-    # ""
+    cap <- paste0(
+      "Order #",
+      orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
+      " - Order placed on: ",
+      paste0(orders()$date[1], " ", orders()$order_time[1])
+    )
 
     n_row <- nrow(out)
     n_col <- ncol(out)
@@ -292,6 +312,8 @@ orders_module <- function(input, output, session, vendor_info){
 
     datatable(
       out,
+      caption = cap,
+      style = "bootstrap",
       class = "row-border nowrap",
       rownames = FALSE,
       selection = "none",

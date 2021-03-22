@@ -6,16 +6,25 @@ customers_module_ui <- function(id) {
     fluidRow(
       box(
         width = 12,
-        title = 'Customers',
-        DT::DTOutput(ns('customers_table')) %>%
-          shinycustomloader::withLoader(),
-        hr(),
+        title = icon_text("user-friends", 'Customers'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        height = NULL,
+        fluidRow(
+          column(
+            12,
+            DT::DTOutput(ns('customers_table')) %>%
+              shinycustomloader::withLoader(),
+            hr()
+          )
+        ),
         fluidRow(
           column(
             width = 6,
             offset = 6,
-            fluidRow(
-              uiOutput(ns("map_title")) %>% shinyjs::hidden(),
+            span(
+              uiOutput(ns("map_title")),
               actionButton(ns("map_bttn"),
                            "View All",
                            icon = icon("map")) %>%
@@ -51,7 +60,7 @@ customers_module <- function(input, output, session, vendor_info) {
   customers <- reactive({
 
     id <- notify("Loading Customers from Database...")
-    on.exit(removeNotification(id), add = TRUE)
+    on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
@@ -59,21 +68,7 @@ customers_module <- function(input, output, session, vendor_info) {
 
     tryCatch({
 
-      out <- conn %>%
-        dplyr::tbl("orders") %>%
-        dplyr::filter(vendor_uid == vend) %>%
-        dplyr::distinct(customer_uid, customer_name) %>%
-        dplyr::left_join(
-          conn %>% dplyr::tbl("customer_locations") %>% dplyr::select(-uid, -c(created_at:modified_by)),
-          by = c("customer_uid")
-        ) %>%
-        dplyr::left_join(
-          conn %>% dplyr::tbl("customers"),
-          by = c("customer_uid" = "uid", "customer_name")
-        ) %>%
-        dplyr::rename(customer_location_url = customer_location_url.x, customer_location_url_full = customer_location_url.y) %>%
-        dplyr::select(-customer_location) %>%
-        dplyr::collect()
+      out <- get_customer_locations_by_vendor(vend, conn)
 
     }, error = function(err) {
       msg <- 'Error collecting data from database.'
@@ -155,16 +150,16 @@ customers_module <- function(input, output, session, vendor_info) {
 
     DT::datatable(
       out,
+      style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
-      class = 'dt-center stripe cell-border display',
+      class = 'table table-striped table-bordered dt-center compact hover',
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
-      selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
-      # elementId = session$ns("customers_table"),
+      selection = "none",
+      # selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
-        autoWidth = TRUE,
         scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
@@ -194,13 +189,12 @@ customers_module <- function(input, output, session, vendor_info) {
     dat <- customers() %>%
       mutate(
         colour = "red",
-        # polyline =
         title = paste0(customer_name, ": ", customer_location_name),
         info = paste0(
           "<div id='bodyContent'>",
-          "<h4>", customer_name, "</h4><br>",
+          "<h4>", customer_name, "</h4>",
           "<h5>", customer_location_name, "<h5><hr>",
-          "<iframe width='400px' height='250px'",
+          "<iframe width='450px' height='250px'",
           "frameborder='0' style = 'border:0'",
           "src=",
           paste0(
@@ -211,30 +205,49 @@ customers_module <- function(input, output, session, vendor_info) {
           ),
           "></iframe></div>"
         )
-      )# %>%
-      # rename(
-      #   id = customer_uid,
-      #   lat = customer_location_lat,
-      #   lon = customer_location_lon,
-
-      # )
+      )
 
     map_data(dat)
 
   })
 
   output$customer_locations <- renderGoogle_map({
-    req(map_data())
+    req(map_data(), customers())
 
     dat <- map_data()
 
-    # set_key(key)
+    key <- googleway::google_keys()$google$default
+
+    vend_dat <- tibble(
+      lat = customers()$vendor_location_lat[[1]],
+      lon = customers()$vendor_location_lon[[1]],
+      address = customers()$vendor_location_address[[1]],
+      place_id = vendor_info()$place_id,
+      name = vendor_info()$vendor_name,
+      colour = "blue"
+    ) %>%
+      mutate(title = paste0(name, ": ", address),
+             info = paste0(
+               "<div id='bodyContent'>",
+               "<h4>", name, "</h4>",
+               "<h5>", address, "<h5><hr>",
+               "<iframe width='450px' height='250px'",
+               "frameborder='0' style = 'border:0'",
+               "src=",
+               paste0(
+                 "https://www.google.com/maps/embed/v1/place?q=place_id:",
+                 place_id,
+                 "&key=",
+                 key
+               ),
+               "></iframe></div>"
+             ))
 
     google_map(dat,
                key = key,
-               # location = c(dat$customer_location_lat, dat$customer_location_lon),
+               # location = c(vend_dat$lat, vend_dat$lon),
                # zoom = 12,
-               search_box = TRUE,
+               # search_box = TRUE,
                update_map_view = TRUE,
                geolocation = TRUE,
                map_type_control = TRUE,
@@ -248,19 +261,28 @@ customers_module <- function(input, output, session, vendor_info) {
       add_markers(
         data = dat,
         id = "customer_uid",
-        # colour
+        # colour = "colour",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
-        # mouse_over_group =
-        # label = "customer_name",
         layer_id = "customer_locations",
         info_window = "info",
-        # mouse_over = "customer_location_address",
         close_info_window = TRUE,
         focus_layer = TRUE,
-        # cluster = TRUE,
         update_map_view = TRUE
+      ) %>%
+      add_markers(
+        data = vend_dat,
+        id = "place_id",
+        lat = "lat",
+        lon = "lon",
+        title = "title",
+        info_window = "info",
+        close_info_window = TRUE,
+        layer_id = "vendor",
+        colour = "colour",
+        update_map_view = TRUE,
+        focus_layer = TRUE
       )
   })
 
@@ -272,6 +294,7 @@ customers_module <- function(input, output, session, vendor_info) {
   title_txt <- reactiveVal(NULL)
 
   observeEvent(customer_to_map(), {
+    scroll(session$ns("customer_locations"))
     sel <- customer_to_map()
     res <- google_directions(
       origin = paste0("place_id:",
@@ -300,11 +323,9 @@ customers_module <- function(input, output, session, vendor_info) {
         info_window = "info",
         layer_id = "single_customer",
         update_map_view = TRUE,
-        close_info_window = TRUE,
         focus_layer = TRUE
       ) %>%
       add_polylines(polyline = "poly")
-    shinyjs::show("map_title")
     shinyjs::show("map_bttn")
   })
 
@@ -323,14 +344,15 @@ customers_module <- function(input, output, session, vendor_info) {
         layer_id = "customer_locations",
         update_map_view = TRUE
       )
-    selectRows(customers_table_proxy, selected = NULL)
-    shinyjs::hide("map_title")
+    # selectRows(customers_table_proxy, selected = NULL)
+    title_txt("All Customer Locations")
     shinyjs::hide("map_bttn")
   })
 
   observeEvent(input$customer_locations_marker_click, {
     print(input$customer_locations_marker_click)
     id <- input$customer_locations_marker_click$id
+    if (id == vendor_info()$place_id) return(NULL)
     sel <- customers() %>%
       mutate(row = row_number()) %>%
       filter(customer_uid == id)
@@ -349,23 +371,18 @@ customers_module <- function(input, output, session, vendor_info) {
                       duration_txt)
     title_txt(txt_out)
     shinyjs::show("map_title")
-    selectRows(customers_table_proxy, selected = row)
+    # selectRows(customers_table_proxy, selected = row)
   })
 
-  # output$map_title <- renderUI({
-  #   req(title_txt())
-  #
-  #   div(
-  #     h4(
-  #       title_txt()
-  #     )
-  #   )
-  # })
+  output$map_title <- renderUI({
+    req(title_txt())
+    div(h4(title_txt()))
+  })
 
   output$vendor_region <- renderUI({
     HTML(
       paste0(
-        '<iframe width="100%" height="450" style="border:0" loading="lazy" allowfullscreen
+        '<iframe width="100%" height="400px" style="border:0" loading="lazy" allowfullscreen
       src="https://www.google.com/maps/embed/v1/place?q=place_id:',
       vendor_info()$region_id, '&key=', key, '"></iframe>'
       )
