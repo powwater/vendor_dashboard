@@ -11,14 +11,9 @@ customers_module_ui <- function(id) {
         status = "primary",
         solidHeader = TRUE,
         height = NULL,
-        fluidRow(
-          column(
-            12,
-            DT::DTOutput(ns('customers_table')) %>%
-              shinycustomloader::withLoader(),
-            hr()
-          )
-        ),
+        DT::DTOutput(ns('customers_table')) %>%
+          shinycustomloader::withLoader(),
+        hr(),
         fluidRow(
           column(
             width = 6,
