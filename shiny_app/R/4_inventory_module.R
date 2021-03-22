@@ -204,12 +204,12 @@ inventory_module <- function(input, output, session, vendor_info) {
       as.list()
   })
 
-  # shiny::callModule(
-  #   inventory_delete_module,
-  #   "delete_offering",
-  #   vendor_to_delete = vendor_to_delete,
-  #   trigger = shiny::reactive({input$vendor_id_to_delete})
-  # )
+  shiny::callModule(
+    inventory_delete_module,
+    "delete_offering",
+    vendor_inventory_to_delete = vendor_inventory_to_delete,
+    trigger = shiny::reactive({input$vendor_inventory_id_to_delete})
+  )
 
 }
 
@@ -433,6 +433,72 @@ inventory_edit_module <- function(input, output, session,
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
+    })
+  })
+}
+
+inventory_delete_module <- function(input, output, session,
+                                    vendor_inventory_to_delete,
+                                    trigger) {
+
+  ns <- session$ns
+
+  observeEvent(trigger(), {
+
+    showModal(
+      modalDialog(
+        div(
+          style = "padding: 30px;",
+          class = "text-center",
+          h2(
+            style = "line-height: 1.75;",
+            'Are you sure you want to delete this offering?'
+          )
+        ),
+        br(),
+        title = "Delete Vendor Offering",
+        size = "m",
+        footer = list(
+          modalButton("Cancel"),
+          actionButton(
+            ns("delete_button"),
+            "Delete Offering",
+            class = "btn-danger",
+            style = "color: #FFF;"
+          )
+        )
+      )
+    )
+  })
+
+  observeEvent(input$delete_button, {
+
+    req(vendor_inventory_to_delete())
+    hold_vendor_inenvtory <- vendor_inventory_to_delete()
+    removeModal()
+
+    tryCatch({
+
+      uid <- hold_vendor_inenvtory$uid
+
+      DBI::dbExecute(
+        conn,
+        "DELETE FROM vendor_inventory WHERE uid=$1",
+        params = c(uid)
+      )
+
+      session$userData$vendor_inventory_trigger(
+        session$userData$vendor_inventory_trigger() + 1
+      )
+
+      shinyFeedback::showToast("success", "Vendor Inventory/Offering Successfully Deleted")
+
+    }, error = function(err) {
+
+      msg <- "Error Deleting Vendor Offering"
+      print(msg)
+      print(err)
+      shinyFeedback::showToast("error", msg)
     })
   })
 }
