@@ -46,7 +46,6 @@ contact_menu <- function(...){
         shiny::tags$i(
           class = "fa fa-phone"
         ),
-        "Contact",
         style = "display: inline"
       ),
       shiny::tags$ul(
