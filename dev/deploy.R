@@ -20,7 +20,7 @@ poldeps <- polished:::get_package_deps("shiny_app")
 
 yaml::write_yaml(poldeps, "shiny_app/deps.yml")
 
-polishedapi:::create_dockerfile_ss("shiny_app/deps.yml", app_dir = "shiny_app")
+polishedapi:::create_dockerfile("shiny_app/deps.yml", app_dir = "shiny_app")
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")

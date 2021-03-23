@@ -1,4 +1,9 @@
-res <- google_directions(origin = "place_id:ChIJrToahpQJQBgRZ6ukvDc1LO4", destination = "place_id:ChIJEWIbWucPQBgRlOJYb4bzHas", mode = "driving", key = "AIzaSyB_PPKpl5FeJqASVAulT2FWimKeDMAlJ5o")
+key <- config::get()$gcp$gmaps_api_key
+
+res <- google_directions(origin = "place_id:ChIJrToahpQJQBgRZ6ukvDc1LO4",
+                         destination = "place_id:ChIJEWIbWucPQBgRlOJYb4bzHas",
+                         mode = "driving",
+                         key = key)
 
 df_route <- data.frame(route = res$routes$overview_polyline$points)
 

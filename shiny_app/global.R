@@ -59,7 +59,7 @@ options(lubridate.week.start = 1)
 # load configuration ------------------------------------------------------
 
 # tell app if in development or not
-is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
+is_dev <- Sys.getenv("R_CONFIG_ACTIVE") == "default"
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # enable shiny devmode
@@ -77,11 +77,17 @@ set_key(key = key)
 
 # setup database connection -----------------------------------------------
 
-conn <- dbx::dbxConnect(app_config$db$url)
+conn <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  host = app_config$db$host,
+  dbname = app_config$db$dbname,
+  user = app_config$db$user,
+  password = app_config$db$password
+)
 
 # disconnect --------------------------------------------------------------
-shiny::onStop({
-  function() dbx::dbxDisconnect(conn)
+shiny::onStop(function() {
+  DBI::dbDisconnect(conn)
 })
 
 # setup powpolished -------------------------------------------------------
@@ -89,16 +95,17 @@ shiny::onStop({
 powpolished::global_sessions_config(
   api_url = app_config$powpolished$api_url,
   app_name = app_config$powpolished$app_name,
-  api_key = app_config$powpolished$api_key,
+  api_key = app_config$powpolished$api_key#,
   # firebase_config = list(
   #   apiKey = app_config$firebase$api_key,
   #   authDomain = app_config$firebase$auth_domain,
   #   projectId = app_config$firebase$project_id
   # ),
-  sign_in_providers = c("google",
-                        "microsoft",
-                        "facebook",
-                        "email")
+  #sign_in_providers = "email"
+  #c("google",
+  #                      "microsoft",
+  #                      "facebook",
+  #                      "email")
 )
 
 # assets ---------------------------------------

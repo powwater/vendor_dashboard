@@ -1,7 +1,6 @@
-FROM gcr.io/postgres-db-189513/shiny_run_server
+FROM rocker/r-ver:4.0.4
 
-ARG R_CONFIG_ACTIVE=default
-
+EXPOSE 8080 
 
 RUN apt-get update && apt-get install -y \ 
   default-jre-headless \ 
@@ -64,18 +63,5 @@ RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b4133631
 # Copy app into shiny server `shiny_app` directory
 COPY 'shiny_app' /srv/shiny-server/shiny_app
 
-# Update permissions (recursively) to App directory for `shiny` user
-RUN chown -R shiny:shiny /srv/shiny-server/shiny_app
 
-# Set the R_CONFIG_ACTIVE environment variable for Shiny.  For some reason shiny-server
-# can't read in regular environment variables, so we have to pass the environment variable
-# as a build argument to this Docker image, and then set it as an R environment variable. We
-# set it in .Rprofile rather than .Renviron, because if there is a .Renviron supplied with the
-# shiny app, the .Renviron from the shiny user's home folder will not be read in.
-RUN echo "Sys.setenv(R_CONFIG_ACTIVE='$R_CONFIG_ACTIVE')" >> /home/shiny/.Rprofile
-
-
-USER shiny
-
-
-CMD ["/usr/bin/shiny-server"]
+CMD ["Rscript","-e","shiny::runApp(appDir='/srv/shiny-server/shiny_app',port=8080,launch.browser=FALSE,host='0.0.0.0')"]

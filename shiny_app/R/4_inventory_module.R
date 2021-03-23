@@ -357,7 +357,7 @@ inventory_edit_module <- function(input, output, session,
       data = list(
         vendor_uid = vendor_info()$vendor_uid,
         capacity = input$capacity,
-        offer_type = input$offer_type,
+        offer_type = stringr::str_to_title(input$offer_type),
         price_per_unit = input$price_per_unit,
         quantity = input$quantity
       )
@@ -476,12 +476,12 @@ inventory_delete_module <- function(input, output, session,
   observeEvent(input$delete_button, {
 
     req(vendor_inventory_to_delete())
-    hold_vendor_inenvtory <- vendor_inventory_to_delete()
+    hold_vendor_inventory <- vendor_inventory_to_delete()
     removeModal()
 
     tryCatch({
 
-      uid <- hold_vendor_inenvtory$uid
+      uid <- hold_vendor_inventory$uid
 
       DBI::dbExecute(
         conn,
