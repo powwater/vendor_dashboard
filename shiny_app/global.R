@@ -54,6 +54,7 @@ suppressWarnings({
 options(shiny.trace = FALSE) # set to T to print full shiny operations.
 options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
+options(lubridate.week.start = 1)
 
 # load configuration ------------------------------------------------------
 
