@@ -256,7 +256,7 @@ orders_module <- function(input, output, session, vendor_info){
 
   num_awaiting_response <- reactive({
     hold <- orders() %>%
-      filter(vendor_response == "Pending" || is.na(vendor_response)) %>%
+      filter(vendor_response == "Pending" | is.na(vendor_response)) %>%
       nrow()
 
     paste0(hold, " Orders")
