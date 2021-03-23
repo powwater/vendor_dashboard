@@ -15,7 +15,7 @@
 rm(list = ls())
 
 # library packages --------------------------------------------------------
-suppressWarnings({
+suppressPackageStartupMessages({
   library(DBI)
   library(RPostgres)
   library(dbx)
@@ -23,7 +23,6 @@ suppressWarnings({
   library(dbplyr)
   library(dplyr)
   library(DT)
-  # library(highcharter)
   library(formattable)
   library(powpolished)
   library(snakecase)
@@ -36,7 +35,6 @@ suppressWarnings({
   library(shinyFeedback)
   library(shinyjs)
   library(shinyWidgets)
-  # library(markdown)
   library(yaml)
   library(lubridate)
   library(purrr)
@@ -49,6 +47,9 @@ suppressWarnings({
   library(shinyscroll)
   library(dialr)
 })
+
+# library(markdown)
+# library(highcharter)
 
 # set default options -----------------------------------------------------
 options(shiny.trace = FALSE) # set to T to print full shiny operations.
@@ -66,10 +67,7 @@ is_local <- Sys.getenv('SHINY_PORT') == ""
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 
 # load config yaml file
-attempt::attempt({
-  app_config <- config::get()
-}, msg = "Error loading configuration. Run `get_config()` to
-          retrieve config.yml from Google Drive and re-try.")
+app_config <- config::get()
 
 # setup google maps API key for googleway
 key <- app_config$gcp$gmaps_api_key
@@ -95,17 +93,7 @@ shiny::onStop(function() {
 powpolished::global_sessions_config(
   api_url = app_config$powpolished$api_url,
   app_name = app_config$powpolished$app_name,
-  api_key = app_config$powpolished$api_key#,
-  # firebase_config = list(
-  #   apiKey = app_config$firebase$api_key,
-  #   authDomain = app_config$firebase$auth_domain,
-  #   projectId = app_config$firebase$project_id
-  # ),
-  #sign_in_providers = "email"
-  #c("google",
-  #                      "microsoft",
-  #                      "facebook",
-  #                      "email")
+  api_key = app_config$powpolished$api_key
 )
 
 # assets ---------------------------------------
@@ -114,5 +102,6 @@ assets <- yaml::read_yaml("config/assets.yml")
 pow_colors <- assets$colors
 
 # choices -----------------------------------------------------------------
+
 choices <- yaml::read_yaml("config/choices.yml") %>%
   purrr::map(unlist)
