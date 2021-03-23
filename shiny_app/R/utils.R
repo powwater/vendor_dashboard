@@ -402,3 +402,11 @@ get_last_updated_date <- function(path = ".") {
     dplyr::pull("modification_time") %>%
     max(na.rm = TRUE)
 }
+
+format_currency_kes <- function(num) {
+  paste0(formattable::currency(num, "", sep = "", big.mark = ","), " KES")
+}
+
+format_duration_minutes <- function(num) {
+  paste0(num, " Minutes")
+}
