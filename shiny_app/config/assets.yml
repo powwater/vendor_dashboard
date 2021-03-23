@@ -13,10 +13,24 @@ colors:
   black: "#000000"
 
 order_status_colors:
-  Completed: "green"
-  Out for Delivery: "orange"
-  Pending: "orange"
-  Cancelled: "red"
+  Completed: green
+  "In Progress": lightgreen
+  Pending: orange
+  Cancelled: red
+  Rejected: red
+
+order_delivery_status_colors:
+  "Pending": orange
+  "Awaiting Delivery": orange
+  "Out for Delivery": green
+  "Delivered": green
+  "Cancelled": red
+  "Rejected": red
+
+vendor_response_colors:
+  "Accepted": green
+  "Rejected": red
+  "Pending": orange
 
 textcolors:
     title: magenta
