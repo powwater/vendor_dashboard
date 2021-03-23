@@ -75,11 +75,17 @@ set_key(key = key)
 
 # setup database connection -----------------------------------------------
 
-conn <- dbx::dbxConnect(app_config$db$url)
+conn <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  host = app_config$db$host,
+  dbname = app_config$db$dbname,
+  user = app_config$db$user,
+  password = app_config$db$password
+)
 
 # disconnect --------------------------------------------------------------
-shiny::onStop({
-  function() dbx::dbxDisconnect(conn)
+shiny::onStop(function() {
+  DBI::dbDisconnect(conn)
 })
 
 # setup powpolished -------------------------------------------------------
