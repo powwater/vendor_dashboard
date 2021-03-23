@@ -2,6 +2,13 @@ orders_module_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
+      shinyFeedback::valueBoxModuleUI(
+        ns("awaiting_vendor_response"),
+        "Orders Awaiting Vendor Response",
+        icon = icon("hourglass"),
+        backgroundColor = pow_colors$red,
+        width = 6
+      ),
       box(
         width = 12,
         title = icon_text("folder-open", 'Orders'),
@@ -86,26 +93,44 @@ orders_module <- function(input, output, session, vendor_info){
       )
     })
 
+    curr_cols <- c("delivery_fee",
+                   "price_of_water",
+                   "delivery_commission",
+                   "vendor_commission",
+                   "discount_amount",
+                   "total_payment_price")
+
+    duration_cols <- c("time_vendor_prep",
+                       "time_rider_to_vendor",
+                       "time_rider_to_customer",
+                       "total_delivery_time")
+
     orders() %>%
-      mutate(
-        delivery_fee = paste0(formattable::currency(delivery_fee, "", sep = "", big.mark = ","), " KES"),
-        total_price = paste0(formattable::currency(total_price, "", sep = "", big.mark = ","), " KES"),
-        vendor_prep_time = paste0(vendor_prep_time, " Minutes"),
-        payment_total = paste0(formattable::currency(payment_total, "", sep = "", big.mark = ","), " KES"),
-        order_type = ifelse(order_type == "Refill", "Swap", order_type)
-      ) %>%
+      mutate_at(vars(all_of(curr_cols)), format_currency_kes) %>%
+      mutate_at(vars(all_of(duration_cols)), format_duration_minutes) %>%
       select(
         order_number,
+        order_date,
+        order_time,
         customer_name,
         rider_name,
-        order_time,
-        status,
-        delivery_fee,
-        total_price_of_water = total_price,
-        total_transaction_payment = payment_total,
         order_type,
+        order_status,
+        order_delivery_status,
+        vendor_response,
+        vendor_response_text,
         payment_type,
-        vendor_prep_time,
+        price_of_water,
+        delivery_fee,
+        delivery_commission,
+        vendor_commission,
+        discount_applied,
+        discount_amount,
+        total_transaction_payment = total_payment_price,
+        total_delivery_time,
+        time_vendor_prep,
+        time_rider_to_vendor,
+        time_rider_to_customer,
         vendor_rating
       ) %>%
       # add action bttns
@@ -118,8 +143,11 @@ orders_module <- function(input, output, session, vendor_info){
 
     factor_cols <- c(
       "customer_name",
+      "rider_name",
       "order_type",
-      "status",
+      "order_status",
+      "order_delivery_status",
+      "vendor_response",
       "payment_type"
     )
 
@@ -129,15 +157,14 @@ orders_module <- function(input, output, session, vendor_info){
       # mutate_at(vars(tidyselect::all_of(factor_cols)), as.factor) %>%
       ratings_to_stars(cols = rating_cols)
 
-    out$status[2] <- "Out for Delivery"
-    out$status[3] <- "Pending"
-    out$status[4] <- "Cancelled"
-
+    out$order_status[2] <- "In Progress"
+    out$order_status[3] <- "Pending"
+    out$order_status[4] <- "Cancelled"
 
     n_row <- nrow(out)
     n_col <- ncol(out)
     cols <- snakecase::to_title_case(colnames(out))
-    esc_cols <- c(-1, -13)
+    esc_cols <- c(-1, -ncol(out))
     id <- session$ns("orders_table")
 
     dt_js <- paste0(
@@ -181,14 +208,29 @@ orders_module <- function(input, output, session, vendor_info){
         )
       )
     ) %>%
-      formatStyle("status",
+      formatStyle("order_status",
                   target = "cell",
                   fontWeight = "bold",
                   color = styleEqual(levels = choices$order_status,
                                      values = assets$order_status_colors,
+                                     default = "black")) %>%
+      formatStyle("order_delivery_status",
+                  target = "cell",
+                  fontWeight = "bold",
+                  color = styleEqual(levels = choices$order_delivery_status,
+                                     values = assets$order_delivery_status_colors,
+                                     default = "black")) %>%
+      formatStyle("vendor_response",
+                  target = "cell",
+                  fontWeight = "bold",
+                  color = styleEqual(levels = choices$vendor_response,
+                                     values = assets$vendor_response_colors,
                                      default = "black"))
 
   })
+
+
+  # valboxes ----------------------------------------------------------------
 
   avg_rating <- reactive({
     mean(orders()$vendor_rating, na.rm = TRUE)
@@ -211,6 +253,20 @@ orders_module <- function(input, output, session, vendor_info){
                hr()))
     )
   })
+
+  num_awaiting_response <- reactive({
+    hold <- orders() %>%
+      filter(vendor_response == "Pending" || is.na(vendor_response)) %>%
+      nrow()
+
+    paste0(hold, " Orders")
+  })
+
+  callModule(
+    shinyFeedback::valueBoxModule,
+    "awaiting_vendor_response",
+    value = num_awaiting_response
+  )
 
   selected_order_for_view <- reactiveVal(NULL)
 
@@ -237,34 +293,7 @@ orders_module <- function(input, output, session, vendor_info){
 
     tryCatch({
 
-      out <- conn %>%
-        dplyr::tbl("order_routes") %>%
-        dplyr::filter(vendor_location_uid == vend) %>%
-        left_join(
-          conn %>%
-            tbl('vendor_locations') %>%
-            select(vendor_location_uid = uid,
-                   vendor_uid,
-                   vendor_location_lat,
-                   vendor_location_lon,
-                   vendor_location_name,
-                   vendor_location_address,
-                   vendor_location_place_id),
-          by = "vendor_location_uid"
-        ) %>%
-        left_join(
-          conn %>%
-            tbl('customer_locations') %>%
-            select(customer_location_uid = uid,
-                   customer_uid,
-                   customer_location_lat,
-                   customer_location_lon,
-                   customer_location_name,
-                   customer_location_address,
-                   customer_location_place_id),
-          by = "customer_location_uid"
-        ) %>%
-        dplyr::collect()
+      out <- get_routes_by_vendor(vend, conn = conn)
 
     }, error = function(err) {
       msg <- 'Error collecting data from database.'
@@ -303,7 +332,7 @@ orders_module <- function(input, output, session, vendor_info){
       "Order #",
       orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
       " - Order placed on: ",
-      paste0(orders()$date[1], " ", orders()$order_time[1])
+      paste0(orders()$order_date[1], " ", orders()$order_time[1])
     )
 
     n_row <- nrow(out)
