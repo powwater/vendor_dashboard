@@ -1,0 +1,28 @@
+name: Build and Push to GHCR
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-svc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout repository
+
+      - uses: pmorelli92/github-container-registry-build-push@1.0.1
+        name: Build and Publish latest service image
+        with:
+          # Read note below to see how to generate the PAT
+          personal-access-token: ${{secrets.GITHUB_PAT}}
+          docker-image-name: vendor_dashboard
+          docker-image-tag: latest
+          dockerfile-path: ./Dockerfile
+          build-context: ./shiny_ap
