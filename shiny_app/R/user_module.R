@@ -46,9 +46,19 @@ user_module <- function(input, output, session, vendor_info) {
     out
   })
 
+  is_online <- reactive({
+    is_vendor_online(conn, vendor_info()$vendor_uid)
+  })
+
   output$user_panel <- renderUI({
 
     img <- image_path()
+
+    if (is_online()) {
+      online_badge <- shinydashboardPlus::dashboardBadge("Online", color = "green")
+    } else {
+      online_badge <- shinydashboardPlus::dashboardBadge("Offline", color = "red")
+    }
 
     div(
       id = session$ns("user_panel"),
@@ -57,7 +67,7 @@ user_module <- function(input, output, session, vendor_info) {
         subtitle = tags$span(
           icon("wifi"),
           ": ",
-          shinydashboardPlus::dashboardBadge("Online", color = "green")
+          online_badge
         ),
         image = img
       )

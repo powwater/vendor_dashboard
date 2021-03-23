@@ -1,17 +1,26 @@
-library(polished)
-library(polishedapi)
+
+library(dep)
+library(shinycoreci)
+library(automagic)
+library(rsconnect)
+library(powpolished)
+library(sysreqs)
 library(yaml)
 
+
+# create .dockerignore ----------------------------------------------------
 write("shiny_app/logs/*", ".dockerignore")
 write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
 write("shiny_app/README.md", ".dockerignore", append = TRUE)
 
-pak::pkg_deps("powpolished")
+# gather R package dependencies -------------------------------------------
+deps <- dep::get_proj_deps(root = "shiny_app")
+autodeps <- automagic::get_dependent_packages("shiny_app")
+poldeps <- polished:::get_package_deps("shiny_app")
 
+yaml::write_yaml(poldeps, "shiny_app/deps.yml")
 
-deps <- polished:::get_package_deps("shiny_app")
-yaml::write_yaml(deps, "shiny_app/deps.yml")
-polishedapi:::create_dockerfile("shiny_app/deps.yml", app_dir = "shiny_app")
+polishedapi:::create_dockerfile_ss("shiny_app/deps.yml", app_dir = "shiny_app")
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")
