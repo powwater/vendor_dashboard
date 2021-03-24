@@ -1,6 +1,6 @@
-get_customer_locations_by_vendor <- function(vendor_id, conn) {
+get_customer_locations_by_vendor <- function(vendor_id, conn, collect = TRUE) {
 
-  conn %>%
+  hold <- conn %>%
     dplyr::tbl("orders") %>%
     dplyr::filter(.data$vendor_uid == vendor_id) %>%
     dplyr::distinct(customer_uid) %>%
@@ -23,14 +23,17 @@ get_customer_locations_by_vendor <- function(vendor_id, conn) {
     left_join(
       conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
       by = c("vendor_location_uid" = "uid")
-    ) %>%
-    collect()
+    )
+
+  if (!collect) return(hold)
+
+  hold %>% collect()
 
 }
 
 
-get_orders_by_vendor <- function(vendor_id, conn) {
-  conn %>%
+get_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+  hold <- conn %>%
     dplyr::tbl("orders") %>%
     filter(.data$vendor_uid == vendor_id) %>%
     rename(order_uid = uid) %>%
@@ -48,13 +51,25 @@ get_orders_by_vendor <- function(vendor_id, conn) {
       conn %>% tbl("riders") %>%
         select(rider_uid = uid, rider_name),
       by = c("rider_uid")
-    ) %>%
-    collect()
+    )
+
+  if (!collect) return(hold)
+
+  hold %>% collect()
 }
 
-get_routes_by_vendor <- function(vendor_location_id, conn) {
+get_completed_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+  hold <- get_orders_by_vendor(vendor_id, conn, collect = FALSE) %>%
+    filter(order_status == "Completed")
 
-  conn %>%
+  if (!collect) return(hold)
+
+  hold %>% collect()
+}
+
+get_routes_by_vendor <- function(vendor_location_id, conn, collect = TRUE) {
+
+  hold <- conn %>%
     dplyr::tbl("order_routes") %>%
     dplyr::filter(vendor_location_uid == vendor_location_id) %>%
     left_join(
@@ -80,7 +95,9 @@ get_routes_by_vendor <- function(vendor_location_id, conn) {
                customer_location_address,
                customer_location_place_id),
       by = "customer_location_uid"
-    ) %>%
-    dplyr::collect()
+    )
 
+  if (!collect) return(hold)
+
+  hold %>% collect()
 }
