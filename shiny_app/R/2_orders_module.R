@@ -452,21 +452,28 @@ orders_module <- function(input, output, session, vendor_info) {
 
   orders_prep <- reactiveVal(NULL)
 
-  observeEvent(list(orders(), awaiting_orders()), {
+  observeEvent(orders(), {
 
     hold <- orders() %>%
       filter(!(order_uid %in% awaiting_orders()$order_uid))
 
+    hold_disable <- hold %>%
+      filter(order_status != "Completed")
+
     ids <- hold$order_uid
+
+    disable_ids <- hold_disable$order_uid
 
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
+
+      class <- if (id_ %in% disable_ids) "shinyjs-disabled " else NULL
+
       paste0(
-        '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons">
-          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip"
-          data-placement="top" title="View Order Details" id="', id_,
-        '" style="margin: 0"><i class="fas fa-id-card"></i></button>
-        </div>'
+        '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons"><button class="',
+        paste0(class, 'btn btn-info btn-sm info_btn" '),
+        'data-toggle="tooltip" data-placement="top" title="Details" id="', id_,
+        '" style="margin: 0"><i class="fas fa-id-card"></i></button></div>'
       )
     })
 
