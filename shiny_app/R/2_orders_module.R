@@ -499,15 +499,21 @@ orders_module <- function(input, output, session, vendor_info) {
       "payment_type"
     )
 
+    logical_cols <- c("discount_applied")
+
     rating_cols <- c("vendor_rating")
 
     out <- hold %>%
       mutate_at(vars(all_of(curr_cols)), Vectorize(format_currency_kes)) %>%
       mutate_at(vars(all_of(duration_cols)), Vectorize(format_duration_minutes)) %>%
       mutate_at(vars(all_of(factor_cols)), as.factor) %>%
-      mutate_if(is.numeric, coalesce, 0L) %>%
+      mutate_at(vars(all_of(logical_cols)), ~ stringr::str_to_title(format_true_false(., "yes", "no"))) %>%
+      # mutate_if(is.numeric, coalesce, 0L) %>%
       ratings_to_stars(cols = rating_cols) %>%
+      tibble::add_column(" " = actions, .before = 1) %>%
+      arrange(desc(modified_at)) %>%
       select(
+        " ",
         order_number,
         order_date,
         order_time,
@@ -515,7 +521,7 @@ orders_module <- function(input, output, session, vendor_info) {
         rider_name,
         order_type,
         order_status,
-        order_delivery_status,
+        # order_delivery_status,
         vendor_response,
         vendor_response_text,
         payment_type,
@@ -531,8 +537,7 @@ orders_module <- function(input, output, session, vendor_info) {
         time_rider_to_vendor,
         time_rider_to_customer,
         vendor_rating
-      ) %>%
-      tibble::add_column(" " = actions, .before = 1)
+      )
 
     if (is.null(orders_prep())) {
       orders_prep(out)
