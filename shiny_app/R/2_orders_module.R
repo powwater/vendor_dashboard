@@ -31,8 +31,6 @@ orders_module_ui <- function(id){
         footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
-        uiOutput(ns("ratings_ui")),
-        hr(),
         fluidRow(
           column(
             12,
@@ -53,7 +51,7 @@ orders_module_ui <- function(id){
           )
         ),
         hr(),
-        h3(icon_text("car", "Historical Delivery Details:")),
+        h3(icon_text("road", " Delivery Details:")),
         hr(),
         fluidRow(
           column(
@@ -68,9 +66,10 @@ orders_module_ui <- function(id){
             12,
             shiny::splitLayout(
               style = "border: 1px solid #333;",
-              cellArgs = list(style = "padding: 6px"),
+              cellArgs = list(style = "padding: 20px;"),
               div(
-                h4(icon_text("road", "Delivery Routes:")),
+                style = "border-right: 0.5px solid #000000;",
+                h4(icon_text("route", "Delivery Routes:")),
                 uiOutput(ns("directions_iframe")) %>%
                   shinycustomloader::withLoader()
               ),
@@ -81,7 +80,10 @@ orders_module_ui <- function(id){
               )
             )
           )
-        )
+        ),
+        hr(),
+        uiOutput(ns("ratings_ui")) %>%
+          shinycustomloader::withLoader()
       )
     ),
     htmltools::tags$script(src = "orders_module.js?version=2"),
