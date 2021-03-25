@@ -7,6 +7,7 @@ library(powpolished)
 library(sysreqs)
 library(yaml)
 
+source("dev/sysreqs.R")
 
 # create .dockerignore ----------------------------------------------------
 write("shiny_app/logs/*", ".dockerignore")
@@ -14,13 +15,14 @@ write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
 write("shiny_app/README.md", ".dockerignore", append = TRUE)
 
 # gather R package dependencies -------------------------------------------
-deps <- dep::get_proj_deps(root = "shiny_app")
-autodeps <- automagic::get_dependent_packages("shiny_app")
-poldeps <- polished:::get_package_deps("shiny_app")
-
-yaml::write_yaml(poldeps, "shiny_app/deps.yml")
-
+deps <- polished:::get_package_deps("shiny_app")
+yaml::write_yaml(deps, "shiny_app/deps.yml")
 polishedapi:::create_dockerfile("shiny_app/deps.yml", app_dir = "shiny_app")
+
+sysreqs <- get_sysreqs(names(deps))
+sysreqs_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
+write(sysreqs_cmd, "Dockerfile", append = TRUE)
+file.edit("Dockerfile")
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")
@@ -34,7 +36,6 @@ system("docker build -t powwater_vendorsdashboard .")
 system("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
 system("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
-
 # Only run if want to push to container registries outside of GCR: --------
 
 # tag and push to github
@@ -47,3 +48,8 @@ system("docker push gcr.io/powwater/powwater_vendorsdashboard")
 # system("docker tag powwater_vendorsdashboard jimbrig2011/powwater_vendorsdashboard:alpha")
 # system("docker build -t jimbrig2011/powwater_vendor_dashboard:alpha .")
 # system("docker push jimbrig2011/powwater_vendor_dashboard:alpha")
+
+# deps <- dep::get_proj_deps(root = "shiny_app")
+# deps <- automagic::get_dependent_packages("shiny_app")
+
+# pkgdeps_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
