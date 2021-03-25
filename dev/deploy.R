@@ -34,6 +34,7 @@ system("docker build -t powwater_vendorsdashboard .")
 system("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
 system("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
+browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendorsdashboard/revisions?project=powwater")
 
 # Only run if want to push to container registries outside of GCR: --------
 

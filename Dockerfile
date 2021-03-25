@@ -40,7 +40,7 @@ RUN R -e "remotes::install_version('shiny', version = '1.6.0', upgrade = 'never'
 RUN R -e "remotes::install_version('shinycustomloader', version = '0.9.0', upgrade = 'never')" 
 RUN R -e "remotes::install_version('shinydashboard', version = '0.7.1', upgrade = 'never')" 
 RUN R -e "remotes::install_version('shinydashboardPlus', version = '0.7.5', upgrade = 'never')" 
-RUN R -e "remotes::install_version('shinyFeedback', version = '0.3.0', upgrade = 'never')" 
+RUN R -e "remotes::install_version('shinyFiles', version = '0.9.0', upgrade = 'never')" 
 RUN R -e "remotes::install_version('shinyjs', version = '2.0.0', upgrade = 'never')" 
 RUN R -e "remotes::install_version('shinyWidgets', version = '0.6.0', upgrade = 'never')" 
 RUN R -e "remotes::install_version('snakecase', version = '0.11.0', upgrade = 'never')" 
@@ -55,7 +55,7 @@ RUN R -e "remotes::install_version('yaml', version = '2.2.1', upgrade = 'never')
 
 # GitHub R packages 
 RUN R -e "remotes::install_github('powwater/powpolished', ref = 'faa4f0d8ea4c92d8d16c73f95b17db09f6ebc963', upgrade='never')" 
-RUN R -e "remotes::install_github('thomasp85/shinyFiles', ref = '07797c5aa4d447d2a7234c36ed80ce855fea6b1c', upgrade='never')" 
+RUN R -e "remotes::install_github('merlinoa/shinyFeedback', ref = 'ceb65e02428181a166a8b2cb20aac727c6f261ab', upgrade='never')" 
 RUN R -e "remotes::install_github('JohnCoene/shinyscroll', ref = '98f5d669ab76c9e44fda798beac4c17dd58f66c9', upgrade='never')" 
 RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b413363174f1115a0b34d9ae3f8616e5b76', upgrade='never')"
 
