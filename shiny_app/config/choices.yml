@@ -31,8 +31,8 @@ inventory_offer_type:
   "Swap": "swap"
 order_status:
   "Completed": "Completed"
-  "Pending": "Pending"
   "In Progress": "In Progress"
+  "Pending": "Pending"
   "Cancelled": "Cancelled"
   "Rejected": "Rejected"
 order_delivery_status:
