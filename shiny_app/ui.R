@@ -62,7 +62,6 @@ body <- dashboardBody(
   waiter::waiter_show_on_load(waiting_screen),
   shinyscroll::use_shinyscroll(),
   shinyjs::useShinyjs(),
-  shinyWidgets::useSweetAlert(),
   shinyFeedback::useShinyFeedback(),
   tags$head(
     includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"),
@@ -111,8 +110,8 @@ ui <- shinydashboardPlus::dashboardPagePlus(
 
 powpolished::secure_ui(
   ui,
-  sign_in_ui_default(
-    sign_in_module = sign_in_module_2_ui('sign_in'),
+  sign_in_page_ui = powpolished::sign_in_ui_default(
+    sign_in_module = powpolished::sign_in_module_2_ui('sign_in'),
     color = '#2F3474',
     company_name = 'POWWATER',
     logo_top = tags$div(
@@ -125,5 +124,6 @@ powpolished::secure_ui(
     ),
     icon_href = 'images/logo_droplet.png',
     background_image = "images/power_of_water.png"
-  )
+  ),
+  custom_admin_button_ui = admin_button_ui(align = "left", vertical_align = "bottom")
 )
