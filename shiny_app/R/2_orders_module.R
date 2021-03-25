@@ -609,12 +609,12 @@ orders_module <- function(input, output, session, vendor_info) {
                   color = styleEqual(levels = choices$order_status,
                                      values = assets$order_status_colors,
                                      default = "black")) %>%
-      formatStyle("order_delivery_status",
-                  target = "cell",
-                  fontWeight = "bold",
-                  color = styleEqual(levels = choices$order_delivery_status,
-                                     values = assets$order_delivery_status_colors,
-                                     default = "black")) %>%
+      # formatStyle("order_delivery_status",
+      #             target = "cell",
+      #             fontWeight = "bold",
+      #             color = styleEqual(levels = choices$order_delivery_status,
+      #                                values = assets$order_delivery_status_colors,
+      #                                default = "black")) %>%
       formatStyle("vendor_response",
                   target = "cell",
                   fontWeight = "bold",
