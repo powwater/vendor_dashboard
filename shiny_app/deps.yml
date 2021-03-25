@@ -68,8 +68,10 @@ shinydashboardPlus:
   Version: 0.7.5
 shinyFeedback:
   Package: shinyFeedback
-  Repository: CRAN
-  Version: 0.3.0
+  GithubUsername: merlinoa
+  GithubRepo: shinyFeedback
+  GithubRef: HEAD
+  GithubSHA1: ceb65e02428181a166a8b2cb20aac727c6f261ab
 shinyjs:
   Package: shinyjs
   Repository: CRAN
@@ -108,10 +110,8 @@ googleway:
   Version: 2.7.3
 shinyFiles:
   Package: shinyFiles
-  GithubUsername: thomasp85
-  GithubRepo: shinyFiles
-  GithubRef: HEAD
-  GithubSHA1: 07797c5aa4d447d2a7234c36ed80ce855fea6b1c
+  Repository: CRAN
+  Version: 0.9.0
 waiter:
   Package: waiter
   Repository: CRAN
