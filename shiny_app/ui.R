@@ -62,14 +62,19 @@ body <- dashboardBody(
   waiter::waiter_show_on_load(waiting_screen),
   shinyscroll::use_shinyscroll(),
   shinyjs::useShinyjs(),
+  shinyWidgets::useSweetAlert(),
   shinyFeedback::useShinyFeedback(),
   tags$head(
-    includeCSS("www/stars.css"),
-    includeCSS("www/styles.css"),
     includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"),
     includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
-    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js"),
-    intlTelInputDependencies()
+    includeCSS("www/stars.css"),
+    includeCSS("www/styles.css"),
+    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js",
+                           type = "text/javascript",
+                           language = "JavaScript"),
+    htmltools::tags$script(src = "custom.js",
+                           type = "text/javascript",
+                           language = "JavaScript")
   ),
   tabItems(
     tabItem(

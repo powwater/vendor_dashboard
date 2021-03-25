@@ -272,7 +272,7 @@ inventory_edit_module <- function(input, output, session,
           ),
           div(
             id = ns("danger"),
-            class = "danger",
+            class = "dangerdiv",
             span(icon("exclamation-circle"), p("Offering already available."))
           ) %>% shinyjs::hidden()
         )

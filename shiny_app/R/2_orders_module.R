@@ -31,53 +31,50 @@ orders_module_ui <- function(id){
         footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
-        uiOutput(ns("ratings_ui"), inline = TRUE),
+        uiOutput(ns("ratings_ui")),
+        hr(),
         fluidRow(
           column(
             12,
-            h3("Orders Awaiting Vendor Response:"),
-            # div(
-            #   id = ns("resolve_div"),
-            #   actionButton(
-            #     ns("resolve_awaiting_orders"),
-            #     "Resolve Orders Pending Response",
-            #     icon = icon("check"),
-            #     class = "btn-danger"
-            #   ),
-            #   br(),
-            #   br()
-            # ) %>% shinyjs::hidden(),
-            DT::DTOutput(ns("awaiting_orders_table")) %>%
-              shinycustomloader::withLoader()
-          )
-        ),
-        fluidRow(
-          column(
-            12,
-            h3("Accepted Orders:"),
-            DT::DTOutput(ns('orders_table')) %>%
+            h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
+            hr(),
+            DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
               shinycustomloader::withLoader()
           )
         ),
         hr(),
-        h3("Routes"),
         fluidRow(
           column(
-            6,
-            h4("Delivery Route Map:"),
+            12,
+            h3(icon_text("check", "All Orders:")),
+            hr(),
+            DT::DTOutput(ns('orders_table'), width = "100%") %>%
+              shinycustomloader::withLoader()
+          )
+        ),
+        hr(),
+        fluidRow(
+          column(
+            12,
+            h3(icon_text("car", "Historical Delivery Details:")),
+            hr(),
             pickerInput(ns("selected_order"),
                         "Select an Order to View:",
                         choices = ""),
-            uiOutput(ns("directions_iframe")) %>%
-              shinycustomloader::withLoader()
-            # googleway::google_mapOutput(ns("deliveries"), height = "450px")%>%
-            # shinycustomloader::withLoader()
-          ),
-          column(
-            6,
-            h4("Delivery Details:"),
-            DT::DTOutput(ns('delivery_details')) %>%
-              shinycustomloader::withLoader()
+            shiny::splitLayout(
+              style = "border: 1px solid #333;",
+              cellArgs = list(style = "padding: 6px"),
+              div(
+                h4(icon_text("road", "Delivery Routes:")),
+                uiOutput(ns("directions_iframe")) %>%
+                  shinycustomloader::withLoader()
+              ),
+              div(
+                h4(icon_text("info", "Delivery Details")),
+                DT::DTOutput(ns('delivery_details')) %>%
+                  shinycustomloader::withLoader()
+              )
+            )
           )
         )
       )
@@ -88,7 +85,8 @@ orders_module_ui <- function(id){
   )
 }
 
-orders_module <- function(input, output, session, vendor_info){
+orders_module <- function(input, output, session, vendor_info) {
+
   ns <- session$ns
 
   session$userData$orders_trigger <- reactiveVal(0)
@@ -189,12 +187,8 @@ orders_module <- function(input, output, session, vendor_info){
       tibble::add_column(" " = actions, .before = 1)
 
     if (is.null(awaiting_orders_prep())) {
-      # loading data into the table for the first time, so we render the entire table
-      # rather than using a DT proxy
       awaiting_orders_prep(out)
     } else {
-      # table has already rendered, so use DT proxy to update the data in the
-      # table without re-rendering the entire table
       replaceData(awaiting_orders_table_proxy, out, resetPaging = FALSE, rownames = FALSE)
     }
   })
@@ -217,7 +211,7 @@ orders_module <- function(input, output, session, vendor_info){
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = "row-border nowrap",
+      class = "table table-striped",
       escape = esc_cols,
       extensions = c("Buttons"),
       filter = "none",
@@ -312,7 +306,6 @@ orders_module <- function(input, output, session, vendor_info){
 
         ids <- accepted_dat$order_uid
 
-        # Edit/Delete buttons
         actions <- purrr::map_chr(ids, function(id_) {
           paste0(
             '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons">
@@ -412,14 +405,17 @@ orders_module <- function(input, output, session, vendor_info){
             style = "color: white"
           )
         ),
-        fluidRow(
-          column(
-            12,
-            helpText("Rejected Orders must be reviewed by Powwater and Vendor must provide a detailed description for the reasoning behind rejection."),
+        tagList(
+          helpText("Rejected Orders must be reviewed by Powwater and Vendor must
+                   provide a detailed description for the reasoning behind rejection."),
+          div(
+            style = "width = 100%;",
             textAreaInput(session$ns("vendor_response_text"),
-                          "Response Comments:",
-                          placeholder = "Add details for why you are rejecting the order here...")
-
+                          "Response Text:",
+                          placeholder = "Add details for why you are rejecting the order here...",
+                          height = "200px",
+                          width = "100%",
+                          resize = "vertical")
           )
         )
       )
@@ -427,7 +423,7 @@ orders_module <- function(input, output, session, vendor_info){
 
     observeEvent(input$vendor_response_text, {
       if (is.null(input$vendor_response_text) || input$vendor_response_text == "") {
-        shinyFeedback::showFeedbackDanger("vendor_response_text")
+        shinyFeedback::showFeedbackDanger("vendor_response_text", text = "Cannot be left blank.", icon = NULL)
         shinyjs::disable("submit")
       } else {
         shinyFeedback::hideFeedback("vendor_response_text")
@@ -497,7 +493,8 @@ orders_module <- function(input, output, session, vendor_info){
       actions <- purrr::map_chr(ids, function(id_) {
         paste0(
           '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons">
-          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top" title="View Order Details" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
+          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top"
+          title="View Order Details" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
         </div>'
         )
       })
@@ -594,7 +591,9 @@ orders_module <- function(input, output, session, vendor_info){
     actions <- purrr::map_chr(ids, function(id_) {
       paste0(
         '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons">
-          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top" title="View Order Details" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
+          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip"
+          data-placement="top" title="View Order Details" id="', id_,
+          '" style="margin: 0"><i class="fas fa-id-card"></i></button>
         </div>'
       )
     })
@@ -657,12 +656,8 @@ orders_module <- function(input, output, session, vendor_info){
       tibble::add_column(" " = actions, .before = 1)
 
     if (is.null(orders_prep())) {
-      # loading data into the table for the first time, so we render the entire table
-      # rather than using a DT proxy
       orders_prep(out)
     } else {
-      # table has already rendered, so use DT proxy to update the data in the
-      # table without re-rendering the entire table
       replaceData(orders_table_proxy, out, resetPaging = FALSE, rownames = FALSE)
     }
 
@@ -699,13 +694,16 @@ orders_module <- function(input, output, session, vendor_info){
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'table table-striped table-bordered dt-center compact hover',
+      class = 'table table-striped table-bordered table-hover nowrap table', #dt-responsive
       escape = esc_cols,
-      extensions = c("Buttons"),
+      extensions = c("Buttons"), # "Responsive"
       filter = "top",
+      width = "100%",
       options = list(
         scrollX = TRUE,
-        dom = '<Bf>tip',
+        dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
+               <'row'<'col-sm-12'tr>>
+               <'row'<'col-sm-5'i><'col-sm-7'p>>", # '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")
@@ -744,154 +742,199 @@ orders_module <- function(input, output, session, vendor_info){
 
   orders_table_proxy <- DT::dataTableProxy("orders_table")
 
-  # valboxes ----------------------------------------------------------------
+  # ratings -----------------------------------------------------------------
 
-  avg_rating <- reactive({
-    mean(orders()$vendor_rating, na.rm = TRUE)
-  })
+  ratings_prep <- reactive({
+    avg_rating <- mean(orders()$vendor_rating, na.rm = TRUE)
 
-  num_ratings <- reactive({
-    orders() %>%
+    num_ratings <- orders() %>%
       filter(vendor_rating > 0, !is.na(vendor_rating), !is.null(vendor_rating)) %>%
       nrow()
+
+    num_five_star <- orders() %>%
+      filter(vendor_rating >= 5) %>%
+      nrow()
+
+    num_four_star <- orders() %>%
+      filter(vendor_rating >= 4, vendor_rating <= 5) %>%
+      nrow()
+
+    num_three_star <- orders() %>%
+      filter(vendor_rating >= 3, vendor_rating <= 4) %>%
+      nrow()
+
+    num_two_star <- orders() %>%
+      filter(vendor_rating >= 2, vendor_rating <= 3) %>%
+      nrow()
+
+    num_one_star <- orders() %>%
+      filter(vendor_rating >= 1, vendor_rating <= 2) %>%
+      nrow()
+
+    list(
+      avg_rating = avg_rating,
+      num_ratings = num_ratings,
+      num_five_star = num_five_star,
+      num_four_star = num_four_star,
+      num_three_star = num_three_star,
+      num_two_star = num_two_star,
+      num_one_star = num_one_star
+    )
   })
 
   output$ratings_ui <- renderUI({
+
+    avg <- formattable::comma(ratings_prep()$avg_rating, 3)
+    tot <- formattable::comma(ratings_prep()$num_ratings, 0)
+    five <- formattable::comma(ratings_prep()$num_five_star, 0)
+    four <- formattable::comma(ratings_prep()$num_four_star, 0)
+    three <- formattable::comma(ratings_prep()$num_three_star, 0)
+    two <- formattable::comma(ratings_prep()$num_two_star, 0)
+    one <- formattable::comma(ratings_prep()$num_one_star, 0)
+
     fluidRow(
-      column(width = 12,
-             div(
-               h3(paste0(vendor_info()$vendor_name, " Average Rating: ",
-                         formattable::comma(avg_rating(), 3), " Stars ")),
-               rating_stars(avg_rating()),
-               h3(paste0(" (", formattable::comma(num_ratings(), 0), " Reviews)")),
-               hr()))
-    )
-  })
-
-  avg_rating_valbox <- reactive({
-    paste0(formattable::comma(avg_rating(), 3), " Stars")
-  })
-
-  callModule(
-    shinyFeedback::valueBoxModule,
-    "average_rating",
-    value = avg_rating_valbox
-  )
-
-  num_awaiting_response <- reactive({
-    hold <- orders() %>%
-      filter(vendor_response == "Pending" | is.na(vendor_response)) %>%
-      nrow()
-
-    paste0(hold, " Orders")
-  })
-
-  callModule(
-    shinyFeedback::valueBoxModule,
-    "awaiting_vendor_response",
-    value = num_awaiting_response
-  )
-
-  completed_orders_valbox <- reactive({
-    hold <- orders() %>%
-      filter(order_status == "Completed") %>%
-      nrow()
-
-    paste0(hold, " Orders")
-  })
-
-  callModule(
-    shinyFeedback::valueBoxModule,
-    "completed_orders",
-    value = completed_orders_valbox
-  )
-
-  selected_order_for_view <- reactiveVal(NULL)
-
-  order_to_info <- eventReactive(input$order_id_to_info, {
-    orders() %>%
-      filter(order_uid == input$order_id_to_info)
-  })
-
-  observeEvent(order_to_info(), {
-    scroll(session$ns("directions_iframe"))
-    sel <- order_to_info()
-    updatePickerInput(session, "selected_order", selected = sel$order_uid)
-    selected_order_for_view(sel)
-  })
-
-  routes <- reactive({
-
-    id <- notify("Loading Routes from Database...")
-    on.exit(shinyFeedback::hideToast(), add = TRUE)
-
-    vend <- vendor_info()$vendor_location_uid
-
-    out <- NULL
-
-    tryCatch({
-
-      out <- get_routes_by_vendor(vend, conn = conn)
-
-    }, error = function(err) {
-      msg <- 'Error collecting data from database.'
-      print(msg)
-      print(err)
-      shinyFeedback::showToast('error', msg)
-    })
-
-    out
-
-  })
-
-  routes_filt <- reactive({
-    req(routes())
-    routes() %>% filter(order_uid == input$selected_order)
-  })
-
-  output$directions_iframe <- renderUI({
-    vendor_place_id <- vendor_info()$place_id
-    customer_place_id <- routes_filt()$customer_location_place_id
-    HTML(create_directions_iframe(key = key, start = vendor_place_id, stop = customer_place_id))
-  })
-
-  output$delivery_details <- DT::renderDT({
-    req(routes_filt())
-
-    hold <- routes_filt()
-
-    out <- tibble::tibble(
-      " " = c("Location", "Address", "Coordinates"),
-      "Start (Vendor)" = c(hold$vendor_location_name, hold$vendor_location_address, paste0("(", round(hold$vendor_location_lat, 3), ", ", round(hold$vendor_location_lon, 3), ")")),
-      "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
-    )
-
-    cap <- paste0(
-      "Order #",
-      orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
-      " - Order placed on: ",
-      paste0(orders()$order_date[1], " ", orders()$order_time[1])
-    )
-
-    n_row <- nrow(out)
-    n_col <- ncol(out)
-    id <- session$ns("delivery_details_table")
-
-    datatable(
-      out,
-      caption = cap,
-      style = "bootstrap",
-      class = "row-border nowrap",
-      rownames = FALSE,
-      selection = "none",
-      options = list(
-        dom = "t",
-        columnDefs = list(
-          list(className = "dt-center dt-col", targets = "_all")
+      column(
+        width = 12,
+        div(
+          h3(paste0(vendor_info()$vendor_name, " Average Rating: ", avg, " Stars ")),
+          rating_stars(ratings_prep()$avg_rating),
+          h3(paste0(" (", tot, " Reviews)")),
+          hr()
         )
       )
     )
-
   })
+
+# valboxes ----------------------------------------------------------------
+
+avg_rating_valbox <- reactive({
+  paste0(formattable::comma(ratings_prep()$avg_rating, 3), " Stars")
+})
+
+callModule(
+  shinyFeedback::valueBoxModule,
+  "average_rating",
+  value = avg_rating_valbox
+)
+
+num_awaiting_response <- reactive({
+  hold <- orders() %>%
+    filter(vendor_response == "Pending" | is.na(vendor_response)) %>%
+    nrow()
+
+  paste0(hold, " Orders")
+})
+
+callModule(
+  shinyFeedback::valueBoxModule,
+  "awaiting_vendor_response",
+  value = num_awaiting_response
+)
+
+completed_orders_valbox <- reactive({
+  hold <- orders() %>%
+    filter(order_status == "Completed") %>%
+    nrow()
+
+  paste0(hold, " Orders")
+})
+
+callModule(
+  shinyFeedback::valueBoxModule,
+  "completed_orders",
+  value = completed_orders_valbox
+)
+
+selected_order_for_view <- reactiveVal(NULL)
+
+order_to_info <- eventReactive(input$order_id_to_info, {
+  orders() %>%
+    filter(order_uid == input$order_id_to_info)
+})
+
+observeEvent(order_to_info(), {
+  scroll(session$ns("directions_iframe"))
+  sel <- order_to_info()
+  updatePickerInput(session, "selected_order", selected = sel$order_uid)
+  selected_order_for_view(sel)
+})
+
+
+# routes ------------------------------------------------------------------
+
+
+routes <- reactive({
+
+  id <- notify("Loading Routes from Database...")
+  on.exit(shinyFeedback::hideToast(), add = TRUE)
+
+  vend <- vendor_info()$vendor_location_uid
+
+  out <- NULL
+
+  tryCatch({
+
+    out <- get_routes_by_vendor(vend, conn = conn)
+
+  }, error = function(err) {
+    msg <- 'Error collecting data from database.'
+    print(msg)
+    print(err)
+    shinyFeedback::showToast('error', msg)
+  })
+
+  out
+
+})
+
+routes_filt <- reactive({
+  req(routes())
+  routes() %>% filter(order_uid == input$selected_order)
+})
+
+output$directions_iframe <- renderUI({
+  vendor_place_id <- vendor_info()$place_id
+  customer_place_id <- routes_filt()$customer_location_place_id
+  HTML(create_directions_iframe(key = key, start = vendor_place_id, stop = customer_place_id))
+})
+
+output$delivery_details <- DT::renderDT({
+  req(routes_filt())
+
+  hold <- routes_filt()
+
+  out <- tibble::tibble(
+    " " = c("Location", "Address", "Coordinates"),
+    "Start (Vendor)" = c(hold$vendor_location_name, hold$vendor_location_address, paste0("(", round(hold$vendor_location_lat, 3), ", ", round(hold$vendor_location_lon, 3), ")")),
+    "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
+  )
+
+  cap <- paste0(
+    "Order #",
+    orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
+    " - Order placed on: ",
+    paste0(orders()$order_date[1], " ", orders()$order_time[1])
+  )
+
+  n_row <- nrow(out)
+  n_col <- ncol(out)
+  id <- session$ns("delivery_details_table")
+
+  datatable(
+    out,
+    caption = cap,
+    style = "bootstrap",
+    class = "row-border nowrap",
+    rownames = FALSE,
+    selection = "none",
+    options = list(
+      dom = "t",
+      columnDefs = list(
+        list(className = "dt-center dt-col", targets = "_all")
+      )
+    )
+  )
+
+})
 
 }
