@@ -556,7 +556,7 @@ orders_module <- function(input, output, session, vendor_info) {
     n_row <- nrow(out)
     n_col <- ncol(out)
     cols <- snakecase::to_title_case(colnames(out))
-    esc_cols <- c(-1, -ncol(out))
+    esc_cols <- c(-1, -1 * match("discount_applied", colnames(out)), -ncol(out))
     id <- session$ns("orders_table")
 
     dt_js <- paste0(
