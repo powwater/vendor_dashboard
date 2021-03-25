@@ -164,7 +164,7 @@ orders_module <- function(input, output, session, vendor_info) {
     )
 
     out <- awaiting_orders() %>%
-      mutate_at(vars(all_of(curr_cols)), format_currency_kes) %>%
+      mutate_at(vars(all_of(curr_cols)), Vectorize(format_currency_kes)) %>%
       mutate_at(vars(all_of(factor_cols)), as.factor) %>%
       mutate_if(is.numeric, coalesce, 0L) %>%
       select(
@@ -616,8 +616,8 @@ orders_module <- function(input, output, session, vendor_info) {
     rating_cols <- c("vendor_rating")
 
     out <- hold %>%
-      mutate_at(vars(all_of(curr_cols)), format_currency_kes) %>%
-      mutate_at(vars(all_of(duration_cols)), format_duration_minutes) %>%
+      mutate_at(vars(all_of(curr_cols)), Vectorize(format_currency_kes)) %>%
+      mutate_at(vars(all_of(duration_cols)), Vectorize(format_duration_minutes)) %>%
       mutate_at(vars(all_of(factor_cols)), as.factor) %>%
       mutate_if(is.numeric, coalesce, 0L) %>%
       ratings_to_stars(cols = rating_cols) %>%
