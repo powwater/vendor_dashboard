@@ -94,9 +94,22 @@ shiny::onStop(function() {
 # setup powpolished -------------------------------------------------------
 
 powpolished::global_sessions_config(
-  api_url = app_config$powpolished$api_url,
+  api_url = app_config$powpolished$api_url, #"http://localhost:8080",
   app_name = app_config$powpolished$app_name,
-  api_key = app_config$powpolished$api_key
+  api_key = app_config$powpolished$api_key,
+  # admin_mode = TRUE,
+  is_invite_required = TRUE,
+  firebase_config = list(
+    apiKey = app_config$firebase$api_key,
+    authDomain = app_config$firebase$auth_domain,
+    projectId = app_config$firebase$project_id
+  ),
+  sign_in_providers = c(
+    "email",
+    "phone",
+    "google",
+    "facebook"
+  )
 )
 
 # assets ---------------------------------------
