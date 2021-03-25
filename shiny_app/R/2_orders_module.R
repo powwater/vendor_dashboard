@@ -636,54 +636,110 @@ orders_module <- function(input, output, session, vendor_info) {
       nrow()
 
     num_five_star <- orders() %>%
-      filter(vendor_rating >= 5) %>%
+      filter(vendor_rating > 4) %>%
       nrow()
 
     num_four_star <- orders() %>%
-      filter(vendor_rating >= 4, vendor_rating <= 5) %>%
+      filter(vendor_rating > 3 & vendor_rating <= 4) %>%
       nrow()
 
     num_three_star <- orders() %>%
-      filter(vendor_rating >= 3, vendor_rating <= 4) %>%
+      filter(vendor_rating > 2 & vendor_rating <= 3) %>% # >= 3, vendor_rating <= 4) %>%
       nrow()
 
     num_two_star <- orders() %>%
-      filter(vendor_rating >= 2, vendor_rating <= 3) %>%
+      filter(vendor_rating > 1 & vendor_rating <= 2) %>%
       nrow()
 
     num_one_star <- orders() %>%
-      filter(vendor_rating >= 1, vendor_rating <= 2) %>%
+      filter(vendor_rating > 0 & vendor_rating <= 1) %>%
+      nrow()
+
+    unrated <- orders() %>%
+      filter(is.na(vendor_rating) | is.null(vendor_rating) | vendor_rating == 0) %>%
       nrow()
 
     list(
       avg_rating = avg_rating,
       num_ratings = num_ratings,
+      num_orders = num_ratings + unrated,
       num_five_star = num_five_star,
       num_four_star = num_four_star,
       num_three_star = num_three_star,
       num_two_star = num_two_star,
-      num_one_star = num_one_star
+      num_one_star = num_one_star,
+      num_unrated = unrated
     )
   })
 
   output$ratings_ui <- renderUI({
 
+    # browser()
+
     avg <- formattable::comma(ratings_prep()$avg_rating, 3)
-    tot <- formattable::comma(ratings_prep()$num_ratings, 0)
-    five <- formattable::comma(ratings_prep()$num_five_star, 0)
-    four <- formattable::comma(ratings_prep()$num_four_star, 0)
-    three <- formattable::comma(ratings_prep()$num_three_star, 0)
-    two <- formattable::comma(ratings_prep()$num_two_star, 0)
-    one <- formattable::comma(ratings_prep()$num_one_star, 0)
+    tot <- paste0(formattable::comma(ratings_prep()$num_orders, 0), " Total Orders")
+    tot_ratings <- paste0(formattable::comma(ratings_prep()$num_ratings, 0), " total reviewed orders")
+    five <- paste0(formattable::comma(ratings_prep()$num_five_star, 0), " Reviews")
+    four <- paste0(formattable::comma(ratings_prep()$num_four_star, 0), " Reviews")
+    three <- paste0(formattable::comma(ratings_prep()$num_three_star, 0), " Reviews")
+    two <- paste0(formattable::comma(ratings_prep()$num_two_star, 0), " Reviews")
+    one <- paste0(formattable::comma(ratings_prep()$num_one_star, 0), " Reviews")
+    unrated = paste0(formattable::comma(ratings_prep()$num_unrated, 0), " Unrated Orders")
+
+    percents <- c("one_pct", "two_pct", "three_pct", "four_pct", "five_pct", "unrated_pct")
+
+    pcts <- purrr::map_dbl(percents,
+                           function(x) {
+
+                             hold <- switch(x,
+                                            "five_pct" = ratings_prep()$num_five_star,
+                                            "four_pct" = ratings_prep()$num_four_star,
+                                            "three_pct" = ratings_prep()$num_three_star,
+                                            "two_pct" = ratings_prep()$num_two_star,
+                                            "one_pct" = ratings_prep()$num_one_star,
+                                            "unrated_pct" = ratings_prep()$num_unrated)
+
+                             out <- hold / ratings_prep()$num_orders
+
+                             out
+                           }) %>% set_names(percents)
+
+    pct_widths <- map_chr(pcts, function(x) {
+      paste0(as.character(round(x * 100, 2)), "%")
+    }) %>%
+      set_names(percents)
 
     fluidRow(
       column(
-        width = 12,
-        div(
-          h3(paste0(vendor_info()$vendor_name, " Average Rating: ", avg, " Stars ")),
-          rating_stars(ratings_prep()$avg_rating),
-          h3(paste0(" (", tot, " Reviews)")),
-          hr()
+        12,
+        h3(icon_text("star", " Ratings")),
+        hr(),
+        fluidRow(
+          column(
+            width = 8,
+            offset = 2,
+            div(
+              htmlTemplate(
+                filename = "www/html/ratings_card.html",
+                header = paste(vendor_info()$vendor_name, ": Average Vendor Rating"),
+                header_stars = rating_stars(ratings_prep()$avg_rating, span = TRUE, class = "ratings-fa"),
+                average_rating = avg,
+                number_of_reviews = tot_ratings,
+                num_five_star = five,
+                num_four_star = four,
+                num_three_star = three,
+                num_two_star = two,
+                num_one_star = one,
+                num_unrated = unrated,
+                five_pct = pct_widths["five_pct"],
+                four_pct = pct_widths["four_pct"],
+                three_pct = pct_widths["three_pct"],
+                two_pct = pct_widths["two_pct"],
+                one_pct = pct_widths["one_pct"],
+                unrated_pct = pct_widths["unrated_pct"]
+              )
+            )
+          )
         )
       )
     )
