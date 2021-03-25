@@ -772,7 +772,7 @@ orders_module <- function(input, output, session, vendor_info) {
   })
 
   routes_filt <- reactive({
-    req(routes())
+    req(routes(), input$selected_order)
     routes() %>% filter(order_uid == input$selected_order)
   })
 
