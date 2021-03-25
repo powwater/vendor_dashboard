@@ -102,38 +102,29 @@ orders_module <- function(input, output, session, vendor_info) {
 
     id <- notify("Loading Orders from Database...")
     on.exit(shinyFeedback::hideToast(), add = TRUE)
-
     session$userData$orders_trigger()
-
     vend <- vendor_info()$vendor_uid
-
     out <- NULL
 
     tryCatch({
-
       out <- get_orders_by_vendor(vend, conn)
-
     }, error = function(err) {
       msg <- 'Error collecting data from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
     })
-
     out
-
   })
 
   completed_orders <- reactive({
     req(orders())
-
     orders() %>%
       filter(order_status == "Completed")
   })
 
   awaiting_orders <- reactive({
     req(orders())
-
     orders() %>%
       filter(vendor_response ==  "Pending" | is.na(vendor_response)) %>%
       select(
@@ -149,16 +140,11 @@ orders_module <- function(input, output, session, vendor_info) {
       )
   })
 
-  observeEvent(nrow(awaiting_orders()) > 0, {
-    shinyjs::show("resolve_div")
-  })
-
   awaiting_orders_prep <- reactiveVal(NULL)
 
   observeEvent(awaiting_orders(), {
     ids <- awaiting_orders()$order_uid
 
-    # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
       paste0(
         '<div class="btn-group" style="width: 75px;" role="group" aria-label="Order Buttons">
