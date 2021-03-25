@@ -247,133 +247,81 @@ orders_module <- function(input, output, session, vendor_info) {
   })
 
   observeEvent(order_to_accept(), {
-    sel <- order_to_accept()
 
-    shinyWidgets::ask_confirmation(
-      session$ns("accept_order"),
-      title = "Accept Order?",
-      text = "Please confirm your acceptance of this order.",
+    showModal(
+      modalDialog(
+        title = "Accept Order:",
+        size = "s",
+        footer = list(
+          shiny::modalButton('Cancel'),
+          shiny::actionButton(
+            session$ns('submit'),
+            'Submit',
+            class = "btn btn-primary",
+            style = "color: white"
+          )
+        ),
+        h5("Please confirm your acceptance of this order.")
+      )
     )
+  })
 
-    edit_dat <- eventReactive(input$accept_order, {
-      order_to_accept() %>%
-        mutate(
-          vendor_response = "Accepted",
-          modified_at = tychobratools::time_now_utc(),
-          modified_by = session$userData$user()$email
-        )
-    })
+  edit_dat <- eventReactive(input$submit, {
 
-    observeEvent(edit_dat(), {
+    removeModal()
 
-      hold <- edit_dat() %>%
-        select(
-          order_uid,
-          vendor_response,
-          modified_at,
-          modified_by
-        )
+    msg <- paste0("Order accepted!")
+    shinyFeedback::showToast("success", msg)
 
-      dat <- list(
-        "data" = hold %>% select(-order_uid),
-        "uid" = hold %>% pull(order_uid)
+    order_to_accept() %>%
+      mutate(
+        order_status = "In Progress",
+        vendor_response = "Accepted",
+        vendor_response_time = tychobratools::time_now_utc(),
+        modified_at = tychobratools::time_now_utc(),
+        modified_by = session$userData$user()$user_uid
+      )
+  })
+
+  observeEvent(edit_dat(), {
+
+    hold <- edit_dat() %>%
+      select(
+        order_uid,
+        order_status,
+        vendor_response,
+        vendor_response_time,
+        modified_at,
+        modified_by
       )
 
-      tryCatch({
-        dbExecute(
-          conn,
-          "UPDATE orders SET
-            vendor_response=$1,
-            modified_at=$2,
-            modified_by=$3 WHERE uid=$4",
-          params = c(
-            unname(dat$data),
-            list(dat$uid)
-          )
+    dat <- list(
+      "data" = hold %>% select(-order_uid),
+      "uid" = hold %>% pull(order_uid)
+    )
+
+    tryCatch({
+      dbExecute(
+        conn,
+        "UPDATE orders SET
+            order_status=$1,
+            vendor_response=$2,
+            vendor_response_time=$3,
+            modified_at=$4,
+            modified_by=$5 WHERE uid=$6",
+        params = c(
+          unname(dat$data),
+          list(dat$uid)
         )
-        session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-        reloadData(awaiting_orders_table_proxy)
-
-        accepted_dat <- orders() %>%
-          filter(order_uid == dat$uid)
-
-        ids <- accepted_dat$order_uid
-
-        actions <- purrr::map_chr(ids, function(id_) {
-          paste0(
-            '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons">
-          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top" title="View Order Details" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
-        </div>'
-          )
-        })
-
-        curr_cols <- c("delivery_fee",
-                       "price_of_water",
-                       "delivery_commission",
-                       "vendor_commission",
-                       "discount_amount",
-                       "total_payment_price")
-
-        duration_cols <- c("time_vendor_prep",
-                           "time_rider_to_vendor",
-                           "time_rider_to_customer",
-                           "total_delivery_time")
-
-        factor_cols <- c(
-          "customer_name",
-          "rider_name",
-          "order_type",
-          "order_status",
-          "order_delivery_status",
-          "vendor_response",
-          "payment_type"
-        )
-
-        rating_cols <- c("vendor_rating")
-
-        out <- accepted_dat %>%
-          mutate_at(vars(all_of(curr_cols)), format_currency_kes) %>%
-          mutate_at(vars(all_of(duration_cols)), format_duration_minutes) %>%
-          mutate_at(vars(all_of(factor_cols)), as.factor) %>%
-          mutate_if(is.numeric, coalesce, 0L) %>%
-          ratings_to_stars(cols = rating_cols) %>%
-          select(
-            order_number,
-            order_date,
-            order_time,
-            customer_name,
-            rider_name,
-            order_type,
-            order_status,
-            order_delivery_status,
-            vendor_response,
-            vendor_response_text,
-            payment_type,
-            price_of_water,
-            delivery_fee,
-            delivery_commission,
-            vendor_commission,
-            discount_applied,
-            discount_amount,
-            total_transaction_payment = total_payment_price,
-            total_delivery_time,
-            time_vendor_prep,
-            time_rider_to_vendor,
-            time_rider_to_customer,
-            vendor_rating
-          ) %>%
-          tibble::add_column(" " = actions, .before = 1)
-
-        addRow(orders_table_proxy, out, resetPaging = FALSE)
-
-        msg <- paste0("Order accepted!")
-        shinyFeedback::showToast("success", msg)
-      }, error = function(err) {
-        msg <- 'Error updating database'
-        print(msg)
-        print(err)
-        shinyFeedback::showToast('error', msg)
-      })
+      )
+      session$userData$orders_trigger(session$userData$orders_trigger() + 1)
+      msg <- paste0("Database successfully updated.")
+      shinyFeedback::showToast("success", msg)
+    }, error = function(err) {
+      msg <- 'Error updating database'
+      print(msg)
+      print(err)
+      shinyFeedback::showToast('error', msg)
     })
   })
 
@@ -383,8 +331,6 @@ orders_module <- function(input, output, session, vendor_info) {
   })
 
   observeEvent(order_to_decline(), {
-    sel <- order_to_decline()
-
     showModal(
       modalDialog(
         title = "Decline Order:",
@@ -392,7 +338,7 @@ orders_module <- function(input, output, session, vendor_info) {
         footer = list(
           shiny::modalButton('Cancel'),
           shiny::actionButton(
-            session$ns('submit'),
+            session$ns('submit_'),
             'Submit',
             class = "btn btn-primary",
             style = "color: white"
@@ -426,32 +372,42 @@ orders_module <- function(input, output, session, vendor_info) {
 
   })
 
-  edit_dat <- eventReactive(input$submit, {
+  edit_dat_ <- eventReactive(input$submit_, {
+
+    removeModal()
+
+    msg <- paste0("Order Rejected!")
+    shinyFeedback::showToast("success", msg)
+
     order_to_decline() %>%
       mutate(
+        order_status = "Rejected",
         vendor_response = "Rejected",
         vendor_response_text = input$vendor_response_text,
+        vendor_response_time = tychobratools::time_now_utc(),
         modified_at = tychobratools::time_now_utc(),
-        modified_by = session$userData$user()$email
+        modified_by = session$userData$user()$user_uid
       ) %>%
       select(
         order_uid,
+        order_status,
         vendor_response,
         vendor_response_text,
+        vendor_response_time,
         modified_at,
         modified_by
       )
   })
 
-  observeEvent(edit_dat(), {
+  observeEvent(edit_dat_(), {
 
-    removeModal()
-
-    hold <- edit_dat() %>%
+    hold <- edit_dat_() %>%
       select(
         order_uid,
+        order_status,
         vendor_response,
         vendor_response_text,
+        vendor_response_time,
         modified_at,
         modified_by
       )
@@ -465,103 +421,26 @@ orders_module <- function(input, output, session, vendor_info) {
       dbExecute(
         conn,
         "UPDATE orders SET
-            vendor_response=$1,
-            vendor_response_text=$2,
-            modified_at=$3,
-            modified_by=$4 WHERE uid=$5",
+            order_status=$1,
+            vendor_response=$2,
+            vendor_response_text=$3,
+            vendor_response_time=$4,
+            modified_at=$5,
+            modified_by=$6 WHERE uid=$7",
         params = c(
           unname(dat$data),
           list(dat$uid)
         )
       )
       session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-      reloadData(awaiting_orders_table_proxy)
-
-      accepted_dat <- orders() %>%
-        filter(order_uid == dat$uid)
-
-      ids <- accepted_dat$order_uid
-
-      # Edit/Delete buttons
-      actions <- purrr::map_chr(ids, function(id_) {
-        paste0(
-          '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons">
-          <button class="btn btn-info btn-sm info_btn" data-toggle="tooltip" data-placement="top"
-          title="View Order Details" id="', id_,'" style="margin: 0"><i class="fas fa-id-card"></i></button>
-        </div>'
-        )
-      })
-
-      curr_cols <- c("delivery_fee",
-                     "price_of_water",
-                     "delivery_commission",
-                     "vendor_commission",
-                     "discount_amount",
-                     "total_payment_price")
-
-      duration_cols <- c("time_vendor_prep",
-                         "time_rider_to_vendor",
-                         "time_rider_to_customer",
-                         "total_delivery_time")
-
-      factor_cols <- c(
-        "customer_name",
-        "rider_name",
-        "order_type",
-        "order_status",
-        "order_delivery_status",
-        "vendor_response",
-        "payment_type"
-      )
-
-      rating_cols <- c("vendor_rating")
-
-      out <- accepted_dat %>%
-        mutate_at(vars(all_of(curr_cols)), format_currency_kes) %>%
-        mutate_at(vars(all_of(duration_cols)), format_duration_minutes) %>%
-        mutate_at(vars(all_of(factor_cols)), as.factor) %>%
-        mutate_if(is.numeric, coalesce, 0L) %>%
-        ratings_to_stars(cols = rating_cols) %>%
-        select(
-          order_number,
-          order_date,
-          order_time,
-          customer_name,
-          rider_name,
-          order_type,
-          order_status,
-          order_delivery_status,
-          vendor_response,
-          vendor_response_text,
-          payment_type,
-          price_of_water,
-          delivery_fee,
-          delivery_commission,
-          vendor_commission,
-          discount_applied,
-          discount_amount,
-          total_transaction_payment = total_payment_price,
-          total_delivery_time,
-          time_vendor_prep,
-          time_rider_to_vendor,
-          time_rider_to_customer,
-          vendor_rating
-        ) %>%
-        tibble::add_column(" " = actions, .before = 1)
-
-      addRow(orders_table_proxy, out, resetPaging = FALSE)
-
-      session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-      msg <- paste0("Order Submitted for Rejection..")
+      msg <- paste0("Database successfully updated.")
       shinyFeedback::showToast("success", msg)
-
     }, error = function(err) {
       msg <- 'Error updating database'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
     })
-
   })
 
   observeEvent(completed_orders(), {
