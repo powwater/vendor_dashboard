@@ -101,3 +101,24 @@ get_routes_by_vendor <- function(vendor_location_id, conn, collect = TRUE) {
 
   hold %>% collect()
 }
+
+get_riders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+
+  hold <- conn %>%
+    dplyr::tbl("orders") %>%
+    dplyr::filter(vendor_uid == vendor_id) %>%
+    select(vendor_uid, rider_uid) %>%
+    distinct() %>%
+    left_join(
+      conn %>%
+        tbl('riders') %>%
+        select(rider_uid = uid,
+               everything()),
+      by = "rider_uid"
+    )
+
+  if (!collect) return(hold)
+
+  hold %>% collect()
+
+}
