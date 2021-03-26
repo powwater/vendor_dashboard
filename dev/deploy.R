@@ -30,7 +30,7 @@ browseURL("localhost:8080")
 
 # build production, tag, and push to GCR
 system("gcloud auth configure-docker")
-system("docker build -t powwater_vendorsdashboard .")
+system("docker build --build-arg R_CONFIG_ACTIVE=production -t powwater_vendorsdashboard .")
 system("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
 system("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
