@@ -61,3 +61,8 @@ browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendo
 # system("docker tag powwater_vendorsdashboard jimbrig2011/powwater_vendorsdashboard:alpha")
 # system("docker build -t jimbrig2011/powwater_vendor_dashboard:alpha .")
 # system("docker push jimbrig2011/powwater_vendor_dashboard:alpha")
+
+# deps <- dep::get_proj_deps(root = "shiny_app")
+# deps <- automagic::get_dependent_packages("shiny_app")
+
+# pkgdeps_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))

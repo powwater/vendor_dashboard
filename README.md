@@ -10,6 +10,11 @@
 [![Lifecycle:Maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
+*Pull latest Docker Image to run locally*
+```shell
+docker pull docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest
+```
+
 ## Links 🔗
 
 ### Project Management 📋

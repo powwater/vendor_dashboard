@@ -60,7 +60,7 @@ options(lubridate.week.start = 1)
 # load configuration ------------------------------------------------------
 
 # tell app if in development or not
-is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
+is_dev <- Sys.getenv("R_CONFIG_ACTIVE") == "default"
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # download latest config.yml file:

@@ -1,3 +1,5 @@
+api_key <- readRDS("apikey.RDS")
+
 #' @import leaflet
 leaflet_plot <- function(sp,
                          popup = NULL,
@@ -62,7 +64,7 @@ leaflet_plot <- function(sp,
       urlTemplate = "https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}",
       attribution = "&copy; <a href='http://www.thunderforest.com/'>Thunderforest</a>,  &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
       options = tileOptions(
-        variant = "landscape", apikey = "25ef91f0102248f4a181998ec2b7a1ad"
+        variant = "landscape", apikey = api_key
       ),
       group = "Landscape"
     ) %>%

@@ -18,7 +18,6 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 RUN R -e "install.packages('remotes')"
 
 # CRAN R packages
-# CRAN R packages 
 RUN R -e "remotes::install_version('DBI', version = '1.1.1', upgrade = 'never')" 
 RUN R -e "remotes::install_version('RPostgres', version = '1.3.1', upgrade = 'never')" 
 RUN R -e "remotes::install_version('dbx', version = '0.2.8', upgrade = 'never')" 
@@ -58,7 +57,6 @@ RUN R -e "remotes::install_version('qs', version = '0.24.1', upgrade = 'never')"
 
 
 # GitHub R packages
-# GitHub R packages 
 RUN R -e "remotes::install_github('powwater/powpolished', ref = '5e38b291fdb2103e8c8247db4811a2b54ea0d13c', upgrade='never')" 
 RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b413363174f1115a0b34d9ae3f8616e5b76', upgrade='never')" 
 RUN R -e "remotes::install_github('merlinoa/shinyFeedback', ref = 'ceb65e02428181a166a8b2cb20aac727c6f261ab', upgrade='never')" 
