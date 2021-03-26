@@ -16,7 +16,7 @@ server <- function(input, output, session) {
   })
 
   callModule(
-    powpolished::profile_module,
+    polished::profile_module,
     'polished_profile'
   )
 

@@ -22,12 +22,12 @@ formattable:
   Package: formattable
   Repository: CRAN
   Version: 0.2.1
-powpolished:
-  Package: powpolished
-  GithubUsername: powwater
-  GithubRepo: powpolished
-  GithubRef: develop
-  GithubSHA1: 5e38b291fdb2103e8c8247db4811a2b54ea0d13c
+polished:
+  Package: polished
+  GithubUsername: tychobra
+  GithubRepo: polished
+  GithubRef: HEAD
+  GithubSHA1: ca514d8d10c6fb9de03a358ba9381184e5d7f210
 snakecase:
   Package: snakecase
   Repository: CRAN
