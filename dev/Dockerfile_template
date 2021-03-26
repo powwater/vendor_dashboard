@@ -1,6 +1,6 @@
-FROM gcr.io/powwater/shiny_run_server
+FROM rocker/r-ver:4.0.4
 
-ARG R_CONFIG_ACTIVE=default
+EXPOSE 8080
 
 # System Requirements
 {{{ sysreqs }}}
@@ -11,12 +11,7 @@ RUN R -e "install.packages('remotes')"
 
 {{{ gh_installs }}}
 
+# Copy app into shiny server `shiny_app` directory
 COPY 'shiny_app' /srv/shiny-server/shiny_app
 
-RUN chown -R shiny:shiny /srv/shiny-server/shiny_app
-
-RUN echo "Sys.setenv(R_CONFIG_ACTIVE='$R_CONFIG_ACTIVE')" >> /home/shiny/.Rprofile
-
-USER shiny
-
-CMD ["/usr/bin/shiny-server"]
+CMD ["Rscript","-e","shiny::runApp(appDir='/srv/shiny-server/shiny_app',port=8080,launch.browser=FALSE,host='0.0.0.0')"]
