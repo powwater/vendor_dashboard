@@ -64,12 +64,16 @@ body <- dashboardBody(
   shinyjs::useShinyjs(),
   shinyFeedback::useShinyFeedback(),
   tags$head(
-    includeCSS("www/stars.css"),
-    includeCSS("www/styles.css"),
     includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"),
     includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
-    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js"),
-    intlTelInputDependencies()
+    includeCSS("www/stars.css"),
+    includeCSS("www/styles.css"),
+    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js",
+                           type = "text/javascript",
+                           language = "JavaScript"),
+    htmltools::tags$script(src = "custom.js",
+                           type = "text/javascript",
+                           language = "JavaScript")
   ),
   tabItems(
     tabItem(
@@ -106,8 +110,8 @@ ui <- shinydashboardPlus::dashboardPagePlus(
 
 powpolished::secure_ui(
   ui,
-  sign_in_ui_default(
-    sign_in_module = sign_in_module_2_ui('sign_in'),
+  sign_in_page_ui = powpolished::sign_in_ui_default(
+    sign_in_module = powpolished::sign_in_module_2_ui('sign_in'),
     color = '#2F3474',
     company_name = 'POWWATER',
     logo_top = tags$div(
@@ -120,5 +124,6 @@ powpolished::secure_ui(
     ),
     icon_href = 'images/logo_droplet.png',
     background_image = "images/power_of_water.png"
-  )
+  ),
+  custom_admin_button_ui = admin_button_ui(align = "left", vertical_align = "bottom")
 )

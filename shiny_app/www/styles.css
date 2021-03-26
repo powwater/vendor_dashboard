@@ -13,7 +13,7 @@
     border: 1px solid #333;
 }
 
-.danger {
+.dangerdiv {
   color: red;
   font-size: 14px;
   font-style: bold;
@@ -24,8 +24,25 @@
   width: 150px !important;
 }
 
-/* DT Datatables Styles */
+/*.nav-tabs-custom>.nav-tabs {
+  background-color: #333;
+  color: #fff;
+  background: #333;
+}
 
+.nav-tabs-custom>.nav-tabs>.li>.a>.i {
+  color: #fff;
+}
+
+.header.pull-right.span {
+  color: #fff;
+}
+
+.nav-tabs-custom>.nav-tabs>li.active {
+    border-top-color: rgb(0 0 0 / 20%);
+}*/
+
+/* DT Datatables Styles */
 
 /* nowrap for column widths */
 /* from https://stackoverflow.com/questions/55208855/how-to-set-column-width-in-r-shiny-data-table */
@@ -41,12 +58,20 @@
   min-width: 85px;
 }
 
-.dataTables_length {
+/*.dataTables_length {
   display: inline-block;
   vertical-align: middle;
   text-align: right;
   float: right;
+}*/
+
+/*.dataTables_length, .dt-buttons {
+  float: left;
+  margin-right: 10px;
 }
+
+input, textarea, button { margin-top:10px }
+/*
 
 
 

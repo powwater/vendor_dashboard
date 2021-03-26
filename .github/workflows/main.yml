@@ -25,4 +25,4 @@ jobs:
           docker-image-name: vendor_dashboard
           docker-image-tag: latest
           dockerfile-path: ./Dockerfile
-          build-context: ./shiny_ap
+          build-context: ./shiny_app

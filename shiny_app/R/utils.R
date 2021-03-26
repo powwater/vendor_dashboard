@@ -231,31 +231,36 @@ action_bttns <- function(id_) {
 }
 
 #' @importFrom shiny icon
-rating_stars <- function(rating, max_rating = 5) {
+rating_stars <- function(rating, max_rating = 5, span = FALSE, class = NULL) {
+
+  class_ <- class
+
   star_icon <- function(empty = FALSE) {
-    tagAppendAttributes(shiny::icon("star"),
+    tagAppendAttributes(shiny::icon("star", class = class_),
                         style = paste("color:", if (empty) "#edf0f2" else "orange"),
-                        "aria-hidden" = "true"
-    )
+                        "aria-hidden" = "true")
   }
   rounded_rating <- floor(rating + 0.5)  # always round up
   stars <- lapply(seq_len(max_rating), function(i) {
     if (i <= rounded_rating) star_icon() else star_icon(empty = TRUE)
   })
   label <- sprintf("%s out of %s", rating, max_rating)
-  div(title = label, "aria-label" = label, role = "img", stars)
+  if (!span) {
+    out <- div(title = label, "aria-label" = label, role = "img", stars)
+    return(out)
+  }
+
+  span(title = label, "aria-label" = label, role = "img", stars)
 }
 
 #' @importFrom shiny icon tagAppendAttributes
 #' @importFrom tidyselect all_of
 ratings_to_stars <- function(dat, cols = c("rating")) {
 
-
-
   mutate_at(dat, vars(tidyselect::all_of(cols)), function(rating) {
     rating = case_when(
-      is.na(rating) || is.null(rating) ~ paste0(tags$span(shiny::icon('star'))),
-      rating == 0 ~ paste0(tags$span(shiny::icon('star'))),
+      is.na(rating) | is.null(rating) ~ paste0(tags$span(shiny::icon('ban'))),
+      rating == 0 ~ paste0(tags$span(shiny::icon('ban'))),
       rating == 0.5 ~ paste0(tags$span(
         shiny::icon('star-half') %>% shiny::tagAppendAttributes(style = "color: orange;")
       )),
@@ -367,8 +372,7 @@ ratings_to_stars <- function(dat, cols = c("rating")) {
         )
       )
     )
-  }
-  )
+  })
 }
 
 
@@ -401,4 +405,31 @@ get_last_updated_date <- function(path = ".") {
     tibble::as_tibble() %>%
     dplyr::pull("modification_time") %>%
     max(na.rm = TRUE)
+}
+
+format_currency_kes <- function(num) {
+  if (is.na(num) || is.nan(num)) num <- 0
+  paste0(formattable::currency(num, "", sep = "", big.mark = ","), " KES")
+}
+
+format_duration_minutes <- function(num) {
+  if (is.na(num) || is.nan(num)) num <- 0
+  paste0(num, " Minutes")
+}
+
+format_true_false <- function(log, true_val = TRUE, false_val = FALSE) {
+
+  true_false_formatter <- formattable::formatter("span",
+                                                 style = x ~ formattable::style(
+                                                   font.weight = "bold",
+                                                   color = ifelse(x == true_val,
+                                                                  "forestgreen",
+                                                                  ifelse(x == false_val, "red", "black"))
+                                                 )
+  )
+
+  log <- coalesce(log, false_val)
+
+  formattable::formattable(log, formatter = true_false_formatter)
+
 }

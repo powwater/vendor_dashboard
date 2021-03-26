@@ -18,8 +18,6 @@ rm(list = ls())
 suppressPackageStartupMessages({
   library(DBI)
   library(RPostgres)
-  library(dbx)
-  library(urltools)
   library(dbplyr)
   library(dplyr)
   library(DT)
@@ -60,8 +58,11 @@ options(lubridate.week.start = 1)
 # load configuration ------------------------------------------------------
 
 # tell app if in development or not
-is_dev <- Sys.getenv("R_CONFIG_ACTIVE") == "default"
+is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
 is_local <- Sys.getenv('SHINY_PORT') == ""
+
+# download latest config.yml file:
+if (is_local) source("R/get_config.R"); get_config()
 
 # enable shiny devmode
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
@@ -91,9 +92,22 @@ shiny::onStop(function() {
 # setup powpolished -------------------------------------------------------
 
 powpolished::global_sessions_config(
-  api_url = app_config$powpolished$api_url,
+  api_url = app_config$powpolished$api_url, #"http://localhost:8080",
   app_name = app_config$powpolished$app_name,
-  api_key = app_config$powpolished$api_key
+  api_key = app_config$powpolished$api_key,
+  # admin_mode = TRUE,
+  is_invite_required = TRUE,
+  firebase_config = list(
+    apiKey = app_config$firebase$api_key,
+    authDomain = app_config$firebase$auth_domain,
+    projectId = app_config$firebase$project_id
+  ),
+  sign_in_providers = c(
+    "email",
+    "phone",
+    "google",
+    "facebook"
+  )
 )
 
 # assets ---------------------------------------

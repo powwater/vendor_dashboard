@@ -31,13 +31,25 @@ inventory_offer_type:
   "Swap": "swap"
 order_status:
   "Completed": "Completed"
-  "Out for Delivery": "Out for Delivery"
+  "In Progress": "In Progress"
   "Pending": "Pending"
   "Cancelled": "Cancelled"
+  "Rejected": "Rejected"
+order_delivery_status:
+  "Pending": "Pending"
+  "Awaiting Delivery": "Awaiting Delivery"
+  "Out for Delivery": "Out for Delivery"
+  "Delivered": "Delivered"
+  "Cancelled": "Cancelled"
+  "Rejected": "Rejected"
 order_payment_status:
   "Pending": "payment_pending"
   "Confirmed": "awaiting_vendor_response"
   "Declined": "declined"
+vendor_response:
+  "Accepted": "Accepted"
+  "Rejected": "Rejected"
+  "Pending": "Pending"
 phone_number_format:
   "National": "national"
   "International": "international"

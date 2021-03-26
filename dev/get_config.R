@@ -59,4 +59,3 @@ get_config <- function() {
   }
   usethis::ui_todo("Be sure that config.yml is included in your {usethis::ui_path('.gitignore')}!")
 }
-
