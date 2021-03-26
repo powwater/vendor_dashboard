@@ -1,0 +1,80 @@
+vendors:
+  "c401b531-719d-4cad-82e7-71db3ffba166":
+    vendor_uid: "c401b531-719d-4cad-82e7-71db3ffba166"
+    vendor_name: "Dutch Water"
+    vendor_number: 1
+    vendor_location_uid: "702e0732-db29-479a-a2a0-2595392e7280"
+    vendor_place_id: "ChIJrToahpQJQBgRZ6ukvDc1LO4"
+    vendor_region_id: "ChIJ5b0LA6wOQBgRe0sIruEoRCc"
+    active: TRUE
+    image_path: "images/profiles/dutch_water.png"
+
+  "81be27fc-0b16-42de-894d-9b1f23b5d5b2":
+    vendor_uid: "81be27fc-0b16-42de-894d-9b1f23b5d5b2"
+    vendor_name: "Tumaqua"
+    vendor_number: 2
+    vendor_location_uid: "0f157da0-aa9b-4231-8ba9-26f088a8cc16"
+    vendor_place_id: "ChIJZ8heIZcTQBgRSiwjTDrsH2c"
+    vendor_region_id: "ChIJhUgzwr0SQBgRHRjJF5RyKlw"
+    active: TRUE
+    image_path: "images/profiles/no_picture.png"
+
+  "6997a063-3fd3-443a-9d0d-d2130c373c4d":
+    vendor_uid: "6997a063-3fd3-443a-9d0d-d2130c373c4d"
+    vendor_name: "Water Kiosk - Tudor"
+    vendor_number: 3
+    vendor_location_uid: "7fee3eef-c257-4711-9f55-16683299918c"
+    vendor_place_id: "ChIJrcqBCfETQBgRGIGQ2reX5rg"
+    vendor_region_id: "ChIJ-dJNuboSQBgRw43Iu-jVsD8"
+    active: TRUE
+    image_path: "images/profiles/no_picture.png"
+
+  "44203f64-de6b-49c1-b8c2-8d06c9edae6c":
+    vendor_uid: "44203f64-de6b-49c1-b8c2-8d06c9edae6c"
+    vendor_name: "Water Kiosk - Diani"
+    vendor_number: 4
+    vendor_location_uid: "f41a994e-6d48-471a-a109-8efa95d67533"
+    vendor_place_id: "ChIJof7US0FHQBgReMXqMByJMWc"
+    vendor_region_id: "ChIJBXzKvhNGQBgR02U0ZhUrlA8"
+    active: FALSE
+    image_path: "images/profiles/no_picture.png"
+
+  "add70d88-b7e2-4805-b9be-5738c8696a62":
+    vendor_uid: "add70d88-b7e2-4805-b9be-5738c8696a62"
+    vendor_name: "Water Kiosk - Nyali"
+    vendor_number: 5
+    vendor_location_uid: "2a650127-a767-4dd6-ba85-54ca4cb66e24"
+    vendor_place_id: "ChIJ29RP2VwTQBgRFJhP2qg-Nxs"
+    vendor_region_id: "ChIJfxTHRVESQBgRv0nMpx5zGgQ"
+    active: FALSE
+    image_path: "images/profiles/no_picture.png"
+
+  "9e04f3d0-88f6-4856-aa17-0fc124a416ae":
+    vendor_uid: "9e04f3d0-88f6-4856-aa17-0fc124a416ae"
+    vendor_name: "Water Kiosk - Bamburi"
+    vendor_number: 6
+    vendor_location_uid: "e6d0d6cb-201e-4e6e-a651-74a70bc9410c"
+    vendor_place_id: "ChIJjfvdNB8NQBgRnlXN21peT24"
+    vendor_region_id: "ChIJx5MgBMkNQBgR0TWOp2TTdpU"
+    active: FALSE
+    image_path: "images/profiles/no_picture.png"
+
+  "c236ebbd-255d-41b5-bb30-1a4fb83b823f":
+    vendor_uid: "c236ebbd-255d-41b5-bb30-1a4fb83b823f"
+    vendor_name: "Water Kiosk - Mwtapa"
+    vendor_number: 7
+    vendor_location_uid: "c97e1cd6-9d46-4659-b04a-866091a9d8de"
+    vendor_place_id: "ChIJPSTiJiwJQBgRxSyAmDoOoXo"
+    vendor_region_id: "ChIJ5b0LA6wOQBgRe0sIruEoRCc"
+    active: FALSE
+    image_path: "images/profiles/no_picture.png"
+
+  "552f6c33-8a62-4fde-b21c-0d7defabb35c":
+    vendor_uid: "552f6c33-8a62-4fde-b21c-0d7defabb35c"
+    vendor_name: "GivePower"
+    vendor_number: 8
+    vendor_location_uid: "def9fbfb-4227-428f-ae6d-0f6f9271df79"
+    vendor_place_id: "ChIJ-6BdQEUTQBgRNdaYBUCnfVM"
+    vendor_region_id: "ChIJLXFdP1cTQBgRbjQzj9uzYYA"
+    active: FALSE
+    image_path: "images/profiles/no_picture.png"

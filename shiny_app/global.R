@@ -119,6 +119,10 @@ polished::global_sessions_config(
 #   )
 # )
 
+
+# vendor info -------------------------------------------------------------
+vendors_info <- yaml::read_yaml("config/vendor_info.yml")[["vendors"]]
+
 # assets ---------------------------------------
 
 assets <- yaml::read_yaml("config/assets.yml")

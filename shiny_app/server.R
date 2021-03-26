@@ -5,20 +5,16 @@ server <- function(input, output, session) {
     waiter_hide()
   })
 
-  logged_in_vendor_info <- reactive({
-    list(
-      vendor_uid = "c401b531-719d-4cad-82e7-71db3ffba166",
-      vendor_location_uid = "702e0732-db29-479a-a2a0-2595392e7280",
-      vendor_name = "Dutch Water",
-      place_id = "ChIJrToahpQJQBgRZ6ukvDc1LO4",
-      region_id = "ChIJ5b0LA6wOQBgRe0sIruEoRCc"
-    )
-  })
-
   callModule(
     polished::profile_module,
     'polished_profile'
   )
+
+  logged_in_vendor_info <- reactive({
+    req(input$vendor)
+    vendor_uid <- input$vendor
+    vendors_info[[vendor_uid]]
+  })
 
   configs <- callModule(
     right_sidebar_module,

@@ -24,6 +24,11 @@ header <- dashboardHeaderPlus(
 
 sidebar <- dashboardSidebar(
   tagList(
+    shinyWidgets::pickerInput("vendor", "Select a Vendor:",
+                              choices = list(Active = choices$vendors_active,
+                                             Inactive = choices$vendors_inactive),
+                              selected = "c401b531-719d-4cad-82e7-71db3ffba166",
+                              choicesOpt = list(disabled = choices$vendors_disabled)),
     user_module_ui("user_panel"),
     sidebarMenu(
       id = 'sidebar_menu',
