@@ -22,7 +22,8 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(DT)
   library(formattable)
-  library(powpolished)
+  # library(powpolished)
+  library(polished)
   library(snakecase)
   library(tychobratools)
   library(htmltools)
@@ -62,7 +63,7 @@ is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # download latest config.yml file:
-if (is_local) source("R/get_config.R"); get_config()
+# if (is_local) source("R/get_config.R"); get_config()
 
 # enable shiny devmode
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
@@ -89,26 +90,34 @@ shiny::onStop(function() {
   DBI::dbDisconnect(conn)
 })
 
+
+# polished auth -----------------------------------------------------------
+
+polished::global_sessions_config(
+  app_name = app_config$polished$app_name,
+  api_key = app_config$polished$api_key
+)
+
 # setup powpolished -------------------------------------------------------
 
-powpolished::global_sessions_config(
-  api_url = app_config$powpolished$api_url, #"http://localhost:8080",
-  app_name = app_config$powpolished$app_name,
-  api_key = app_config$powpolished$api_key,
-  # admin_mode = TRUE,
-  is_invite_required = TRUE,
-  firebase_config = list(
-    apiKey = app_config$firebase$api_key,
-    authDomain = app_config$firebase$auth_domain,
-    projectId = app_config$firebase$project_id
-  ),
-  sign_in_providers = c(
-    "email",
-    "phone",
-    "google",
-    "facebook"
-  )
-)
+# powpolished::global_sessions_config(
+#   api_url = app_config$powpolished$api_url, #"http://localhost:8080",
+#   app_name = app_config$powpolished$app_name,
+#   api_key = app_config$powpolished$api_key,
+#   # admin_mode = TRUE,
+#   # is_invite_required = TRUE,
+#   firebase_config = list(
+#     apiKey = app_config$firebase$api_key,
+#     authDomain = app_config$firebase$auth_domain,
+#     projectId = app_config$firebase$project_id
+#   ),
+#   sign_in_providers = c(
+#     "email",
+#     "phone",
+#     "google",
+#     "facebook"
+#   )
+# )
 
 # assets ---------------------------------------
 

@@ -66,7 +66,7 @@ server <- function(input, output, session) {
   )
 }
 
-powpolished::secure_server(
+polished::secure_server(
   server,
   custom_sign_in_server = sign_in_module_2
 )
