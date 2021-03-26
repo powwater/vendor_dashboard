@@ -52,6 +52,11 @@ sidebar <- dashboardSidebar(
         text = 'Inventory',
         tabName = 'inventory_tab',
         icon = icon("warehouse")
+      ),
+      menuItem(
+        text = 'Riders',
+        tabName = 'riders_tab',
+        icon = icon("biking")
       )
     )
   )
@@ -95,6 +100,10 @@ body <- dashboardBody(
     tabItem(
       tabName = "inventory_tab",
       inventory_module_ui("inventory_module")
+    ),
+    tabItem(
+      tabName = "riders_tab",
+      riders_module_ui("riders_module")
     )
   )
 )
