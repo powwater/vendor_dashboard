@@ -6,14 +6,6 @@ RPostgres:
   Package: RPostgres
   Repository: CRAN
   Version: 1.3.1
-dbx:
-  Package: dbx
-  Repository: CRAN
-  Version: 0.2.8
-urltools:
-  Package: urltools
-  Repository: CRAN
-  Version: 1.7.3
 dbplyr:
   Package: dbplyr
   Repository: CRAN
@@ -142,23 +134,7 @@ scales:
   Package: scales
   Repository: CRAN
   Version: 1.1.1
-rprojroot:
-  Package: rprojroot
-  Repository: CRAN
-  Version: 2.0.2
 fs:
   Package: fs
   Repository: CRAN
   Version: 1.5.0
-googledrive:
-  Package: googledrive
-  Repository: CRAN
-  Version: 1.0.1
-usethis:
-  Package: usethis
-  Repository: CRAN
-  Version: 2.0.1
-qs:
-  Package: qs
-  Repository: CRAN
-  Version: 0.24.1

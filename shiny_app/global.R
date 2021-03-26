@@ -18,8 +18,6 @@ rm(list = ls())
 suppressPackageStartupMessages({
   library(DBI)
   library(RPostgres)
-  library(dbx)
-  library(urltools)
   library(dbplyr)
   library(dplyr)
   library(DT)

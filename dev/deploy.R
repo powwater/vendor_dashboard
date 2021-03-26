@@ -3,13 +3,16 @@ library(polished)
 library(yaml)
 library(whisker)
 library(usethis)
+library(purrr)
 
 source("dev/sysreqs.R")
 source("dev/pkgdeps.R")
 source("dev/use_template.R")
 
 # gather R package dependencies -------------------------------------------
+optional_pkgs <- c("googledrive", "qs", "dbx", "urltools", "rprojroot", "usethis")
 deps <- polished:::get_package_deps("shiny_app")
+deps <- deps[!(names(deps) %in% optional_pkgs)]
 yaml::write_yaml(deps, "shiny_app/deps.yml")
 
 # gather sysreqs ----------------------------------------------------------
@@ -33,6 +36,7 @@ use_template("dev/Dockerfile_template",
 write("shiny_app/logs/*", ".dockerignore")
 write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
 write("shiny_app/README.md", ".dockerignore", append = TRUE)
+write("shiny_app/R/get_config.R", ".dockerignore", append = TRUE)
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")
