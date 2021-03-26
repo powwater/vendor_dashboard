@@ -1,26 +1,38 @@
 
-library(dep)
-library(shinycoreci)
-library(automagic)
-library(rsconnect)
-library(powpolished)
-library(sysreqs)
+library(polished)
 library(yaml)
+library(whisker)
+library(usethis)
 
+source("dev/sysreqs.R")
+source("dev/pkgdeps.R")
+source("dev/use_template.R")
+
+# gather R package dependencies -------------------------------------------
+deps <- polished:::get_package_deps("shiny_app")
+yaml::write_yaml(deps, "shiny_app/deps.yml")
+
+# gather sysreqs ----------------------------------------------------------
+sysreqs <- get_sysreqs(names(deps))
+
+# command strings ---------------------------------------------------------
+cran_install_cmd <- get_cran_deps(deps) %>% cran_packages_cmd()
+gh_install_cmd <- get_gh_deps(deps) %>% gh_packages_cmd()
+sysreqs_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
+
+# create Dockerfile from template -----------------------------------------
+use_template("dev/Dockerfile_template",
+             "Dockerfile",
+             data = list(
+               sysreqs = sysreqs_cmd,
+               cran_installs = cran_install_cmd,
+               gh_installs = gh_install_cmd
+             ))
 
 # create .dockerignore ----------------------------------------------------
 write("shiny_app/logs/*", ".dockerignore")
 write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
 write("shiny_app/README.md", ".dockerignore", append = TRUE)
-
-# gather R package dependencies -------------------------------------------
-deps <- dep::get_proj_deps(root = "shiny_app")
-autodeps <- automagic::get_dependent_packages("shiny_app")
-poldeps <- polished:::get_package_deps("shiny_app")
-
-yaml::write_yaml(poldeps, "shiny_app/deps.yml")
-
-polishedapi:::create_dockerfile_ss("shiny_app/deps.yml", app_dir = "shiny_app")
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")
@@ -34,6 +46,7 @@ system("docker build --build-arg R_CONFIG_ACTIVE=production -t powwater_vendorsd
 system("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
 system("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
+# open cloud run
 browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendorsdashboard/revisions?project=powwater")
 
 # Only run if want to push to container registries outside of GCR: --------

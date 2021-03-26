@@ -1,0 +1,23 @@
+FROM gcr.io/powwater/shiny_run_server
+
+ARG R_CONFIG_ACTIVE=default
+
+# System Requirements
+{{{ sysreqs }}}
+
+RUN R -e "install.packages('remotes')"
+
+{{{ cran_installs }}}
+
+{{{ gh_installs }}}
+
+# Copy, Configure, and Run Shiny Server
+COPY 'shiny_app' /srv/shiny-server/shiny_app
+
+RUN chown -R shiny:shiny /srv/shiny-server/shiny_app
+
+RUN echo "Sys.setenv(R_CONFIG_ACTIVE='$R_CONFIG_ACTIVE')" >> /home/shiny/.Rprofile
+
+USER shiny
+
+CMD ["/usr/bin/shiny-server"]

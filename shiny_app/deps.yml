@@ -34,8 +34,8 @@ powpolished:
   Package: powpolished
   GithubUsername: powwater
   GithubRepo: powpolished
-  GithubRef: HEAD
-  GithubSHA1: faa4f0d8ea4c92d8d16c73f95b17db09f6ebc963
+  GithubRef: develop
+  GithubSHA1: 5e38b291fdb2103e8c8247db4811a2b54ea0d13c
 snakecase:
   Package: snakecase
   Repository: CRAN
@@ -142,15 +142,23 @@ scales:
   Package: scales
   Repository: CRAN
   Version: 1.1.1
-usethis:
-  Package: usethis
+rprojroot:
+  Package: rprojroot
   Repository: CRAN
-  Version: 2.0.1
-googledrive:
-  Package: googledrive
-  Repository: CRAN
-  Version: 1.0.1
+  Version: 2.0.2
 fs:
   Package: fs
   Repository: CRAN
   Version: 1.5.0
+googledrive:
+  Package: googledrive
+  Repository: CRAN
+  Version: 1.0.1
+usethis:
+  Package: usethis
+  Repository: CRAN
+  Version: 2.0.1
+qs:
+  Package: qs
+  Repository: CRAN
+  Version: 0.24.1
