@@ -108,7 +108,7 @@ ui <- shinydashboardPlus::dashboardPagePlus(
   skin = 'black'
 )
 
-powpolished::secure_ui(
+polished::secure_ui(
   ui,
   sign_in_page_ui = powpolished::sign_in_ui_default(
     sign_in_module = powpolished::sign_in_module_2_ui('sign_in'),
