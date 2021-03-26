@@ -10,14 +10,12 @@ tests_module_ui <- function(id){
         solidHeader = TRUE,
         br(),
         br(),
-        fluidRow(
-          column(
-            offset = 3,
-            width = 6,
-            DT::DTOutput(ns('tests_table')) %>%
-              shinycustomloader::withLoader(),
-            hr()
-          )
+        column(
+          offset = 3,
+          width = 6,
+          DT::DTOutput(ns('tests_table')) %>%
+            shinycustomloader::withLoader(),
+          hr()
         )
       )
     )
@@ -112,7 +110,6 @@ tests_module <- function(input, output, session, vendor_info){
       extensions = c("Buttons"),
       filter = "top",
       options = list(
-        scrollX = TRUE,
         dom = '<Bf>tip',
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
