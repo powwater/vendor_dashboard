@@ -23,8 +23,6 @@ riders_module_ui <- function(id){
 
 riders_module <- function(input, output, session, vendor_info) {
 
-  ns <- session$ns
-
   riders <- reactive({
 
     id <- notify("Loading Riders from Database...")
@@ -62,11 +60,7 @@ riders_module <- function(input, output, session, vendor_info) {
 
     out <- riders_prep()
 
-    n_row <- nrow(out)
-    n_col <- ncol(out)
     cols <- snakecase::to_title_case(colnames(out))
-    # esc_cols <- c()
-    id <- session$ns("riders_table")
 
     DT::datatable(
       out,
@@ -75,7 +69,6 @@ riders_module <- function(input, output, session, vendor_info) {
       colnames = cols,
       selection = "none",
       class = 'table table-striped table-bordered table-hover nowrap table',
-      # escape = esc_cols,
       extensions = c("Buttons"),
       filter = "top",
       width = "100%",
