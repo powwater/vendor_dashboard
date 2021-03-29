@@ -17,7 +17,7 @@ header <- dashboardHeaderPlus(
   title = header_title(),
   left_menu = header_left_menu("Vendor Dashboard", app_config$app_version),
   header_contact_menu(),
-  powpolished::profile_module_ui("polished_profile"),
+  polished::profile_module_ui("polished_profile"),
   enable_rightsidebar = TRUE,
   rightSidebarIcon = "cogs"
 )
@@ -52,6 +52,11 @@ sidebar <- dashboardSidebar(
         text = 'Inventory',
         tabName = 'inventory_tab',
         icon = icon("warehouse")
+      ),
+      menuItem(
+        text = 'Riders',
+        tabName = 'riders_tab',
+        icon = icon("biking")
       )
     )
   )
@@ -95,6 +100,10 @@ body <- dashboardBody(
     tabItem(
       tabName = "inventory_tab",
       inventory_module_ui("inventory_module")
+    ),
+    tabItem(
+      tabName = "riders_tab",
+      riders_module_ui("riders_module")
     )
   )
 )
@@ -110,8 +119,8 @@ ui <- shinydashboardPlus::dashboardPagePlus(
 
 polished::secure_ui(
   ui,
-  sign_in_page_ui = powpolished::sign_in_ui_default(
-    sign_in_module = powpolished::sign_in_module_2_ui('sign_in'),
+  sign_in_page_ui = polished::sign_in_ui_default(
+    sign_in_module = polished::sign_in_module_2_ui('sign_in'),
     color = '#2F3474',
     company_name = 'POWWATER',
     logo_top = tags$div(

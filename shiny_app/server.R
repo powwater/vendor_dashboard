@@ -16,7 +16,7 @@ server <- function(input, output, session) {
   })
 
   callModule(
-    powpolished::profile_module,
+    polished::profile_module,
     'polished_profile'
   )
 
@@ -62,6 +62,12 @@ server <- function(input, output, session) {
   callModule(
     inventory_module,
     "inventory_module",
+    vendor_info = logged_in_vendor_info
+  )
+
+  callModule(
+    riders_module,
+    "riders_module",
     vendor_info = logged_in_vendor_info
   )
 }
