@@ -40,15 +40,15 @@ write("shiny_app/R/get_config.R", ".dockerignore", append = TRUE)
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")
-system("docker build -t powwater_vendorsdashboard .")
-system("docker run --env SHINY_LOG_STDERR=1 --rm -p 8080:8080 powwater_vendorsdashboard")
+rstudioapi::terminalExecute("docker build -t powwater_vendorsdashboard .")
+rstudioapi::terminalExecute("docker run --env SHINY_LOG_STDERR=1 --rm -p 8080:8080 powwater_vendorsdashboard")
 browseURL("localhost:8080")
 
 # build production, tag, and push to GCR
-system("gcloud auth configure-docker")
-system("docker build --build-arg R_CONFIG_ACTIVE=production -t powwater_vendorsdashboard .")
-system("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
-system("docker push gcr.io/powwater/powwater_vendorsdashboard")
+rstudioapi::terminalExecute("gcloud auth configure-docker")
+rstudioapi::terminalExecute("docker build --build-arg R_CONFIG_ACTIVE=production -t powwater_vendorsdashboard .")
+rstudioapi::terminalExecute("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
+rstudioapi::terminalExecute("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
 # open cloud run
 browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendorsdashboard/revisions?project=powwater")
@@ -65,8 +65,3 @@ browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendo
 # system("docker tag powwater_vendorsdashboard jimbrig2011/powwater_vendorsdashboard:alpha")
 # system("docker build -t jimbrig2011/powwater_vendor_dashboard:alpha .")
 # system("docker push jimbrig2011/powwater_vendor_dashboard:alpha")
-
-# deps <- dep::get_proj_deps(root = "shiny_app")
-# deps <- automagic::get_dependent_packages("shiny_app")
-
-# pkgdeps_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
