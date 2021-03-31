@@ -30,7 +30,7 @@ suppressPackageStartupMessages({
   library(shiny)
   library(shinycustomloader)
   library(shinydashboard)
-  library(shinydashboardPlus)
+  library(shinydashboardPlus) # must be version 0.7.5; remotes::install_version("shinydashboardPlus", "0.7.5")
   library(shinyFeedback)
   library(shinyjs)
   library(shinyWidgets)
@@ -50,6 +50,16 @@ suppressPackageStartupMessages({
 # library(markdown)
 # library(highcharter)
 
+if (packageVersion("shinydashboardPlus") > "0.7.5") {
+  usethis::ui_stop(
+    paste0(
+      "package `shinydashboardPlus` must use version 0.7.5; run ",
+      usethis::ui_code("remotes::install_version('shinydashboardPlus', '0.7.5')"),
+      " to install."
+    )
+  )
+}
+
 # set default options -----------------------------------------------------
 options(shiny.trace = FALSE) # set to T to print full shiny operations.
 options(scipen = 999)
@@ -63,7 +73,7 @@ is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # download latest config.yml file:
-# if (is_local) source("R/get_config.R"); get_config()
+if (is_local) source("R/get_config.R"); get_config()
 
 # enable shiny devmode
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
