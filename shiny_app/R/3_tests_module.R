@@ -22,7 +22,7 @@ tests_module_ui <- function(id){
   )
 }
 
-tests_module <- function(input, output, session, vendor_info){
+tests_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
 
   tests <- reactive({

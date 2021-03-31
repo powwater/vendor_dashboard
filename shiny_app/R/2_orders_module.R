@@ -55,20 +55,20 @@ orders_module_ui <- function(id){
         hr(),
         fluidRow(
           column(
-            4,
+            3,
             pickerInput(ns("selected_order"),
                         "Select an Order to View:",
-                        choices = ""),
+                        choices = "",
+                        width = )
           )
         ),
         fluidRow(
           column(
             12,
-            shiny::splitLayout(
-              style = "border: 1px solid #333;",
-              cellArgs = list(style = "padding: 20px;"),
+            splitLayout(
+              cellWidths = c("60%", "40%"),
+              cellArgs = list(style = "padding: 15px;"),
               div(
-                style = "border-right: 0.5px solid #000000;",
                 h4(icon_text("route", "Delivery Routes:")),
                 uiOutput(ns("directions_iframe")) %>%
                   shinycustomloader::withLoader()
@@ -92,7 +92,7 @@ orders_module_ui <- function(id){
   )
 }
 
-orders_module <- function(input, output, session, vendor_info) {
+orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   ns <- session$ns
 
@@ -198,18 +198,31 @@ orders_module <- function(input, output, session, vendor_info) {
     esc_cols <- c(-1)
     id <- session$ns("awaiting_orders_table")
 
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons", "Responsive")
+      tbl_scroll <- FALSE
+    } else {
+      tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons")
+      tbl_scroll <- TRUE
+    }
+
     DT::datatable(
       out,
       style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = "table table-striped",
+      class = tbl_class,
       escape = esc_cols,
-      extensions = c("Buttons"),
+      extensions = tbl_exts,
       filter = "none",
+      width = "100%",
       options = list(
-        dom = 't',
+        scrollX = tbl_scroll,
+        dom = "<'row'<'col-sm-12'tr>>
+               <'row'<'col-sm-5'i>>",
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "45px"),
           list(className = "dt-center dt-col", targets = "_all")
@@ -572,19 +585,29 @@ orders_module <- function(input, output, session, vendor_info) {
         }
       }")
 
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons", "Responsive")
+      tbl_filt <- "none"
+    } else {
+      tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons")
+      tbl_filt <- "top"
+    }
+
     DT::datatable(
       out,
       style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'table table-striped table-bordered table-hover nowrap table', #dt-responsive
+      class = tbl_class,
+      filter = tbl_filt,
       escape = esc_cols,
-      extensions = c("Buttons"), # "Responsive"
-      filter = "top",
+      extensions = tbl_exts,
       width = "100%",
       options = list(
-        scrollX = TRUE,
+        # scrollX = TRUE,
         dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
                <'row'<'col-sm-12'tr>>
                <'row'<'col-sm-5'i><'col-sm-7'p>>", # '<Bf>tip',

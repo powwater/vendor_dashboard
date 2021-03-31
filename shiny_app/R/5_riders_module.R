@@ -21,7 +21,7 @@ riders_module_ui <- function(id){
   )
 }
 
-riders_module <- function(input, output, session, vendor_info) {
+riders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   riders <- reactive({
 

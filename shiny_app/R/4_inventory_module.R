@@ -28,7 +28,7 @@ inventory_module_ui <- function(id){
   )
 }
 
-inventory_module <- function(input, output, session, vendor_info) {
+inventory_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
 
   # trigger to reload data from the "vendors" table
