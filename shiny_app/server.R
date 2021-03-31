@@ -5,11 +5,11 @@ server <- function(input, output, session) {
     waiter_hide()
   })
 
-  is_mobile_device_rv <- reactiveVal(FALSE)
+  is_mobile_device_rv <- reactiveVal(TRUE)
 
   observeEvent(input$is_mobile_device, {
     print(list("Mobile Device Detected: " = isTRUE(input$is_mobile_device)))
-    if (isTRUE(input$is_mobile_device)) is_mobile_device_rv(TRUE) else is_mobile_device_rv(FALSE)
+    # if (isTRUE(input$is_mobile_device)) is_mobile_device_rv(TRUE) else is_mobile_device_rv(FALSE)
   })
 
   logged_in_vendor_info <- reactive({
