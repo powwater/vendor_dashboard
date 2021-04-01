@@ -12,7 +12,7 @@ source("dev/use_template.R")
 # gather R package dependencies -------------------------------------------
 optional_pkgs <- c("googledrive", "qs", "dbx", "urltools", "rprojroot", "usethis")
 deps <- polished:::get_package_deps("shiny_app")
-deps <- deps[!(names(deps) %in% optional_pkgs)]
+deps <- deps[!(names(deps) %in% c(optional_pkgs, "remotes"))]
 yaml::write_yaml(deps, "shiny_app/deps.yml")
 
 # gather sysreqs ----------------------------------------------------------
