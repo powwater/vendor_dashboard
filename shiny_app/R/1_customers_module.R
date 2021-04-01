@@ -77,7 +77,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
     tryCatch({
 
-      out <- get_customer_locations_by_vendor(vend, conn)
+      out <- get_customer_details_by_vendor(vend, conn)
 
     }, error = function(err) {
       msg <- 'Error collecting data from database.'
