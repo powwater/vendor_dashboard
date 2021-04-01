@@ -11,32 +11,37 @@ customers_module_ui <- function(id) {
         status = "primary",
         solidHeader = TRUE,
         height = NULL,
-        DT::DTOutput(ns('customers_table')) %>%
-          shinycustomloader::withLoader(),
+        fluidRow(
+          column(
+            width = 12,
+            DT::DTOutput(ns('customers_table')) %>%
+              shinycustomloader::withLoader()
+          )
+        ),
         hr(),
         fluidRow(
           column(
-            width = 6,
-            offset = 6,
-            span(
+            width = 12,
+            div(
+              class = "text-center",
               uiOutput(ns("map_title")),
               actionButton(ns("map_bttn"),
                            "View All",
                            icon = icon("map")) %>%
                 shinyjs::hidden()
+            ),
+            shiny::splitLayout(
+              div(
+                h5("Region:"),
+                uiOutput(ns("vendor_region"))
+              ),
+              div(
+                h5("Customer Locations:"),
+                googleway::google_mapOutput(ns("customer_locations"))
+              ),
+              cellWidths = c("50%", "50%"),
+              cellArgs = list(style = "padding:10px;")
             )
-          )
-        ),
-        fluidRow(
-          column(
-            6,
-            h5("Region:"),
-            uiOutput(ns("vendor_region"))
-          ),
-          column(
-            6,
-            h5("Customer Locations:"),
-            googleway::google_mapOutput(ns("customer_locations"))
           )
         )
       )
@@ -48,7 +53,7 @@ customers_module_ui <- function(id) {
 
 }
 
-customers_module <- function(input, output, session, vendor_info, configs) {
+customers_module <- function(input, output, session, vendor_info, configs, is_mobile) {
 
   ns <- session$ns
 
@@ -132,9 +137,9 @@ customers_module <- function(input, output, session, vendor_info, configs) {
 
     dt_js <- paste0(
       "function(settings, json) {
-        var filters = $('#", id, " td .form-group');
-        // columns that should have visible filters
-        var cols = [", paste(2:n_col, collapse = ", "), "];
+      var filters = $('#", id, " td .form-group');
+      // columns that should have visible filters
+      var cols = [", paste(2:n_col, collapse = ", "), "]
         // hide certain column filters
         for (var i = 1; i <= filters.length; i++) {
           if (!cols.includes(i))
@@ -143,25 +148,40 @@ customers_module <- function(input, output, session, vendor_info, configs) {
         }
       }")
 
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons", "Responsive")
+      tbl_filt <- "none"
+      tbl_scroll <- FALSE
+    } else {
+      tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons")
+      tbl_filt <- "top"
+      tbl_scroll <- TRUE
+    }
+
     DT::datatable(
       out,
       style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
-      class = 'table table-striped table-bordered dt-center compact hover',
+      class = tbl_class,
       escape = esc_cols,
-      extensions = c("Buttons"),
-      filter = "top",
+      extensions = tbl_exts,
+      filter = tbl_filt,
       selection = "none",
+      width = "100%",
       callback = DT::JS('Shiny.setInputValue("waiter_trigger", "1", {
                           priority: "event"
                         });'),
-      # selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
-        dom = '<Bf>tip',
+        scrollX = tbl_scroll,
+        dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
+               <'row'<'col-sm-12'tr>>
+               <'row'<'col-sm-5'i><'col-sm-7'p>>",
         columnDefs = list(
-          list(targets = 0, orderable = FALSE, width = "35px"),
-          list(className = "dt-center dt-col", targets = "_all")
+          list(targets = 0, orderable = FALSE, className = "bttn_col", width = "35px"),
+          list(className = "dt-center", targets = "_all")
         ),
         buttons = dt_bttns(out, "customers-table", esc_cols),
         initComplete = JS(dt_js),
@@ -242,7 +262,7 @@ customers_module <- function(input, output, session, vendor_info, configs) {
 
     google_map(dat,
                key = key,
-               # location = c(vend_dat$lat, vend_dat$lon),
+               location = c(vend_dat$lat, vend_dat$lon),
                # zoom = 12,
                # search_box = TRUE,
                update_map_view = TRUE,
@@ -288,7 +308,7 @@ customers_module <- function(input, output, session, vendor_info, configs) {
       filter(customer_uid == input$customer_id_to_map)
   })
 
-  title_txt <- reactiveVal(NULL)
+  title_txt <- reactiveVal("All Customer Locations")
 
   observeEvent(customer_to_map(), {
     scroll(session$ns("customer_locations"))

@@ -78,6 +78,9 @@ body <- dashboardBody(
                            language = "JavaScript"),
     htmltools::tags$script(src = "custom.js",
                            type = "text/javascript",
+                           language = "JavaScript"),
+    htmltools::tags$script(src = "js/is_mobile.js",
+                           type = "text/javascript",
                            language = "JavaScript")
   ),
   tabItems(
