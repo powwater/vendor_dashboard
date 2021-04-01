@@ -261,41 +261,42 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
     key <- googleway::google_keys()$google$default
 
-    vend_dat <- tibble(
-      lat = customers()$vendor_location_lat[[1]],
-      lon = customers()$vendor_location_lon[[1]],
-      address = customers()$vendor_location_address[[1]],
-      place_id = vendor_info()$place_id,
-      name = vendor_info()$vendor_name,
-      colour = "blue"
-    ) %>%
-      mutate(title = paste0(name, ": ", address),
-             info = paste0(
-               "<div id='bodyContent'>",
-               "<h4>", name, "</h4>",
-               "<h5>", address, "<h5><hr>",
-               "<iframe width='450px' height='250px'",
-               "frameborder='0' style = 'border:0'",
-               "src=",
-               paste0(
-                 "https://www.google.com/maps/embed/v1/place?q=place_id:",
-                 place_id,
-                 "&key=",
-                 key
-               ),
-               "></iframe></div>"
-             ))
+    vend_dat <- customers() %>%
+      select(
+        lat = vendor_location_lat,
+        lon = vendor_location_lon,
+        address = vendor_location_address,
+        place_id = vendor_location_place_id,
+        name = vendor_name,
+        vendor_uid
+      ) %>%
+      mutate(
+        colour = "blue",
+        title = paste0(name, ": ", address),
+        info = paste0(
+          "<div id='bodyContent'>",
+          "<h4>", name, "</h4>",
+          "<h5>", address, "<h5><hr>",
+          "<iframe width='450px' height='250px'",
+          "frameborder='0' style = 'border:0'",
+          "src=",
+          paste0(
+            "https://www.google.com/maps/embed/v1/place?q=place_id:",
+            place_id,
+            "&key=",
+            key
+          ),
+          "></iframe></div>"
+        )
+      ) %>%
+      distinct()
 
-    google_map(dat,
+    google_map(vend_dat,
                key = key,
                location = c(vend_dat$lat, vend_dat$lon),
-               # zoom = 12,
-               # search_box = TRUE,
-               update_map_view = TRUE,
-               geolocation = TRUE,
+               zoom = 7,
                map_type_control = TRUE,
                zoom_control = TRUE,
-               # street_view_control = TRUE,
                scale_control = TRUE,
                rotate_control = TRUE,
                fullscreen_control = TRUE,
@@ -304,25 +305,23 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       add_markers(
         data = dat,
         id = "customer_uid",
-        # colour = "colour",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
-        layer_id = "customer_locations",
+        layer_id = "customer_locations_layer",
         info_window = "info",
         close_info_window = TRUE,
-        focus_layer = TRUE,
         update_map_view = TRUE
       ) %>%
       add_markers(
         data = vend_dat,
-        id = "place_id",
+        id = "vendor_uid",
         lat = "lat",
         lon = "lon",
         title = "title",
         info_window = "info",
         close_info_window = TRUE,
-        layer_id = "vendor",
+        layer_id = "vendor_location_layer",
         colour = "colour",
         update_map_view = TRUE,
         focus_layer = TRUE
@@ -334,29 +333,46 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       filter(customer_uid == input$customer_id_to_map)
   })
 
-  title_txt <- reactiveVal("All Customer Locations")
+  details_txt <- reactiveVal(NULL)
 
   observeEvent(customer_to_map(), {
+
+    shinyjs::show("map_bttn")
+
     scroll(session$ns("customer_locations"))
+
     sel <- customer_to_map()
-    res <- google_directions(
-      origin = paste0("place_id:",
-                      sel$customer_location_place_id[[1]]),
-      destination = paste0("place_id:", vendor_info()$place_id),
-      mode = "driving"
-    )
-    distance_txt <- res[["routes"]][["legs"]][[1]][["distance"]][["text"]]
-    duration_txt <- res[["routes"]][["legs"]][[1]][["duration"]][["text"]]
-    txt_out <- paste0("Distance from Customer to Vendor: ",
-                      distance_txt,
+
+    details <- paste0("Distance from Customer to Vendor: ",
+                      format_distance_km(sel$estimated_distance),
                       "; Estimated Duration of a Delivery: ",
-                      duration_txt)
-    sel$poly <- res[["routes"]][["overview_polyline"]][["points"]]
-    title_txt(txt_out)
+                      format_duration_minutes(sel$estimated_duration))
+
+    details_txt(details)
+
+    sel$poly_info <- tagList(
+      tags$div(
+        tags$span(icon("road"), h4("Customer Vendor Locations",
+                                   style = "display:inline-block;")),
+        hr(),
+        h5(paste0("Customer: ", sel$customer_name)),
+        h5(paste0("Vendor: ", sel$vendor_name)),
+        hr(),
+        p("Distance from Customer to Vendor: ",
+          tags$strong(format_distance_km(sel$estimated_distance))),
+        br(),
+        p("Estimated Duration of a Delivery: ",
+          tags$strong(format_duration_minutes(sel$estimated_duration)))
+      )
+    )
+
+    poly_df <- decode_pl(sel$estimated_polyline)
+    sel$poly <- encode_pl(poly_df$lat, poly_df$lon)
+
     google_map_update(session$ns("customer_locations"),
                       session = session,
                       data = sel) %>%
-      clear_markers(layer_id = "customer_locations") %>%
+      clear_markers(layer_id = "customer_locations_layer") %>%
       add_markers(
         data = sel,
         id = "customer_uid",
@@ -364,62 +380,51 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         lon = "customer_location_lon",
         title = "title",
         info_window = "info",
-        layer_id = "single_customer",
+        layer_id = "single_customer_layer",
         update_map_view = TRUE,
         focus_layer = TRUE
       ) %>%
-      add_polylines(polyline = "poly")
-    shinyjs::show("map_bttn")
+      add_polylines(data = sel,
+                    polyline = "poly",
+                    info_window = "poly_info",
+                    update_map_view = TRUE,
+                    focus_layer = TRUE,
+                    layer_id = "single_customer_polyline",
+                    stroke_weight = 3,
+                    stroke_colour = assets$colors$blue,
+                    stroke_opacity = 1)
   })
 
   observeEvent(input$map_bttn, {
+
+    shinyjs::hide("map_bttn")
+    details_txt(NULL)
+
     google_map_update(session$ns("customer_locations"),
                       session = session,
                       data = map_data()) %>%
-      clear_markers(layer_id = "single_customer") %>%
+      clear_markers(layer_id = "single_customer_layer") %>%
+      clear_polylines(layer_id = "single_customer_polyline") %>%
       add_markers(
         data = map_data(),
         id = "customer_uid",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
+        layer_id = "customer_locations_layer",
         info_window = "info",
-        layer_id = "customer_locations",
+        close_info_window = TRUE,
         update_map_view = TRUE
       )
-    # selectRows(customers_table_proxy, selected = NULL)
-    title_txt("All Customer Locations")
-    shinyjs::hide("map_bttn")
   })
 
   observeEvent(input$customer_locations_marker_click, {
     print(input$customer_locations_marker_click)
-    id <- input$customer_locations_marker_click$id
-    if (id == vendor_info()$place_id) return(NULL)
-    sel <- customers() %>%
-      mutate(row = row_number()) %>%
-      filter(customer_uid == id)
-    row <- sel %>% pull(row)
-    res <- google_directions(
-      origin = paste0("place_id:",
-                      sel$customer_location_place_id[[1]]),
-      destination = paste0("place_id:", vendor_info()$place_id),
-      mode = "driving"
-    )
-    distance_txt <- res[["routes"]][["legs"]][[1]][["distance"]][["text"]]
-    duration_txt <- res[["routes"]][["legs"]][[1]][["duration"]][["text"]]
-    txt_out <- paste0("Distance from Customer to Vendor: ",
-                      distance_txt,
-                      "; Estimated Duration of a Delivery: ",
-                      duration_txt)
-    title_txt(txt_out)
-    shinyjs::show("map_title")
-    # selectRows(customers_table_proxy, selected = row)
   })
 
-  output$map_title <- renderUI({
-    req(title_txt())
-    div(h4(title_txt()))
+  output$map_details <- renderUI({
+    req(details_txt(), !is.null(details_txt()))
+    h5(tags$em(details_txt()))
   })
 
   output$vendor_region <- renderUI({
@@ -431,6 +436,8 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       )
     )
   })
+
+  return(customers)
 
 
 }
