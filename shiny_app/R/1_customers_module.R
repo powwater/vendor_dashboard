@@ -111,19 +111,30 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         customer_location = Vectorize(create_link)(customer_location_url, customer_location_name),
         customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon),
         customer_phone_number = format_phone_number(customer_phone_number, type = configs()$phone_number_format, region = "KE"),
-        customer_region = Vectorize(create_link)(vendor_region_url, vendor_region_name)
+        customer_region = Vectorize(create_link)(vendor_region_url, vendor_region_name),
+        total_paid = Vectorize(format_currency_kes)(total_paid),
+        estimated_duration = Vectorize(format_duration_minutes)(estimated_duration),
+        estimated_distance = Vectorize(format_distance_km)(estimated_distance)
       ) %>%
+      ratings_to_stars(cols = "average_rating") %>%
+      tibble::add_column(" " = actions, .before = 1) %>%
       select(
-        customer_number,
+        " ",
+        # customer_number,
         customer_name,
         customer_phone_number,
+        number_of_orders,
+        last_order_date,
+        total_paid,
+        average_rating,
+        estimated_distance,
+        estimated_duration,
         customer_location,
-        customer_location_address,
+        # customer_location_address,
         customer_region,
         customer_coordinates
       ) %>%
-      # add action bttns
-      tibble::add_column(" " = actions, .before = 1)
+      arrange(desc(last_order_date))
 
     if (is.null(customers_prep())) {
       customers_prep(out)
@@ -140,8 +151,14 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
     n_row <- nrow(out)
     n_col <- ncol(out)
-    cols <- c(" ",  "Number", "Name", "Phone Number", "Location", "Address", "Region", "Coordinates")
-    esc_cols <- c(-1, -1 * match("customer_location", colnames(out)), -1 * match("customer_region", colnames(out)))
+    cols <- c(" ",  "Customer Name", "Phone Number", "# Orders",
+              "Last Order Date", "Total Paid", "Average Rating",
+              "Distance", "Duration",
+              "Location", "City", "Coordinates")
+    esc_col_names <- c(" ", "average_rating", "customer_location", "customer_region")
+    esc_cols <- purrr::map_dbl(esc_col_names, function(x) {
+      -1 * match(x, colnames(out))
+    })
     id <- session$ns("customers_table")
 
     dt_js <- paste0(
