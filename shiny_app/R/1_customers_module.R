@@ -219,7 +219,7 @@ customers_module <- function(input, output, session, vendor_info, configs) {
       lat = customers()$vendor_location_lat[[1]],
       lon = customers()$vendor_location_lon[[1]],
       address = customers()$vendor_location_address[[1]],
-      place_id = vendor_info()$place_id,
+      place_id = vendor_info()$vendor_place_id,
       name = vendor_info()$vendor_name,
       colour = "blue"
     ) %>%
@@ -296,7 +296,7 @@ customers_module <- function(input, output, session, vendor_info, configs) {
     res <- google_directions(
       origin = paste0("place_id:",
                       sel$customer_location_place_id[[1]]),
-      destination = paste0("place_id:", vendor_info()$place_id),
+      destination = paste0("place_id:", vendor_info()$vendor_place_id),
       mode = "driving"
     )
     distance_txt <- res[["routes"]][["legs"]][[1]][["distance"]][["text"]]
@@ -349,16 +349,16 @@ customers_module <- function(input, output, session, vendor_info, configs) {
   observeEvent(input$customer_locations_marker_click, {
     print(input$customer_locations_marker_click)
     id <- input$customer_locations_marker_click$id
-    if (id == vendor_info()$place_id) return(NULL)
+    if (id == vendor_info()$vendor_place_id) return(NULL)
     sel <- customers() %>%
       mutate(row = row_number()) %>%
       filter(customer_uid == id)
     row <- sel %>% pull(row)
     res <- google_directions(
-      origin = paste0("place_id:",
-                      sel$customer_location_place_id[[1]]),
-      destination = paste0("place_id:", vendor_info()$place_id),
-      mode = "driving"
+      origin = paste0("place_id:", sel$customer_location_place_id),
+      destination = paste0("place_id:", vendor_info()$vendor_place_id),
+      mode = "driving",
+      key = googleway::google_keys()$default
     )
     distance_txt <- res[["routes"]][["legs"]][[1]][["distance"]][["text"]]
     duration_txt <- res[["routes"]][["legs"]][[1]][["duration"]][["text"]]
@@ -381,7 +381,7 @@ customers_module <- function(input, output, session, vendor_info, configs) {
       paste0(
         '<iframe width="100%" height="400px" style="border:0" loading="lazy" allowfullscreen
       src="https://www.google.com/maps/embed/v1/place?q=place_id:',
-      vendor_info()$region_id, '&key=', key, '"></iframe>'
+      vendor_info()$vendor_region_id, '&key=', key, '"></iframe>'
       )
     )
   })
