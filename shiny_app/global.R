@@ -73,7 +73,7 @@ is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # download latest config.yml file:
-if (is_local) source("R/get_config.R"); get_config()
+# if (is_local) source("R/get_config.R"); get_config()
 
 # enable shiny devmode
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
