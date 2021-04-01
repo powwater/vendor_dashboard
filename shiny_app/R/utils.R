@@ -433,3 +433,8 @@ format_true_false <- function(log, true_val = TRUE, false_val = FALSE) {
   formattable::formattable(log, formatter = true_false_formatter)
 
 }
+
+format_distance_km <- function(num) {
+  if (is.na(num) || is.nan(num)) num <- 0
+  paste0(num, " Kilometers")
+}
