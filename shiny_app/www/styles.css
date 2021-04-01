@@ -3,6 +3,10 @@
   display: none;
 }
 
+.mobile-hide {
+  display: none;
+}
+
 .box.box-solid.box-primary>.box-header {
     color: #fff;
     background: #333;
