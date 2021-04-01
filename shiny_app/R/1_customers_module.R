@@ -373,6 +373,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
                       session = session,
                       data = sel) %>%
       clear_markers(layer_id = "customer_locations_layer") %>%
+      clear_polylines(layer_id = "single_customer_polyline") %>%
       add_markers(
         data = sel,
         id = "customer_uid",
