@@ -17,31 +17,40 @@ customers_module_ui <- function(id) {
             DT::DTOutput(ns('customers_table')) %>%
               shinycustomloader::withLoader()
           )
-        ),
-        hr(),
+        )
+      )
+    ),
+    fluidRow(
+      box(
+        width = 12,
+        title = icon_text("map-marked-alt", "Maps"),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        height = NULL,
         fluidRow(
           column(
-            width = 12,
+            width = 6,
+            tags$span(class = "text-center",
+                      shiny::icon("map-marked-alt"),
+                      h4(" Vendor Region:", style = "display: inline-block;")),
+            uiOutput(ns("vendor_region"))
+          ),
+          column(
+            width = 6,
+            tags$span(class = "text-center",
+                      shiny::icon("map-marker-alt"),
+                      h4("Vendor Customer Locations:", style = "display: inline-block;")),
             div(
-              class = "text-center",
-              uiOutput(ns("map_title")),
+              class = "pull-right",
               actionButton(ns("map_bttn"),
                            "View All",
-                           icon = icon("map")) %>%
-                shinyjs::hidden()
+                           icon = icon("map")) %>% shinyjs::hidden()
             ),
-            shiny::splitLayout(
-              div(
-                h5("Region:"),
-                uiOutput(ns("vendor_region"))
-              ),
-              div(
-                h5("Customer Locations:"),
-                googleway::google_mapOutput(ns("customer_locations"))
-              ),
-              cellWidths = c("50%", "50%"),
-              cellArgs = list(style = "padding:10px;")
-            )
+            googleway::google_mapOutput(ns("customer_locations")),
+            helpText("Select a customer above to view route information.
+                     Click on a marker or line for an information window to appear."),
+            uiOutput(ns("map_details"))
           )
         )
       )
