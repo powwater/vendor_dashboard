@@ -27,7 +27,7 @@ polished:
   GithubUsername: tychobra
   GithubRepo: polished
   GithubRef: HEAD
-  GithubSHA1: ca514d8d10c6fb9de03a358ba9381184e5d7f210
+  GithubSHA1: e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b
 snakecase:
   Package: snakecase
   Repository: CRAN

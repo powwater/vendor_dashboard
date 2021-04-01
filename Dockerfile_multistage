@@ -1,6 +1,4 @@
-FROM rocker/r-ver:4.0.4
-
-EXPOSE 8080
+FROM rocker/r-ver:4.0.4 AS sysreqs
 
 # System Requirements
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \ 
@@ -13,6 +11,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   libicu-dev \ 
   pandoc \ 
   libpq-dev
+
+FROM sysreqs AS rpackages
 
 RUN R -e "install.packages('remotes')"
 
@@ -47,15 +47,13 @@ RUN R -e "remotes::install_version('stringr', version = '1.4.0', upgrade = 'neve
 RUN R -e "remotes::install_version('scales', version = '1.1.1', upgrade = 'never')" 
 RUN R -e "remotes::install_version('fs', version = '1.5.0', upgrade = 'never')"
 
-
-
 # GitHub R packages 
-RUN R -e "remotes::install_github('tychobra/polished', ref = 'e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b', upgrade='never')" 
+RUN R -e "remotes::install_github('tychobra/polished', ref = 'ca514d8d10c6fb9de03a358ba9381184e5d7f210', upgrade='never')" 
 RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b413363174f1115a0b34d9ae3f8616e5b76', upgrade='never')" 
 RUN R -e "remotes::install_github('merlinoa/shinyFeedback', ref = 'ceb65e02428181a166a8b2cb20aac727c6f261ab', upgrade='never')" 
-RUN R -e "remotes::install_github('JohnCoene/shinyscroll', ref = '98f5d669ab76c9e44fda798beac4c17dd58f66c9', upgrade='never')"
+RUN R -e "remotes::install_github('JohnCoene/shinyscroll', ref = '98f5d669ab76c9e44fda798beac4c17dd58f66c9', upgrade='never')" 
 
-
+FROM rpackages AS shinyapp
 
 # Copy app into shiny server `shiny_app` directory
 COPY 'shiny_app' /srv/shiny-server/shiny_app

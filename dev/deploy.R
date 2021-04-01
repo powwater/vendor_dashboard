@@ -12,7 +12,7 @@ source("dev/use_template.R")
 # gather R package dependencies -------------------------------------------
 optional_pkgs <- c("googledrive", "qs", "dbx", "urltools", "rprojroot", "usethis")
 deps <- polished:::get_package_deps("shiny_app")
-deps <- deps[!(names(deps) %in% optional_pkgs)]
+deps <- deps[!(names(deps) %in% c(optional_pkgs, "remotes"))]
 yaml::write_yaml(deps, "shiny_app/deps.yml")
 
 # gather sysreqs ----------------------------------------------------------
@@ -56,7 +56,7 @@ browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendo
 # Only run if want to push to container registries outside of GCR: --------
 
 # tag and push to github
-# system("cat ~/.docker/github_PAT.txt | docker login https://docker.pkg.github.com -u jimbrig --password-stdin")
+# system("cat /mnt/c/Users/jimbrig/.docker/github_PAT.txt | docker login https://docker.pkg.github.com -u jimbrig --password-stdin")
 # system("docker tag powwater_vendorsdashboard docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest")
 # system("docker build -t docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest .")
 # system("docker push docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest")

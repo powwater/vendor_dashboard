@@ -30,7 +30,7 @@ suppressPackageStartupMessages({
   library(shiny)
   library(shinycustomloader)
   library(shinydashboard)
-  library(shinydashboardPlus) # must be version 0.7.5; remotes::install_version("shinydashboardPlus", "0.7.5")
+  library(shinydashboardPlus) # must be version 0.7.5; install_version("shinydashboardPlus", "0.7.5")
   library(shinyFeedback)
   library(shinyjs)
   library(shinyWidgets)
