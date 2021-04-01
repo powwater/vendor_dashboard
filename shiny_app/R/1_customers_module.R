@@ -152,10 +152,12 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
       tbl_exts <- c("Buttons", "Responsive")
       tbl_filt <- "none"
+      tbl_scroll <- FALSE
     } else {
       tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
       tbl_exts <- c("Buttons")
       tbl_filt <- "top"
+      tbl_scroll <- TRUE
     }
 
     DT::datatable(
@@ -172,9 +174,8 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       callback = DT::JS('Shiny.setInputValue("waiter_trigger", "1", {
                           priority: "event"
                         });'),
-      # selection = list(mode = "single", selected = NULL, target = "row", selectable = TRUE),
       options = list(
-        # scrollX = TRUE,
+        scrollX = tbl_scroll,
         dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
                <'row'<'col-sm-12'tr>>
                <'row'<'col-sm-5'i><'col-sm-7'p>>",

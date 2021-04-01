@@ -589,10 +589,12 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
       tbl_exts <- c("Buttons", "Responsive")
       tbl_filt <- "none"
+      tbl_scroll <- FALSE
     } else {
       tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
       tbl_exts <- c("Buttons")
       tbl_filt <- "top"
+      tbl_scroll <- TRUE
     }
 
     DT::datatable(
@@ -607,7 +609,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       extensions = tbl_exts,
       width = "100%",
       options = list(
-        # scrollX = TRUE,
+        scrollX = tbl_scroll,
         dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
                <'row'<'col-sm-12'tr>>
                <'row'<'col-sm-5'i><'col-sm-7'p>>", # '<Bf>tip',
@@ -883,14 +885,28 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     n_col <- ncol(out)
     id <- session$ns("delivery_details_table")
 
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table dt-center dt-responsive nowrap table"
+      tbl_exts <- c("Responsive")
+      tbl_filt <- "none"
+      tbl_scroll <- FALSE
+    } else {
+      tbl_class <- "table dt-center nowrap table"
+      tbl_exts <- list()
+      tbl_filt <- "none"
+      tbl_scroll <- TRUE
+    }
+
     datatable(
       out,
       caption = cap,
       style = "bootstrap",
-      class = "row-border nowrap",
+      class = tbl_class,
       rownames = FALSE,
       selection = "none",
+      extensions = tbl_exts,
       options = list(
+        scrollX = tbl_scroll,
         dom = "t",
         columnDefs = list(
           list(className = "dt-center dt-col", targets = "_all")
