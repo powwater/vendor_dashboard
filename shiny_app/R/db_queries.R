@@ -1,9 +1,14 @@
-get_customer_locations_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
 
   hold <- conn %>%
     dplyr::tbl("orders") %>%
     dplyr::filter(.data$vendor_uid == vendor_id) %>%
-    dplyr::distinct(customer_uid) %>%
+    dplyr::group_by(customer_uid, vendor_uid) %>%
+    dplyr::summarize(number_of_orders = n(),
+                     last_order_date = max(order_date, na.rm = TRUE),
+                     total_paid = sum(total_payment_price, na.rm = TRUE),
+                     average_rating = mean(vendor_rating, na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
     dplyr::left_join(
       conn %>% dplyr::tbl("customer_locations") %>%
         dplyr::select(-c(created_at:modified_by)) %>%
@@ -20,9 +25,50 @@ get_customer_locations_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       conn %>% dplyr::tbl("order_routes") %>% dplyr::select(-uid, -order_uid, -c(created_at:modified_by)),
       by = c("customer_location_uid")
     ) %>%
+    dplyr::left_join(
+      conn %>% dplyr::tbl("vendors") %>% select(uid, vendor_name),
+      by = c("vendor_uid" = "uid")
+    ) %>%
     left_join(
       conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
-      by = c("vendor_location_uid" = "uid")
+      by = c("vendor_location_uid" = "uid", "vendor_uid")
+    ) %>%
+    select(
+      customer_uid,
+      vendor_uid,
+      number_of_orders,
+      last_order_date,
+      total_paid,
+      average_rating,
+
+      customer_location_uid,
+      customer_location_place_id,
+      customer_name,
+      customer_phone_number,
+      customer_location_name,
+      customer_location_address,
+      customer_location_url,
+      customer_location_lat,
+      customer_location_lon,
+
+      vendor_location_uid,
+      vendor_location_place_id,
+      vendor_name,
+      # vendor_phone_number,
+      vendor_location_name,
+      vendor_location_address,
+      vendor_location_url,
+      vendor_location_lat,
+      vendor_location_lon,
+      vendor_region_name,
+      vendor_region_place_id,
+      vendor_region_url,
+
+      origin_id,
+      destination_id,
+      estimated_distance,
+      estimated_duration,
+      estimated_polyline
     )
 
   if (!collect) return(hold)
