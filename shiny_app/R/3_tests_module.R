@@ -22,7 +22,7 @@ tests_module_ui <- function(id){
   )
 }
 
-tests_module <- function(input, output, session, vendor_info){
+tests_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
 
   tests <- reactive({
@@ -99,18 +99,33 @@ tests_module <- function(input, output, session, vendor_info){
         }
       }")
 
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons", "Responsive")
+      tbl_filt <- "none"
+      tbl_scroll <- FALSE
+    } else {
+      tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons")
+      tbl_filt <- "top"
+      tbl_scroll <- TRUE
+    }
+
     DT::datatable(
       out,
       rownames = FALSE,
       colnames = cols,
       selection = "none",
       style = "bootstrap",
-      class = 'table table-striped table-bordered dt-center compact hover',
+      class = tbl_class,
       escape = esc_cols,
-      extensions = c("Buttons"),
-      filter = "top",
+      extensions = tbl_exts,
+      filter = tbl_filt,
       options = list(
-        dom = '<Bf>tip',
+        scrollX = tbl_scroll,
+        dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
+               <'row'<'col-sm-12'tr>>
+               <'row'<'col-sm-5'i><'col-sm-7'p>>",
         columnDefs = list(
           list(targets = 0, orderable = FALSE, width = "35px"),
           list(className = "dt-center dt-col", targets = "_all")

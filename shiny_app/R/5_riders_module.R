@@ -21,7 +21,7 @@ riders_module_ui <- function(id){
   )
 }
 
-riders_module <- function(input, output, session, vendor_info) {
+riders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   riders <- reactive({
 
@@ -62,18 +62,30 @@ riders_module <- function(input, output, session, vendor_info) {
 
     cols <- snakecase::to_title_case(colnames(out))
 
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons", "Responsive")
+      tbl_filt <- "none"
+      tbl_scroll <- FALSE
+    } else {
+      tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
+      tbl_exts <- c("Buttons")
+      tbl_filt <- "top"
+      tbl_scroll <- TRUE
+    }
+
     DT::datatable(
       out,
       style = "bootstrap",
       rownames = FALSE,
       colnames = cols,
       selection = "none",
-      class = 'table table-striped table-bordered table-hover nowrap table',
-      extensions = c("Buttons"),
-      filter = "top",
+      class = tbl_class,
+      extensions = tbl_exts,
+      filter = tbl_filt,
       width = "100%",
       options = list(
-        scrollX = TRUE,
+        scrollX = tbl_scroll,
         dom = "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>
                <'row'<'col-sm-12'tr>>
                <'row'<'col-sm-5'i><'col-sm-7'p>>",

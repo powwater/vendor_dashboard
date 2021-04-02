@@ -3,6 +3,10 @@
   display: none;
 }
 
+.mobile-hide {
+  display: none;
+}
+
 .box.box-solid.box-primary>.box-header {
     color: #fff;
     background: #333;
@@ -54,9 +58,9 @@
   text-align: center !important;
 }
 
-.dt-col {
+/*.dt-col {
   min-width: 85px;
-}
+}*/
 
 /*.dataTables_length {
   display: inline-block;

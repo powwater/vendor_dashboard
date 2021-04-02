@@ -18,7 +18,7 @@ vendor_dashboard_ui <- function(id) {
   )
 }
 
-vendor_dashboard <- function(input, output, session, vendor_info) {
+vendor_dashboard <- function(input, output, session, vendor_info, is_mobile) {
 
   output$vendor_region <- renderUI({
     HTML(

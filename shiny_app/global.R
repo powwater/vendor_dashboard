@@ -30,7 +30,7 @@ suppressPackageStartupMessages({
   library(shiny)
   library(shinycustomloader)
   library(shinydashboard)
-  library(shinydashboardPlus)
+  library(shinydashboardPlus) # must be version 0.7.5; install_version("shinydashboardPlus", "0.7.5")
   library(shinyFeedback)
   library(shinyjs)
   library(shinyWidgets)
@@ -49,6 +49,16 @@ suppressPackageStartupMessages({
 
 # library(markdown)
 # library(highcharter)
+
+if (packageVersion("shinydashboardPlus") > "0.7.5") {
+  usethis::ui_stop(
+    paste0(
+      "package `shinydashboardPlus` must use version 0.7.5; run ",
+      usethis::ui_code("remotes::install_version('shinydashboardPlus', '0.7.5')"),
+      " to install."
+    )
+  )
+}
 
 # set default options -----------------------------------------------------
 options(shiny.trace = FALSE) # set to T to print full shiny operations.
