@@ -68,8 +68,10 @@ options(lubridate.week.start = 1)
 
 # load configuration ------------------------------------------------------
 
+Sys.setenv("R_CONFIG_ACTIVE" = "local")
+
 # tell app if in development or not
-is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") == "default"
+is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") %in% c("default", "local")
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # download latest config.yml file:
@@ -79,7 +81,7 @@ is_local <- Sys.getenv('SHINY_PORT') == ""
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 
 # load config yaml file
-app_config <- config::get()
+app_config <- config::get(file = "config.yml")
 
 # setup google maps API key for googleway
 key <- app_config$gcp$gmaps_api_key

@@ -58,6 +58,6 @@ RUN R -e "remotes::install_github('JohnCoene/shinyscroll', ref = '98f5d669ab76c9
 
 
 # Copy app into shiny server `shiny_app` directory
-COPY 'shiny_app' /srv/shiny-server/shiny_app
+COPY . /srv/shiny-server/shiny_app
 
 CMD ["Rscript","-e","shiny::runApp(appDir='/srv/shiny-server/shiny_app',port=8080,launch.browser=FALSE,host='0.0.0.0')"]
