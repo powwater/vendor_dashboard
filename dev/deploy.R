@@ -53,19 +53,7 @@ rstudioapi::terminalExecute("docker tag powwater_vendorsdashboard gcr.io/powwate
 rstudioapi::terminalExecute("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
 # deploy to cloud run
-<<<<<<< HEAD
 system("gcloud run deploy powwater-vendorsdashboard --memory=8192Mi --platform=managed --cpu=4 --image=gcr.io/powwater/powwater_vendorsdashboard --max-instances='default' --min-instances=0 --port=8080 --no-traffic --allow-unauthenticated --region=asia-east1")
-=======
-system(
-  paste0(
-    "gcloud run deploy powwater --memory=8192Mi --platform=managed --cpu=4 ",
-    "--image=gcr.io/powwater/powwater_vendorsdashboard--max-instances='default' ",
-    "min-instances=0 --port=8080 --taglatest--allow-unauthenticated ",
-    "--region=asia-east1 --add-cloudsql-instances ",
-    "powwater:asia-south1:powwater --concurrency=80"
-  )
-)
->>>>>>> develop
 
 # open cloud run
 browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendorsdashboard/revisions?project=powwater")
