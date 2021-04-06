@@ -1,0 +1,6 @@
+shiny_app/.dockerignore
+shiny_app/Dockerfile
+shiny_app/logs/*
+shiny_app/deps.yaml
+shiny_app/README.md
+shiny_app/R/get_config.R

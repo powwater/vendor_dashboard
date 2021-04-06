@@ -33,7 +33,9 @@ use_template("dev/Dockerfile_template",
              ))
 
 # create .dockerignore ----------------------------------------------------
-write("shiny_app/logs/*", ".dockerignore")
+write("shiny_app/.dockerignore", ".dockerignore")
+write("shiny_app/Dockerfile", ".dockerignore", append = TRUE)
+write("shiny_app/logs/*", ".dockerignore", append = TRUE)
 write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
 write("shiny_app/README.md", ".dockerignore", append = TRUE)
 write("shiny_app/R/get_config.R", ".dockerignore", append = TRUE)
@@ -50,8 +52,22 @@ rstudioapi::terminalExecute("docker build --build-arg R_CONFIG_ACTIVE=production
 rstudioapi::terminalExecute("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
 rstudioapi::terminalExecute("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
+# deploy to cloud run
+system(
+  paste0(
+    "gcloud run deploy powwater --memory=8192Mi --platform=managed --cpu=4 ",
+    "--image=gcr.io/powwater/powwater_vendorsdashboard--max-instances='default' ",
+    "min-instances=0 --port=8080 --taglatest--allow-unauthenticated ",
+    "--region=asia-east1 --add-cloudsql-instances ",
+    "powwater:asia-south1:powwater --concurrency=80"
+  )
+)
+
 # open cloud run
 browseURL("https://console.cloud.google.com/run/detail/asia-east1/powwater-vendorsdashboard/revisions?project=powwater")
+
+# open app
+browseURL("https://vendorsdashboard.powwater.org")
 
 # Only run if want to push to container registries outside of GCR: --------
 
