@@ -68,11 +68,13 @@ options(lubridate.week.start = 1)
 
 # load configuration ------------------------------------------------------
 
-Sys.setenv("R_CONFIG_ACTIVE" = "local")
-
 # tell app if in development or not
 is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") %in% c("default", "local")
 is_local <- Sys.getenv('SHINY_PORT') == ""
+
+# run local docker database for development
+docker_db <- FALSE
+if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
 
 # download latest config.yml file:
 # if (is_local) source("R/get_config.R"); get_config()
