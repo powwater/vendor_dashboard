@@ -1,89 +1,104 @@
 orders_module_ui <- function(id){
   ns <- NS(id)
+
   tagList(
     fluidRow(
-      shinyFeedback::valueBoxModuleUI(
-        ns("completed_orders"),
-        "Completed Orders",
-        icon = icon("check"),
-        backgroundColor = pow_colors$green,
-        width = 4
-      ),
-      shinyFeedback::valueBoxModuleUI(
-        ns("awaiting_vendor_response"),
-        "Orders Awaiting Vendor Response",
-        icon = icon("hourglass"),
-        backgroundColor = pow_colors$red,
-        width = 4
-      ),
-      shinyFeedback::valueBoxModuleUI(
-        ns("average_rating"),
-        "Average Rating per Order",
-        icon = icon("star"),
-        backgroundColor = pow_colors$yellow,
-        width = 4
+      column(
+        12,
+        shinyFeedback::valueBoxModuleUI(
+          ns("completed_orders"),
+          "Completed Orders",
+          icon = icon("check"),
+          backgroundColor = pow_colors$green,
+          width = 4
+        ),
+        shinyFeedback::valueBoxModuleUI(
+          ns("awaiting_vendor_response"),
+          "Orders Awaiting Vendor Response",
+          icon = icon("hourglass"),
+          backgroundColor = pow_colors$red,
+          width = 4
+        ),
+        shinyFeedback::valueBoxModuleUI(
+          ns("average_rating"),
+          "Average Rating per Order",
+          icon = icon("star"),
+          backgroundColor = pow_colors$yellow,
+          width = 4
+        )
       )
     ),
     fluidRow(
-      box(
-        width = 12,
-        title = icon_text("folder-open", 'Orders'),
-        footer = "Powwater | Tychobra 2021",
-        status = "primary",
-        solidHeader = TRUE,
-        fluidRow(
-          column(
-            12,
-            h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
-            hr(),
-            DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
-              shinycustomloader::withLoader()
-          )
-        ),
-        hr(),
-        fluidRow(
-          column(
-            12,
-            h3(icon_text("check", "All Orders:")),
-            hr(),
-            DT::DTOutput(ns('orders_table'), width = "100%") %>%
-              shinycustomloader::withLoader()
-          )
-        ),
-        hr(),
-        h3(icon_text("road", " Delivery Details:")),
-        hr(),
-        fluidRow(
-          column(
-            3,
-            pickerInput(ns("selected_order"),
-                        "Select an Order to View:",
-                        choices = "",
-                        width = )
-          )
-        ),
-        fluidRow(
-          column(
-            12,
-            splitLayout(
-              cellWidths = c("60%", "40%"),
-              cellArgs = list(style = "padding: 15px;"),
-              div(
-                h4(icon_text("route", "Delivery Routes:")),
-                uiOutput(ns("directions_iframe")) %>%
-                  shinycustomloader::withLoader()
-              ),
-              div(
-                h4(icon_text("info", "Delivery Details")),
-                DT::DTOutput(ns('delivery_details')) %>%
-                  shinycustomloader::withLoader()
-              )
+      column(
+        12,
+        box(
+          width = 12,
+          title = icon_text("folder-open", 'Orders'),
+          footer = "Powwater | Tychobra 2021",
+          status = "primary",
+          solidHeader = TRUE,
+          fluidRow(
+            column(
+              12,
+              h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
+              hr(),
+              DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
+                shinycustomloader::withLoader()
+            )
+          ),
+          hr(),
+          fluidRow(
+            column(
+              12,
+              h3(icon_text("check", "All Orders:")),
+              hr(),
+              DT::DTOutput(ns('orders_table'), width = "100%") %>%
+                shinycustomloader::withLoader()
             )
           )
         ),
         hr(),
-        uiOutput(ns("ratings_ui")) %>%
-          shinycustomloader::withLoader()
+        box(
+          width = 12,
+          title = icon_text("road", " Delivery Details:"),
+          footer = "Powwater | Tychobra 2021",
+          status = "primary",
+          solidHeader = TRUE,
+          height = NULL,
+          fluidRow(
+            column(
+              width = 6,
+              h4(icon_text("route", "Delivery Routes:")),
+              uiOutput(ns("directions_iframe")) %>%
+                shinycustomloader::withLoader()
+            ),
+            column(
+              width = 6,
+              h4(icon_text("info", "Delivery Details")),
+              pickerInput(ns("selected_order"),
+                          "Select an Order to View:",
+                          choices = ""),
+              DT::DTOutput(ns('delivery_details')) %>%
+                shinycustomloader::withLoader()
+            )
+          )
+        ),
+        hr(),
+        box(
+          width = 12,
+          title = icon_text("star", " Ratings"),
+          footer = "Powwater | Tychobra 2021",
+          status = "primary",
+          solidHeader = TRUE,
+          height = NULL,
+          fluidRow(
+            column(
+              12,
+              uiOutput(ns("ratings_ui")) %>%
+                shinycustomloader::withLoader()
+            )
+          )
+        )
       )
     ),
     htmltools::tags$script(src = "orders_module.js?version=2"),
@@ -736,38 +751,32 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     fluidRow(
       column(
-        12,
-        h3(icon_text("star", " Ratings")),
-        hr(),
-        fluidRow(
-          column(
-            width = 8,
-            offset = 2,
-            div(
-              htmlTemplate(
-                filename = "www/html/ratings_card.html",
-                header = paste(vendor_info()$vendor_name, ": Average Vendor Rating"),
-                header_stars = rating_stars(ratings_prep()$avg_rating, span = TRUE, class = "ratings-fa"),
-                average_rating = avg,
-                number_of_reviews = tot_ratings,
-                num_five_star = five,
-                num_four_star = four,
-                num_three_star = three,
-                num_two_star = two,
-                num_one_star = one,
-                num_unrated = unrated,
-                five_pct = pct_widths["five_pct"],
-                four_pct = pct_widths["four_pct"],
-                three_pct = pct_widths["three_pct"],
-                two_pct = pct_widths["two_pct"],
-                one_pct = pct_widths["one_pct"],
-                unrated_pct = pct_widths["unrated_pct"]
-              )
-            )
+        width = 8,
+        offset = 2,
+        div(
+          htmlTemplate(
+            filename = "www/html/ratings_card.html",
+            header = paste(vendor_info()$vendor_name, ": Average Vendor Rating"),
+            header_stars = rating_stars(ratings_prep()$avg_rating, span = TRUE, class = "ratings-fa"),
+            average_rating = avg,
+            number_of_reviews = tot_ratings,
+            num_five_star = five,
+            num_four_star = four,
+            num_three_star = three,
+            num_two_star = two,
+            num_one_star = one,
+            num_unrated = unrated,
+            five_pct = pct_widths["five_pct"],
+            four_pct = pct_widths["four_pct"],
+            three_pct = pct_widths["three_pct"],
+            two_pct = pct_widths["two_pct"],
+            one_pct = pct_widths["one_pct"],
+            unrated_pct = pct_widths["unrated_pct"]
           )
         )
       )
     )
+
   })
 
   # valboxes ----------------------------------------------------------------

@@ -1,0 +1,14 @@
+version: "3"
+services:
+  database:
+    container_name: db
+    build: ./database
+    ports:
+     - "5432:5432"
+
+  shiny_app:
+    container_name: app
+    build: ./shiny_app
+    ports:
+      - "8080:8080"
+

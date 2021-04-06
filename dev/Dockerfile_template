@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.0.4
+FROM rocker/r-ver:4.0.5
 
 EXPOSE 8080
 
