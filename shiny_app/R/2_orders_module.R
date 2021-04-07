@@ -40,6 +40,8 @@ orders_module_ui <- function(id){
           fluidRow(
             column(
               12,
+              actionButton(ns("reload_bttn"), "Reload", icon = icon("refresh"), class = "btn-success") %>%
+                shinyjs::hidden(),
               h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
               hr(),
               DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
@@ -112,6 +114,39 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
 
   session$userData$orders_trigger <- reactiveVal(0)
+  session$userData$orders_change_trigger <- reactiveVal(FALSE)
+
+  # get row counts for tables used in module
+  check_db_change <- reactivePoll(intervalMillis = .5 * 60 * 1000,
+                                  session = session,
+                                  checkFunc = function() {
+                                    usethis::ui_info("Checking database..")
+                                    # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
+                                    hold <- conn %>% tbl("orders")
+                                    mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
+                                    num_rows <- hold %>% pull(uid) %>% length()
+                                    message(paste0("Latest modified timestamp: ",
+                                                   mod_stamp, "; ",
+                                                   "Row Count: ", num_rows, "."))
+                                    return(list(mod_stamp, num_rows))
+                                  },
+                                  valueFunc = function() {
+                                    session$userData$orders_change_trigger(TRUE)
+                                  })
+
+  observe({
+    req(check_db_change())
+    print(list("check_db_change:" = check_db_change()))
+    notify("Database changes detected. Click refresh button to reload data tables.")
+    shinyjs::show("reload_bttn")
+  })
+
+  observeEvent(input$reload_bttn, {
+    # req(check_db_change() > 1)
+    session$userData$orders_trigger(session$userData$orders_trigger() + 1)
+    shinyjs::hide("reload_bttn")
+    session$userData$orders_change_trigger(FALSE)
+  })
 
   orders <- reactive({
 
