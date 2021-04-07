@@ -25,8 +25,8 @@ riders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   riders <- reactive({
 
-    id <- notify("Loading Riders from Database...")
-    on.exit(shinyFeedback::hideToast(), add = TRUE)
+    # id <- notify("Loading Riders from Database...")
+    # on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
