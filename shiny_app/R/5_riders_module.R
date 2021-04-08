@@ -2,36 +2,29 @@ riders_module_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
-      column(
-        12,
-        box(
-          width = 12,
-          title = icon_text("car-side", 'Powwater Riders'),
-          footer = "Powwater | Tychobra 2021",
-          status = "primary",
-          solidHeader = TRUE,
-          fluidRow(
-            column(
-              width = 12,
-              helpText("Powwater rides are assigned to vendors by Powwater to fulfill order deliveries to customers."),
-              DT::DTOutput(ns('pow_riders_table')) %>%
-                shinycustomloader::withLoader()
-            )
+      box(
+        width = 12,
+        title = icon_text("car-side", 'Drivers'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        br(),
+        br(),
+        fluidRow(
+          column(
+            width = 12,
+            h3("Powwater Riders:"),
+            DT::DTOutput(ns('pow_riders_table')) %>%
+              shinycustomloader::withLoader()
           )
         ),
-        box(
-          width = 12,
-          title = icon_text("car-side", 'Vendor Riders'),
-          footer = "Powwater | Tychobra 2021",
-          status = "primary",
-          solidHeader = TRUE,
-          fluidRow(
-            column(
-              12,
-              helpText("Vendor specific riders are employees of the vendor and only deliver for that vendor."),
-              DT::DTOutput(ns('vendor_riders_table')) %>%
-                shinycustomloader::withLoader()
-            )
+        hr(),
+        fluidRow(
+          column(
+            12,
+            h3("Vendor Specific Riders:"),
+            DT::DTOutput(ns('vendor_riders_table')) %>%
+              shinycustomloader::withLoader()
           )
         )
       )
