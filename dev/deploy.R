@@ -24,7 +24,7 @@ gh_install_cmd <- get_gh_deps(deps) %>% gh_packages_cmd()
 sysreqs_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
 
 # create Dockerfile from template -----------------------------------------
-use_template("dev/Dockerfile_template",
+use_template("dev/Dockerfile_template_multistage",
              "Dockerfile",
              data = list(
                sysreqs = sysreqs_cmd,

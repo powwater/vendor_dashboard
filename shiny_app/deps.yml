@@ -22,12 +22,12 @@ formattable:
   Package: formattable
   Repository: CRAN
   Version: 0.2.1
-polished:
-  Package: polished
-  GithubUsername: tychobra
-  GithubRepo: polished
-  GithubRef: HEAD
-  GithubSHA1: e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b
+powpolished:
+  Package: powpolished
+  GithubUsername: powwater
+  GithubRepo: powpolished
+  GithubRef: develop
+  GithubSHA1: 37354e0305a6c031e8667c0f49089f3061898a2a
 snakecase:
   Package: snakecase
   Repository: CRAN
@@ -138,3 +138,9 @@ fs:
   Package: fs
   Repository: CRAN
   Version: 1.5.0
+polished:
+  Package: polished
+  GithubUsername: tychobra
+  GithubRepo: polished
+  GithubRef: HEAD
+  GithubSHA1: e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b
