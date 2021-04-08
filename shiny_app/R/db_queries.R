@@ -19,8 +19,6 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       conn %>% dplyr::tbl("customers"),
       by = c("customer_uid" = "uid")
     ) %>%
-    dplyr::rename(customer_location_url = customer_location_url.x, customer_location_url_full = customer_location_url.y) %>%
-    dplyr::select(-customer_location) %>%
     left_join(
       conn %>% dplyr::tbl("order_routes") %>% dplyr::select(-uid, -order_uid, -c(created_at:modified_by)),
       by = c("customer_location_uid")
@@ -33,6 +31,7 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
       by = c("vendor_location_uid" = "uid", "vendor_uid")
     ) %>%
+    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
     select(
       customer_uid,
       vendor_uid,
@@ -85,6 +84,7 @@ get_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
     rename(order_uid = uid) %>%
     left_join(
       conn %>% tbl("customers") %>%
+        mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
         select(customer_uid = uid, customer_name),
       by = c("customer_uid")
     ) %>%
