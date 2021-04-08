@@ -77,7 +77,7 @@ docker_db <- FALSE
 if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
 
 # download latest config.yml file:
-# if (is_local) source("R/get_config.R"); get_config()
+if (is_local) source("R/get_config.R"); get_config()
 
 # enable shiny devmode
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
