@@ -68,8 +68,8 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
   customers <- reactive({
 
-    id <- notify("Loading Customers from Database...")
-    on.exit(shinyFeedback::hideToast(), add = TRUE)
+    # id <- notify("Loading Customers from Database...")
+    # on.exit(shinyFeedback::hideToast(), add = TRUE)
 
     vend <- vendor_info()$vendor_uid
 
