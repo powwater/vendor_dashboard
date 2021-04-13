@@ -114,25 +114,29 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
 
   session$userData$orders_trigger <- reactiveVal(0)
-  session$userData$orders_change_trigger <- reactiveVal(FALSE)
 
   # get row counts for tables used in module
-  check_db_change <- reactivePoll(intervalMillis = .5 * 60 * 1000,
-                                  session = session,
-                                  checkFunc = function() {
-                                    usethis::ui_info("Checking database..")
-                                    # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
-                                    hold <- conn %>% tbl("orders")
-                                    mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
-                                    num_rows <- hold %>% pull(uid) %>% length()
-                                    message(paste0("Latest modified timestamp: ",
-                                                   mod_stamp, "; ",
-                                                   "Row Count: ", num_rows, "."))
-                                    return(list(mod_stamp, num_rows))
-                                  },
-                                  valueFunc = function() {
-                                    session$userData$orders_change_trigger(TRUE)
-                                  })
+  check_db_change <- reactivePoll(
+    intervalMillis = .5 * 60 * 1000,
+    session = session,
+    checkFunc = function() {
+      usethis::ui_info("Checking database..")
+      # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
+
+      #browser()
+      hold <- conn %>% tbl("orders")
+      mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
+
+      message(paste0("Latest modified timestamp: ", mod_stamp))
+
+      return(mod_stamp)
+    },
+    valueFunc = function() {
+      session$userData$orders_trigger(session$userData$orders_trigger() + 1)
+
+      invisible()
+    }
+  )
 
   observe({
     req(check_db_change())
@@ -145,7 +149,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     # req(check_db_change() > 1)
     session$userData$orders_trigger(session$userData$orders_trigger() + 1)
     shinyjs::hide("reload_bttn")
-    session$userData$orders_change_trigger(FALSE)
   })
 
   orders <- reactive({
