@@ -159,7 +159,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     tryCatch({
       out <- get_orders_by_vendor(vend, conn)
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting vendor orders from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
@@ -886,7 +886,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       out <- get_routes_by_vendor(vend, conn = conn)
 
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting vendor routes from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)

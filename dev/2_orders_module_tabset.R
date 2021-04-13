@@ -146,7 +146,7 @@ orders_module <- function(input, output, session, vendor_info){
       out <- get_orders_by_vendor(vend, conn)
 
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting orders from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
@@ -929,7 +929,7 @@ routes <- reactive({
     out <- get_routes_by_vendor(vend, conn = conn)
 
   }, error = function(err) {
-    msg <- 'Error collecting data from database.'
+    msg <- 'Error collecting order routes from database.'
     print(msg)
     print(err)
     shinyFeedback::showToast('error', msg)
