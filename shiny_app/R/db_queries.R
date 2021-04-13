@@ -19,8 +19,6 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       conn %>% dplyr::tbl("customers"),
       by = c("customer_uid" = "uid")
     ) %>%
-    dplyr::rename(customer_location_url = customer_location_url.x, customer_location_url_full = customer_location_url.y) %>%
-    dplyr::select(-customer_location) %>%
     left_join(
       conn %>% dplyr::tbl("order_routes") %>% dplyr::select(-uid, -order_uid, -c(created_at:modified_by)),
       by = c("customer_location_uid")
@@ -33,6 +31,7 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
       by = c("vendor_location_uid" = "uid", "vendor_uid")
     ) %>%
+    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
     select(
       customer_uid,
       vendor_uid,
@@ -85,6 +84,7 @@ get_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
     rename(order_uid = uid) %>%
     left_join(
       conn %>% tbl("customers") %>%
+        mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
         select(customer_uid = uid, customer_name),
       by = c("customer_uid")
     ) %>%
@@ -148,7 +148,7 @@ get_routes_by_vendor <- function(vendor_location_id, conn, collect = TRUE) {
   hold %>% collect()
 }
 
-get_riders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+get_riders_by_vendor <- function(vendor_id, conn) {
 
   hold <- conn %>%
     dplyr::tbl("orders") %>%
@@ -163,8 +163,17 @@ get_riders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       by = "rider_uid"
     )
 
-  if (!collect) return(hold)
+  vendor_riders <- conn %>%
+    dplyr::tbl("vendor_riders") %>%
+    filter(vendor_uid == vendor_id) %>%
+    left_join(hold, by = c("vendor_uid", "rider_uid")) %>%
+    collect()
 
-  hold %>% collect()
+  pow_riders <- hold %>% collect() %>% filter(!(rider_uid %in% vendor_riders$rider_uid))
+
+  list(
+    "pow_riders" = pow_riders,
+    "vendor_riders" = vendor_riders
+  )
 
 }

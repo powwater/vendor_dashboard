@@ -5,14 +5,16 @@ vendor_dashboard_ui <- function(id) {
   tagList(
     fluidRow(
       column(
-        6,
+        12,
+        h5("Map:"),
+        uiOutput(ns("global_map"))
+      )
+    ),
+    fluidRow(
+      column(
+        12,
         h5("Region:"),
         uiOutput(ns("vendor_region"))
-      ),
-      column(
-        6,
-        h5("Vendor Details:") #,
-        # googleway::google_mapOutput(ns("customer_locations"))
       )
     )
   )
@@ -28,6 +30,12 @@ vendor_dashboard <- function(input, output, session, vendor_info, is_mobile) {
       vendor_info()$region_id, '&key=', key, '"></iframe>'
       )
     )
+  })
+
+  output$global_map <- renderUI({
+    HTML(
+      '<iframe src="https://www.google.com/maps/d/embed?mid=1wAlwYO6JtA_JZlmcrnfLjIySRFzVU0yF&hl=en" width="100%" height="550"></iframe>'
+      )
   })
 
   # top customers
