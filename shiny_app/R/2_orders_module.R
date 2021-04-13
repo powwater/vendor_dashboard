@@ -40,8 +40,8 @@ orders_module_ui <- function(id){
           fluidRow(
             column(
               12,
-              actionButton(ns("reload_bttn"), "Reload", icon = icon("refresh"), class = "btn-success") %>%
-                shinyjs::hidden(),
+              # actionButton(ns("reload_bttn"), "Reload", icon = icon("refresh"), class = "btn-success") %>%
+              #   shinyjs::hidden(),
               h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
               hr(),
               DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
@@ -138,18 +138,11 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     }
   )
 
-  observe({
-    req(check_db_change())
-    print(list("check_db_change:" = check_db_change()))
-    notify("Database changes detected. Click refresh button to reload data tables.")
-    shinyjs::show("reload_bttn")
-  })
-
-  observeEvent(input$reload_bttn, {
-    # req(check_db_change() > 1)
-    session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-    shinyjs::hide("reload_bttn")
-  })
+  # observeEvent(input$reload_bttn, {
+  #   # req(check_db_change() > 1)
+  #   session$userData$orders_trigger(session$userData$orders_trigger() + 1)
+  #   shinyjs::hide("reload_bttn")
+  # })
 
   orders <- reactive({
 
