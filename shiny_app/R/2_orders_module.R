@@ -122,13 +122,14 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   # get row counts for tables used in module
   check_db_change <- reactivePoll(
-    intervalMillis = 5 * 60 * 1000,
+    intervalMillis = 0.5 * 60 * 1000,
     session = session,
     checkFunc = function() {
       usethis::ui_info("Checking database..")
       # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
 
-      hold <- conn %>% tbl("orders") %>% filter(vendor_uid == vendor_info()$vendor_uid)
+      vend_id <- vendor_info()$vendor_uid
+      hold <- conn %>% tbl("orders") %>% filter(vendor_uid == vend_id)
       mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
 
       message(paste0("Latest modified timestamp: ", mod_stamp))
