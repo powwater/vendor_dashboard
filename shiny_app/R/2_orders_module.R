@@ -44,9 +44,10 @@ orders_module_ui <- function(id){
                 ns("reload_bttn"),
                 "Reload",
                 icon = icon("refresh"),
-                class = "btn-success"
+                class = "btn-success",
+                style = "float: right;"
               ) %>%
-                shinyjs::hidden(),
+                shinyjs::disabled(),
               h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
               hr(),
               DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
