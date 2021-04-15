@@ -329,9 +329,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     removeModal()
 
-    msg <- paste0("Order accepted!")
-    shinyFeedback::showToast("success", msg)
-
     order_to_accept() %>%
       mutate(
         order_status = "In Progress",
@@ -373,11 +370,13 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
           list(dat$uid)
         )
       )
+
+
       session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-      msg <- paste0("Database successfully updated.")
-      shinyFeedback::showToast("success", msg)
+      shinyFeedback::showToast("success", "Order Accepted")
+
     }, error = function(err) {
-      msg <- 'Error updating database'
+      msg <- "Error accepting order"
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
@@ -435,9 +434,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     removeModal()
 
-    msg <- paste0("Order Rejected!")
-    shinyFeedback::showToast("success", msg)
-
     order_to_decline() %>%
       mutate(
         order_status = "Rejected",
@@ -492,10 +488,10 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         )
       )
       session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-      msg <- paste0("Database successfully updated.")
-      shinyFeedback::showToast("success", msg)
+
+      shinyFeedback::showToast("success", "Order Rejected.")
     }, error = function(err) {
-      msg <- 'Error updating database'
+      msg <- 'Error rejecting order'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
