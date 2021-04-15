@@ -136,15 +136,15 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       return(mod_stamp)
     },
     valueFunc = function() {
-      runif(1)
+      Sys.time()
     }
   )
 
   initial_change_check <- TRUE
   observeEvent(check_db_change(), {
     # do not show the reload data button if this is the initila data load
+    initial_change_check <<- FALSE
     if (isFALSE(initial_change_check)) {
-      initial_change_check <<- FALSE
       showElement("reload_bttn")
     }
   })
@@ -156,7 +156,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   })
 
   orders <- reactive({
-    initial_change_check <<- TRUE
+
     # id <- notify("Loading Orders from Database...")
     # on.exit(shinyFeedback::hideToast(), add = TRUE)
     session$userData$orders_trigger()
@@ -382,7 +382,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         )
       )
 
-
+      initial_change_check <<- TRUE
       session$userData$orders_trigger(session$userData$orders_trigger() + 1)
       shinyFeedback::showToast("success", "Order Accepted")
 
@@ -498,8 +498,9 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
           list(dat$uid)
         )
       )
-      session$userData$orders_trigger(session$userData$orders_trigger() + 1)
 
+      initial_change_check <<- TRUE
+      session$userData$orders_trigger(session$userData$orders_trigger() + 1)
       shinyFeedback::showToast("success", "Order Rejected.")
     }, error = function(err) {
       msg <- 'Error rejecting order'
