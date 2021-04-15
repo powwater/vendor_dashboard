@@ -40,6 +40,14 @@ orders_module_ui <- function(id){
           fluidRow(
             column(
               12,
+              actionButton(
+                ns("reload_bttn"),
+                "Reload",
+                icon = icon("refresh"),
+                class = "btn-success",
+                style = "float: right;"
+              ) %>%
+                shinyjs::disabled(),
               h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
               hr(),
               DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
@@ -113,6 +121,43 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   session$userData$orders_trigger <- reactiveVal(0)
 
+  # get row counts for tables used in module
+  check_db_change <- reactivePoll(
+    intervalMillis = 2 * 60 * 1000,
+    session = session,
+    checkFunc = function() {
+      usethis::ui_info("Checking database..")
+      # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
+
+      vend_id <- vendor_info()$vendor_uid
+      hold <- conn %>% tbl("orders") %>% filter(vendor_uid == vend_id)
+      mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
+
+      message(paste0("Latest modified timestamp: ", mod_stamp))
+
+      return(mod_stamp)
+    },
+    valueFunc = function() {
+      Sys.time()
+    }
+  )
+
+  initial_change_check <- TRUE
+  observeEvent(check_db_change(), {
+
+    if (isFALSE(initial_change_check)) {
+      shinyjs::enable("reload_bttn")
+    }
+    # do not show the reload data button if this is the initila data load
+    initial_change_check <<- FALSE
+  })
+
+  observeEvent(input$reload_bttn, {
+    # req(check_db_change() > 1)
+    session$userData$orders_trigger(session$userData$orders_trigger() + 1)
+    shinyjs::disable("reload_bttn")
+  })
+
   orders <- reactive({
 
     # id <- notify("Loading Orders from Database...")
@@ -124,7 +169,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     tryCatch({
       out <- get_orders_by_vendor(vend, conn)
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting vendor orders from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
@@ -298,9 +343,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     removeModal()
 
-    msg <- paste0("Order accepted!")
-    shinyFeedback::showToast("success", msg)
-
     order_to_accept() %>%
       mutate(
         order_status = "In Progress",
@@ -342,11 +384,13 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
           list(dat$uid)
         )
       )
+
+      initial_change_check <<- TRUE
       session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-      msg <- paste0("Database successfully updated.")
-      shinyFeedback::showToast("success", msg)
+      shinyFeedback::showToast("success", "Order Accepted")
+
     }, error = function(err) {
-      msg <- 'Error updating database'
+      msg <- "Error accepting order"
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
@@ -404,9 +448,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     removeModal()
 
-    msg <- paste0("Order Rejected!")
-    shinyFeedback::showToast("success", msg)
-
     order_to_decline() %>%
       mutate(
         order_status = "Rejected",
@@ -460,11 +501,12 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
           list(dat$uid)
         )
       )
+
+      initial_change_check <<- TRUE
       session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-      msg <- paste0("Database successfully updated.")
-      shinyFeedback::showToast("success", msg)
+      shinyFeedback::showToast("success", "Order Rejected.")
     }, error = function(err) {
-      msg <- 'Error updating database'
+      msg <- 'Error rejecting order'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
@@ -851,7 +893,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       out <- get_routes_by_vendor(vend, conn = conn)
 
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting vendor routes from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)

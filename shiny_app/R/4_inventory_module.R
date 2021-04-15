@@ -53,7 +53,7 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
         dplyr::collect()
 
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting inventory from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
