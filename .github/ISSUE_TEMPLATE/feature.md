@@ -4,7 +4,6 @@ about: Create issues for new features and enhancements to add to project.
 title: 'Feature: <name>'
 labels: enhancement
 assignees: jimbrig
-
 ---
 
 **Is the feature request related to a particular problem? Please describe.**
