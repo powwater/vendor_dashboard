@@ -123,7 +123,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   # get row counts for tables used in module
   check_db_change <- reactivePoll(
-    intervalMillis = 0.5 * 60 * 1000,
+    intervalMillis = 2 * 60 * 1000,
     session = session,
     checkFunc = function() {
       usethis::ui_info("Checking database..")
