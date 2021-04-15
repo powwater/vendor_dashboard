@@ -143,17 +143,18 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   initial_change_check <- TRUE
   observeEvent(check_db_change(), {
+
+    if (isFALSE(initial_change_check)) {
+      shinyjs::enable("reload_bttn")
+    }
     # do not show the reload data button if this is the initila data load
     initial_change_check <<- FALSE
-    if (isFALSE(initial_change_check)) {
-      showElement("reload_bttn")
-    }
   })
 
   observeEvent(input$reload_bttn, {
     # req(check_db_change() > 1)
     session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-    shinyjs::hide("reload_bttn")
+    shinyjs::disable("reload_bttn")
   })
 
   orders <- reactive({
