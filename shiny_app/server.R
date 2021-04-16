@@ -1,5 +1,8 @@
 server <- function(input, output, session) {
 
+  logger::log_layout(layout_glue_colors)
+  logger::log_shiny_input_changes(input = input, level = INFO)
+
   observeEvent(input$waiter_trigger == '1', {
     req(input$waiter_trigger == '1')
     waiter_hide()
