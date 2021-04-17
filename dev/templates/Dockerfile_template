@@ -1,15 +1,20 @@
-FROM rocker/r-ver:4.0.5
+FROM rocker/r-ver:4.0.5 AS sysreqs
 
 EXPOSE 8080
 
 # System Requirements
 {{{ sysreqs }}}
 
+FROM sysreqs AS rpackages
+
+COPY .Rprofile.site /usr/lib/R/etc/
 RUN R -e "install.packages('remotes')"
 
 {{{ cran_installs }}}
 
 {{{ gh_installs }}}
+
+FROM rpackages AS shinyapp
 
 # Copy app into shiny server `shiny_app` directory
 COPY 'shiny_app' /srv/shiny-server/shiny_app
