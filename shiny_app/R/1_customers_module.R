@@ -230,8 +230,9 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
   observeEvent(customers(), {
 
     dat <- customers() %>%
+      filter(!is.na(customer_location_name)) %>%
       mutate(
-        colour = "red",
+        # colour = "red",
         title = paste0(customer_name, ": ", customer_location_name),
         info = paste0(
           "<div id='bodyContent'>",
@@ -270,6 +271,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         name = vendor_name,
         vendor_uid
       ) %>%
+      filter(!is.na(place_id)) %>%
       mutate(
         colour = "blue",
         title = paste0(name, ": ", address),
