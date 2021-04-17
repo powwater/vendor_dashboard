@@ -22,7 +22,10 @@ services:
     build: ./shiny_app
     depends_on:
       - "database"
+    env_file:
+      - ./shiny_app/.env
     environment:
+      - GITHUB_PAT="${GITHUB_PAT}"
       - R_CONFIG_ACTIVE=local
     ports:
       - "8080:8080"
