@@ -53,3 +53,13 @@ config/powwater_vendorsdashboard.yml
 dev/apikey.RDS
 
 database/README.html
+
+config/
+
+database/files/
+
+database/pghero/.pgsync.yml
+
+database/pghero/pghero_credentials.json
+
+dev/R/

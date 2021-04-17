@@ -15,6 +15,44 @@
 docker pull docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest
 ```
 
+*Run `docker-compose up --build` to build and run local replicated database, pghero dashboard, and shiny app in same network*
+```shell
+docker-compose up --build
+```
+
+- `docker-compose.yml`
+
+```Dockerfile
+version: "3.9"
+services:
+  database:
+    container_name: pow_db
+    build: ./database
+    restart: always
+    env_file:
+      - ./database/.env
+    ports:
+     - "5432:5432"
+  pghero:
+    container_name: pow_pghero
+    build: ./database/pghero
+    depends_on: 
+      - "database"
+    env_file:
+      - ./database/pghero/.env
+    ports:
+      - "6657:6657"
+  shiny_app:
+    container_name: pow_vendors_app
+    build: ./shiny_app
+    depends_on:
+      - "database"
+    environment:
+      - R_CONFIG_ACTIVE=local
+    ports:
+      - "8080:8080"
+```
+
 ## Links 🔗
 
 ### Project Management 📋
