@@ -5,11 +5,11 @@ DBI:
 RPostgres:
   Package: RPostgres
   Repository: CRAN
-  Version: 1.3.1
+  Version: 1.3.2
 dbplyr:
   Package: dbplyr
   Repository: CRAN
-  Version: 2.1.0
+  Version: 2.1.1
 dplyr:
   Package: dplyr
   Repository: CRAN
@@ -17,17 +17,17 @@ dplyr:
 DT:
   Package: DT
   Repository: CRAN
-  Version: '0.17'
+  Version: '0.18'
 formattable:
   Package: formattable
   Repository: CRAN
   Version: 0.2.1
-polished:
-  Package: polished
-  GithubUsername: tychobra
-  GithubRepo: polished
+powpolished:
+  Package: powpolished
+  GithubUsername: powwater
+  GithubRepo: powpolished
   GithubRef: HEAD
-  GithubSHA1: e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b
+  GithubSHA1: a02c2459d306d4ef7d5ee10b9509f52c7089234d
 snakecase:
   Package: snakecase
   Repository: CRAN
@@ -98,8 +98,10 @@ attempt:
   Version: 0.3.1
 googleway:
   Package: googleway
-  Repository: CRAN
-  Version: 2.7.3
+  GithubUsername: merlinoa
+  GithubRepo: googleway
+  GithubRef: HEAD
+  GithubSHA1: c35b8edec8721e73df3fbfeb6f2a02e039ae2f7b
 shinyFiles:
   Package: shinyFiles
   Repository: CRAN
@@ -110,7 +112,7 @@ waiter:
   Version: 0.2.0
 shinyscroll:
   Package: shinyscroll
-  GithubUsername: JohnCoene
+  GithubUsername: johncoene
   GithubRepo: shinyscroll
   GithubRef: HEAD
   GithubSHA1: 98f5d669ab76c9e44fda798beac4c17dd58f66c9
@@ -138,3 +140,9 @@ fs:
   Package: fs
   Repository: CRAN
   Version: 1.5.0
+polished:
+  Package: polished
+  GithubUsername: tychobra
+  GithubRepo: polished
+  GithubRef: HEAD
+  GithubSHA1: e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b
