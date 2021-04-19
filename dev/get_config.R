@@ -1,5 +1,7 @@
 # usethis::use_git_hook("post-checkout", script = "dev/hooks.R")
 
+gdrive_url <- "https://drive.google.com/file/d/1sbGPuRL5D4I19kIjg6eFVob2MmQFBMWx/view?usp=sharing"
+
 get_config <- function() {
 
   root <- rprojroot::find_rstudio_root_file()
@@ -9,11 +11,9 @@ get_config <- function() {
 
   if (!fs::dir_exists(dirname(meta_cache_path))) fs::dir_create(dirname(meta_cache_path))
 
-  if (file.exists(root_path)) file.copy(root_path, paste0(fs::path_ext_remove(root_path), "_old.yml"))
-
   meta <- googledrive::drive_get(
-    googledrive::as_id("https://drive.google.com/file/d/115lcGZ-OCtHgaUM_XQYl6IJBBestwV8_/view?usp=sharing")
-    )
+    googledrive::as_id("gdrive_url")
+  )
 
   last_modified <- purrr::pluck(meta, "drive_resource", 1, "modifiedTime")
 
@@ -22,7 +22,7 @@ get_config <- function() {
     if (download) {
       requireNamespace("googledrive")
       googledrive::drive_download(
-        file = googledrive::as_id("https://drive.google.com/file/d/115lcGZ-OCtHgaUM_XQYl6IJBBestwV8_/view?usp=sharing"),
+        file = googledrive::as_id("gdrive_url"),
         path = root_path,
         overwrite = TRUE
       )
@@ -40,7 +40,7 @@ get_config <- function() {
         usethis::ui_warn("config.yml has changed since last loading. Re-downloading from Google Drive...")
         requireNamespace("googledrive")
         googledrive::drive_download(
-          file = googledrive::as_id("https://drive.google.com/file/d/115lcGZ-OCtHgaUM_XQYl6IJBBestwV8_/view?usp=sharing"),
+          file = googledrive::as_id("gdrive_url"),
           path = root_path,
           overwrite = TRUE
         )
@@ -51,7 +51,7 @@ get_config <- function() {
       }
     } else {
       googledrive::drive_download(
-        file = googledrive::as_id("https://drive.google.com/file/d/115lcGZ-OCtHgaUM_XQYl6IJBBestwV8_/view?usp=sharing"),
+        file = googledrive::as_id("gdrive_url"),
         path = root_path,
         overwrite = TRUE
       )
