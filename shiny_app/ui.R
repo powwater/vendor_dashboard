@@ -120,10 +120,10 @@ ui <- shinydashboardPlus::dashboardPagePlus(
   skin = 'black'
 )
 
-polished::secure_ui(
+secure_ui(
   ui,
-  sign_in_page_ui = polished::sign_in_ui_default(
-    sign_in_module = polished::sign_in_module_2_ui('sign_in'),
+  sign_in_page_ui = sign_in_ui_default(
+    sign_in_module = sign_in_module_2_ui('sign_in'),
     color = '#2F3474',
     company_name = 'POWWATER',
     logo_top = tags$div(

@@ -7,6 +7,7 @@ EXPOSE 8080
 
 FROM sysreqs AS rpackages
 
+COPY .Rprofile.site /usr/lib/R/etc/
 RUN R -e "install.packages('remotes')"
 
 {{{ cran_installs }}}

@@ -42,7 +42,7 @@ tests_module <- function(input, output, session, vendor_info, is_mobile) {
         dplyr::collect()
 
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting tests from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)

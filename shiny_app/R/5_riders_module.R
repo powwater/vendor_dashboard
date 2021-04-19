@@ -50,7 +50,7 @@ riders_module <- function(input, output, session, vendor_info, is_mobile) {
     tryCatch({
       out <- get_riders_by_vendor(vend, conn)
     }, error = function(err) {
-      msg <- 'Error collecting data from database.'
+      msg <- 'Error collecting riders from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)

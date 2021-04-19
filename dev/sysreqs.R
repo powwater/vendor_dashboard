@@ -12,6 +12,11 @@
 #' get_sysreqs("tidyverse", source = "rspm")
 #' get_sysreqs(c("plumber", "rmarkdown"))
 #' }
+#'
+#' @importFrom httr GET status_code has_content content
+#' @importFrom jsonlite fromJSON
+#' @importFrom pkgsearch cran_packages
+#' @importFrom remotes package_deps
 get_sysreqs <- function(packages,
                         source = c("rspm", "rhub"),
                         package_deps = TRUE) {

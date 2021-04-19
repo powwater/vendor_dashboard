@@ -11,19 +11,20 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   default-jdk \
   libicu-dev \
   pandoc \
-  libpq-dev \
-  git
+  git \
+  libpq-dev
 
 FROM sysreqs AS rpackages
 
+COPY shiny_app/.Rprofile.site /usr/lib/R/etc/
 RUN R -e "install.packages('remotes')"
 
 # CRAN R packages
 RUN R -e "remotes::install_version('DBI', version = '1.1.1', upgrade = 'never')"
-RUN R -e "remotes::install_version('RPostgres', version = '1.3.1', upgrade = 'never')"
-RUN R -e "remotes::install_version('dbplyr', version = '2.1.0', upgrade = 'never')"
+RUN R -e "remotes::install_version('RPostgres', version = '1.3.2', upgrade = 'never')"
+RUN R -e "remotes::install_version('dbplyr', version = '2.1.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('dplyr', version = '1.0.5', upgrade = 'never')"
-RUN R -e "remotes::install_version('DT', version = '0.17', upgrade = 'never')"
+RUN R -e "remotes::install_version('DT', version = '0.18', upgrade = 'never')"
 RUN R -e "remotes::install_version('formattable', version = '0.2.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('snakecase', version = '0.11.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('htmltools', version = '0.5.1.1', upgrade = 'never')"
@@ -39,7 +40,6 @@ RUN R -e "remotes::install_version('purrr', version = '0.3.4', upgrade = 'never'
 RUN R -e "remotes::install_version('rlang', version = '0.4.10', upgrade = 'never')"
 RUN R -e "remotes::install_version('tidyselect', version = '1.1.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('attempt', version = '0.3.1', upgrade = 'never')"
-RUN R -e "remotes::install_version('googleway', version = '2.7.3', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinyFiles', version = '0.9.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('waiter', version = '0.2.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('dialr', version = '0.3.2', upgrade = 'never')"
@@ -52,10 +52,11 @@ RUN R -e "remotes::install_version('fs', version = '1.5.0', upgrade = 'never')"
 
 
 # GitHub R packages
-RUN R -e "remotes::install_github('powwater/powpolished', ref = '37354e0305a6c031e8667c0f49089f3061898a2a', upgrade='never')"
+RUN R -e "remotes::install_github('powwater/powpolished', ref = 'a02c2459d306d4ef7d5ee10b9509f52c7089234d', upgrade='never')"
 RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b413363174f1115a0b34d9ae3f8616e5b76', upgrade='never')"
 RUN R -e "remotes::install_github('merlinoa/shinyFeedback', ref = 'ceb65e02428181a166a8b2cb20aac727c6f261ab', upgrade='never')"
-RUN R -e "remotes::install_github('JohnCoene/shinyscroll', ref = '98f5d669ab76c9e44fda798beac4c17dd58f66c9', upgrade='never')"
+RUN R -e "remotes::install_github('merlinoa/googleway', ref = 'c35b8edec8721e73df3fbfeb6f2a02e039ae2f7b', upgrade='never')"
+RUN R -e "remotes::install_github('johncoene/shinyscroll', ref = '98f5d669ab76c9e44fda798beac4c17dd58f66c9', upgrade='never')"
 RUN R -e "remotes::install_github('tychobra/polished', ref = 'e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b', upgrade='never')"
 
 

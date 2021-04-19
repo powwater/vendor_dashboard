@@ -1,5 +1,8 @@
 server <- function(input, output, session) {
 
+  # logger::log_layout(layout_glue_colors)
+  # logger::log_shiny_input_changes(input = input, level = INFO)
+
   observeEvent(input$waiter_trigger == '1', {
     req(input$waiter_trigger == '1')
     waiter_hide()
@@ -28,7 +31,7 @@ server <- function(input, output, session) {
   })
 
   callModule(
-    polished::profile_module,
+    profile_module,
     'polished_profile'
   )
 
@@ -88,7 +91,7 @@ server <- function(input, output, session) {
   )
 }
 
-polished::secure_server(
+secure_server(
   server,
   custom_sign_in_server = sign_in_module_2
 )
