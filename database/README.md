@@ -13,7 +13,7 @@ sudo gem install pgsync
 mkdir powwater_localdb
 cd powwater_localdb
 
-pgsync init
+pgsync --init
 # edit yml file
 
 # run db in docker
@@ -273,6 +273,19 @@ CREATE TABLE order_routes (
   created_by TEXT,
   modified_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
   modified_by TEXT
+);
+
+CREATE TABLE delivery_pricing (
+  uid                        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  tier_distance_min          INTEGER NOT NULL CHECK (tier_distance_min >= 0),
+  tier_distance_max          INTEGER NOT NULL CHECK (tier_distance_max > tier_distance_min),
+  tier_new_delivery_fee      REAL NOT NULL CHECK (tier_new_delivery_fee >= 0),
+  tier_refill_delivery_fee   REAL NOT NULL CHECK (tier_refill_delivery_fee >= 0),
+  tier_swap_delivery_fee     REAL NOT NULL CHECK (tier_swap_delivery_fee >= 0),
+  created_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_by                 TEXT DEFAULT NULL,
+  modified_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  modified_by                TEXT DEFAULT NULL
 );
 
 # exit

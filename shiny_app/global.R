@@ -75,7 +75,7 @@ is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # run local docker database for development
 # source("R/docker.R")
-docker_db <- FALSE
+docker_db <- TRUE
 # docker_running <- docker_is_running()
 if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
 
