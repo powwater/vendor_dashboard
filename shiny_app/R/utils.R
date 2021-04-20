@@ -9,8 +9,6 @@ create_coords_string <- function(lat, lon) {
 
 }
 
-
-
 create_directions_iframe <- function(key, start, stop, type = "place_id") {
 
   paste0(

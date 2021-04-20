@@ -12,7 +12,7 @@ get_config <- function() {
   if (!fs::dir_exists(dirname(meta_cache_path))) fs::dir_create(dirname(meta_cache_path))
 
   meta <- googledrive::drive_get(
-    googledrive::as_id("gdrive_url")
+    googledrive::as_id(gdrive_url)
   )
 
   last_modified <- purrr::pluck(meta, "drive_resource", 1, "modifiedTime")
@@ -22,7 +22,7 @@ get_config <- function() {
     if (download) {
       requireNamespace("googledrive")
       googledrive::drive_download(
-        file = googledrive::as_id("gdrive_url"),
+        file = googledrive::as_id(gdrive_url),
         path = root_path,
         overwrite = TRUE
       )
@@ -40,7 +40,7 @@ get_config <- function() {
         usethis::ui_warn("config.yml has changed since last loading. Re-downloading from Google Drive...")
         requireNamespace("googledrive")
         googledrive::drive_download(
-          file = googledrive::as_id("gdrive_url"),
+          file = googledrive::as_id(gdrive_url),
           path = root_path,
           overwrite = TRUE
         )
@@ -51,7 +51,7 @@ get_config <- function() {
       }
     } else {
       googledrive::drive_download(
-        file = googledrive::as_id("gdrive_url"),
+        file = googledrive::as_id(gdrive_url),
         path = root_path,
         overwrite = TRUE
       )
