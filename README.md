@@ -10,49 +10,6 @@
 [![Lifecycle:Maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
-*Pull latest Docker Image to run locally*
-```shell
-docker pull docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest
-```
-
-*Run `docker-compose up --build` to build and run local replicated database, pghero dashboard, and shiny app in same network*
-```shell
-docker-compose up --build
-```
-
-- `docker-compose.yml`
-
-```Dockerfile
-version: "3.9"
-services:
-  database:
-    container_name: pow_db
-    build: ./database
-    restart: always
-    env_file:
-      - ./database/.env
-    ports:
-     - "5432:5432"
-  pghero:
-    container_name: pow_pghero
-    build: ./database/pghero
-    depends_on: 
-      - "database"
-    env_file:
-      - ./database/pghero/.env
-    ports:
-      - "6657:6657"
-  shiny_app:
-    container_name: pow_vendors_app
-    build: ./shiny_app
-    depends_on:
-      - "database"
-    environment:
-      - R_CONFIG_ACTIVE=local
-    ports:
-      - "8080:8080"
-```
-
 ## Links 🔗
 
 ### Project Management 📋
@@ -109,7 +66,6 @@ services:
 - [Polished Dashboard](https://dashboard.polished.tech/)
 - [Powpolished API Dashboard](https://dashboard.powwater.org/)
 
-
 ### Developer Tools 🛠️
 
 - [dbdocs.io](https://dbdocs.io/) and [DBML - Database Markup Language](https://www.dbml.org/home/)
@@ -150,6 +106,73 @@ services:
 - The project is managed and version controlled using Git and hosted in this private Github repository.
 - Shared documents and cloud storage can be found on the project’s [Shared Google Drive](https://drive.google.com/drive/folders/1phWTOrfO89lJftvpnFn3jnHHdZwxHM7L?usp=sharing).
 - The project also has a dedicated [Slack Channel](https://powwatertychobra.slack.com/archives/C01JDL820MA) setup for communication.
+
+## Docker and Google Cloud
+
+*Pull latest Docker Image to run locally*
+```shell
+docker pull docker.pkg.github.com/powwater/vendor_dashboard/powwater_vendorsdashboard:latest
+```
+
+*Run `docker-compose up --build` to build and run local replicated database, pghero dashboard, and shiny app in same network*
+```shell
+docker-compose up --build
+```
+
+- `docker-compose.yml`
+
+```Dockerfile
+version: "3.9"
+services:
+  database:
+    container_name: pow_db
+    build: ./database
+    restart: always
+    env_file:
+      - ./database/.env
+    ports:
+     - "5432:5432"
+  pghero:
+    container_name: pow_pghero
+    build: ./database/pghero
+    depends_on: 
+      - "database"
+    env_file:
+      - ./database/pghero/.env
+    ports:
+      - "6657:6657"
+  shiny_app:
+    container_name: pow_vendors_app
+    build: ./shiny_app
+    depends_on:
+      - "database"
+    environment:
+      - R_CONFIG_ACTIVE=local
+    ports:
+      - "8080:8080"
+```
+
+**deploy to cloud run via docker**
+
+```
+PROJECTID=$(gcloud config get-value project)
+docker build . -t gcr.io/$PROJECTID/powwater_vendorsdashboard
+
+# test locally
+docker run --rm -p 8080:8080 gcr.io/$PROJECTID/powwater_vendorsdashboard
+
+# push image to gcr
+gcloud auth configure-docker
+docker push gcr.io/$PROJECTID/powwater_vendorsdashboard
+```
+
+**deploy to cloud run via gcloud builds**
+
+```
+gcloud builds submit --tag gcr.io/$PROJECTID/powwater_vendorsdashboard
+
+gcloud run deploy --image gcr.io/$PROJECTID/powwater_vendorsdashboard --platform managed --max-instances 1
+```
 
 ## Contacts 📧
 
