@@ -63,3 +63,5 @@ database/pghero/.pgsync.yml
 database/pghero/pghero_credentials.json
 
 dev/R/
+
+*.env
