@@ -13,7 +13,7 @@ sudo gem install pgsync
 mkdir powwater_localdb
 cd powwater_localdb
 
-pgsync init
+pgsync --init
 # edit yml file
 
 # run db in docker
@@ -275,6 +275,19 @@ CREATE TABLE order_routes (
   modified_by TEXT
 );
 
+CREATE TABLE delivery_pricing (
+  uid                        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  tier_distance_min          INTEGER NOT NULL CHECK (tier_distance_min >= 0),
+  tier_distance_max          INTEGER NOT NULL CHECK (tier_distance_max > tier_distance_min),
+  tier_new_delivery_fee      REAL NOT NULL CHECK (tier_new_delivery_fee >= 0),
+  tier_refill_delivery_fee   REAL NOT NULL CHECK (tier_refill_delivery_fee >= 0),
+  tier_swap_delivery_fee     REAL NOT NULL CHECK (tier_swap_delivery_fee >= 0),
+  created_at                 TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_by                 TEXT DEFAULT NULL,
+  modified_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  modified_by                TEXT DEFAULT NULL
+);
+
 # exit
 exit
 
@@ -284,8 +297,6 @@ sudo docker commit <ID> powwater_localdb
 # sync
 pgsync customers,vendors,riders,orders,order_items,customer_locations,vendor_locations,vendor_riders,order_routes,vendor_offerings,vendor_tests,vendor_working_hours,vendor_inventory --defer-constraints-v2 --disable-integrity
 ```
-
-
 
 ## Output Results
 

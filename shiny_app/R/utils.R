@@ -9,8 +9,6 @@ create_coords_string <- function(lat, lon) {
 
 }
 
-
-
 create_directions_iframe <- function(key, start, stop, type = "place_id") {
 
   paste0(
@@ -96,6 +94,11 @@ get_last_updated_date <- function(path = ".") {
 create_link <- function(val, txt = NA) {
   if (is.na(txt)) txt <- val
   paste0("<a href='", val, "' target='_blank'>", txt, "</a>")
+}
+
+create_link_pull_right <- function(val, txt = NA) {
+  if (is.na(txt)) txt <- val
+  paste0("<a class='pull-right' href='", val, "' target='_blank'>", txt, "</a>")
 }
 
 dt_bttns <- function(data, filename = "data", escape_cols = NULL) {

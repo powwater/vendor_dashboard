@@ -1,4 +1,3 @@
-
 #  ------------------------------------------------------------------------
 #
 # Title : Global
@@ -6,10 +5,6 @@
 #  Date : 2021-03-09
 #
 #  ------------------------------------------------------------------------
-
-# NOTE
-# For config.yml source R/get_config.R and run get_config() OR pull directly from
-# GCP secret manager via dev/gcloud_secret.(ps1|.sh)
 
 # clear global environment ------------------------------------------------
 rm(list = ls())
@@ -23,14 +18,13 @@ suppressPackageStartupMessages({
   library(DT)
   library(formattable)
   library(powpolished)
-  # library(polished)
   library(snakecase)
   library(tychobratools)
   library(htmltools)
   library(shiny)
   library(shinycustomloader)
   library(shinydashboard)
-  library(shinydashboardPlus) # must be version 0.7.5; install_version("shinydashboardPlus", "0.7.5")
+  library(shinydashboardPlus) # v0.7.5!
   library(shinyFeedback)
   library(shinyjs)
   library(shinyWidgets)
@@ -47,9 +41,6 @@ suppressPackageStartupMessages({
   library(dialr)
   # library(logger)
 })
-
-# library(markdown)
-# library(highcharter)
 
 if (packageVersion("shinydashboardPlus") > "0.7.5") {
   usethis::ui_stop(
@@ -74,9 +65,7 @@ is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") %in% c("default", "local")
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # run local docker database for development
-# source("R/docker.R")
-docker_db <- FALSE
-# docker_running <- docker_is_running()
+docker_db <- TRUE
 if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
 
 # download latest config.yml file:
@@ -131,3 +120,21 @@ pow_colors <- assets$colors
 
 choices <- yaml::read_yaml("config/choices.yml") %>%
   purrr::map(unlist)
+
+
+# deprecated --------------------------------------------------------------
+
+# library(dbx)
+# library(polished)
+# library(tinytex)
+# library(shinylogs)
+# library(shinytest)
+# library(logger)
+# library(markdown)
+# library(highcharter)
+
+# NOTE
+# For config.yml source R/get_config.R and run get_config() OR pull directly from
+# GCP secret manager via dev/gcloud_secret.(ps1|.sh)
+
+# source("R/docker.R")

@@ -7,6 +7,10 @@
   display: none;
 }
 
+.sidebarItemExpanded > ul > li:nth-child(3) > a > small {
+  display: none;
+}
+
 .box.box-solid.box-primary>.box-header {
     color: #fff;
     background: #333;
@@ -24,9 +28,42 @@
   text-align: center;
 }
 
-.profile-user-img {
+#shiny-modal > div > div > div.modal-body > div > img .profile-user-img {
   width: 150px !important;
 }
+
+.gm-style-iw-d {
+  max-height: 400px !important;
+}
+
+.gm-style img {
+  max-width: 75px;
+}
+
+/* iw-container  .iw-title {
+   font-family: 'Open Sans Condensed', sans-serif;
+   font-size: 22px;
+   font-weight: 400;
+   padding: 10px;
+   background-color: #48b5e9;
+   color: white;
+   margin: 1px;
+   border-radius: 2px 2px 0 0; /* In accordance with the rounding of the default infowindow corners.
+}*/
+
+.gm-style-iw {
+   max-width: 500px !important;
+   max-height: 400px !important;
+   background-color: #fff;
+}
+
+.gm-style-iw-c {
+  max-width: 500px !important;
+  max-height: 400px !important;
+  min-width: 0px !important;
+}
+
+
 
 /*.nav-tabs-custom>.nav-tabs {
   background-color: #333;
@@ -76,6 +113,5 @@
 
 input, textarea, button { margin-top:10px }
 /*
-
 
 

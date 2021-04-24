@@ -1,10 +1,10 @@
 waiting_screen <- tagList(
   tags$div(
-    style = 'width: 100%; margin-top: 25px; margin-bottom: 40px;',
+    style = 'width: 100%;', # margin-top: 25px; margin-bottom: 40px;',
     tags$img(
-      src = "images/powwater_alt.png",
+      src = "spinner.gif",
       alt = 'POWWATER Logo',
-      width = '30%'
+      width = '100%'
     )
   ),
   br(),
@@ -41,7 +41,9 @@ sidebar <- dashboardSidebar(
       menuItem(
         text = 'Orders',
         tabName = 'orders_tab',
-        icon = icon('money')
+        icon = icon('money'),
+        badgeLabel = "!",
+        badgeColor = "red"
       ),
       menuItem(
         text = 'Tests',

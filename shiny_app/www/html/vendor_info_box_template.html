@@ -1,0 +1,53 @@
+<div class="box-body, box-profile">
+  <img width="75px" class="profile-user-img img-responsive img-circle" src='{{ image_path }}'/>
+  <h3 class="profile-username text-center">{{ vendor_name }}</h3>
+  <p class="text-muted text-center">{{ vendor_address }}</p>
+  <ul class="list-group">
+    <li class="list-group-item">
+      <strong>
+        <span>
+          <i
+            class="fa fa-phone"
+            role="presentation"
+            aria-label="phone icon"
+          ></i>
+          Phone Number:
+        </span>
+      </strong>
+      <a class="pull-right">{{ vendor_phone }}</a>
+    </li>
+    <li class="list-group-item">
+      <strong>
+        <span>
+          <i class="fa fa-link" role="presentation" aria-label="link icon"></i>
+          Website:
+        </span>
+      </strong>
+      {{ HTML(vendor_website) }}
+    </li>
+    <li class="list-group-item">
+      <strong>
+        <span>
+          <i
+            class="fa fa-map-marker"
+            role="presentation"
+            aria-label="marker icon"
+          ></i>
+          Address:
+        </span>
+      </strong>
+      {{ HTML(vendor_location) }}
+    </li>
+    <li class="list-group-item">
+      <strong>
+        <span>
+          <i class="fa fa-info" role="presentation" aria-label="info icon"></i>
+          Operation Description:
+        </span>
+      </strong>
+      <br>
+      <br>
+      <p>{{ vendor_desc }}<p>
+    </li>
+  </ul>
+</div>

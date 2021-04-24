@@ -225,16 +225,13 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
   customers_table_proxy <- DT::dataTableProxy("customers_table")
 
-  map_data <- reactiveVal(NULL)
+  map_data <- reactive({
 
-  observeEvent(customers(), {
-
-    dat <- customers() %>%
+    customer_markers_data <- customers() %>%
       filter(!is.na(customer_location_name)) %>%
       mutate(
-        # colour = "red",
         title = paste0(customer_name, ": ", customer_location_name),
-        info = paste0(
+        info_box = paste0(
           "<div id='bodyContent'>",
           "<h4>", customer_name, "</h4>",
           "<h5>", customer_location_name, "<h5><hr>",
@@ -251,51 +248,61 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         )
       )
 
-    map_data(dat)
+    vendor_markers_data <- customers() %>%
+      select(
+        vendor_uid,
+        vendor_location_uid,
+        vendor_name,
+        vendor_location_name,
+        vendor_location_address,
+        vendor_location_url,
+        vendor_location_place_id,
+        vendor_location_lat,
+        vendor_location_lon
+      ) %>%
+      filter(!is.na(vendor_location_place_id)) %>%
+      left_join(
+        conn %>% tbl("vendors") %>%
+          select(vendor_uid = uid,
+                 website,
+                 phone_number,
+                 operation_description) %>%
+          collect(),
+        by = "vendor_uid") %>%
+      distinct() %>%
+      mutate(
+        colour = "blue",
+        title = paste0(vendor_name, ": ", vendor_location_name),
+        image_path = ifelse(vendor_name == "Dutch Water",
+                            "images/profiles/dutch_water.png",
+                            "images/profiles/no_picture.png"),
+        info_box = as.character(tags$div(fluidPage(shiny::htmlTemplate(
+          "www/html/vendor_info_box_template.html",
+          image_path = .data$image_path,
+          vendor_name = .data$vendor_name,
+          vendor_address = .data$vendor_location_address,
+          vendor_location = create_link_pull_right(.data$vendor_location_url, .data$vendor_location_address),
+          vendor_phone = .data$phone_number,
+          vendor_website = create_link_pull_right(.data$website, .data$website),
+          vendor_desc = .data$operation_description
+        ))))
+      )
+
+    list(customers = customer_markers_data,
+         vendors = vendor_markers_data)
 
   })
 
   output$customer_locations <- renderGoogle_map({
-    req(map_data(), customers())
+    req(map_data())
 
-    dat <- map_data()
-
+    cust_dat <- map_data()$customers
+    vend_dat <- map_data()$vendors
     key <- googleway::google_keys()$google$default
-
-    vend_dat <- customers() %>%
-      select(
-        lat = vendor_location_lat,
-        lon = vendor_location_lon,
-        address = vendor_location_address,
-        place_id = vendor_location_place_id,
-        name = vendor_name,
-        vendor_uid
-      ) %>%
-      filter(!is.na(place_id)) %>%
-      mutate(
-        colour = "blue",
-        title = paste0(name, ": ", address),
-        info = paste0(
-          "<div id='bodyContent'>",
-          "<h4>", name, "</h4>",
-          "<h5>", address, "<h5><hr>",
-          "<iframe width='450px' height='250px'",
-          "frameborder='0' style = 'border:0'",
-          "src=",
-          paste0(
-            "https://www.google.com/maps/embed/v1/place?q=place_id:",
-            place_id,
-            "&key=",
-            key
-          ),
-          "></iframe></div>"
-        )
-      ) %>%
-      distinct()
 
     google_map(vend_dat,
                key = key,
-               location = c(vend_dat$lat, vend_dat$lon),
+               location = c(vend_dat$vendor_location_lat, vend_dat$vendor_location_lon),
                zoom = 7,
                map_type_control = TRUE,
                zoom_control = TRUE,
@@ -305,23 +312,23 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
                event_return_type = "list"
     ) %>%
       add_markers(
-        data = dat,
+        data = cust_dat,
         id = "customer_uid",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
         layer_id = "customer_locations_layer",
-        info_window = "info",
+        info_window = "info_box",
         close_info_window = TRUE,
         update_map_view = TRUE
       ) %>%
       add_markers(
         data = vend_dat,
         id = "vendor_uid",
-        lat = "lat",
-        lon = "lon",
+        lat = "vendor_location_lat",
+        lon = "vendor_location_lon",
         title = "title",
-        info_window = "info",
+        info_window = "info_box",
         close_info_window = TRUE,
         layer_id = "vendor_location_layer",
         colour = "colour",
@@ -331,7 +338,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
   })
 
   customer_to_map <- eventReactive(input$customer_id_to_map, {
-    map_data() %>%
+    map_data()$customers %>%
       filter(customer_uid == input$customer_id_to_map)
   })
 
@@ -383,7 +390,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
-        info_window = "info",
+        info_window = "info_box",
         layer_id = "single_customer_layer",
         update_map_view = TRUE,
         focus_layer = TRUE
@@ -410,13 +417,13 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       clear_markers(layer_id = "single_customer_layer") %>%
       clear_polylines(layer_id = "single_customer_polyline") %>%
       add_markers(
-        data = map_data(),
+        data = map_data()$customers,
         id = "customer_uid",
         lat = "customer_location_lat",
         lon = "customer_location_lon",
         title = "title",
         layer_id = "customer_locations_layer",
-        info_window = "info",
+        info_window = "info_box",
         close_info_window = TRUE,
         update_map_view = TRUE
       )
