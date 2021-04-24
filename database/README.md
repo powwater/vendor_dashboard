@@ -298,8 +298,6 @@ sudo docker commit <ID> powwater_localdb
 pgsync customers,vendors,riders,orders,order_items,customer_locations,vendor_locations,vendor_riders,order_routes,vendor_offerings,vendor_tests,vendor_working_hours,vendor_inventory --defer-constraints-v2 --disable-integrity
 ```
 
-
-
 ## Output Results
 
 ```bash

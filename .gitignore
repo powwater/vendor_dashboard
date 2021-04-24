@@ -65,3 +65,6 @@ database/pghero/pghero_credentials.json
 dev/R/
 
 *.env
+
+README.html
+

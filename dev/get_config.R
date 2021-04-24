@@ -11,6 +11,8 @@ get_config <- function() {
 
   if (!fs::dir_exists(dirname(meta_cache_path))) fs::dir_create(dirname(meta_cache_path))
 
+  if (file.exists(root_path)) file.copy(root_path, paste0(fs::path_ext_remove(root_path), "_old.yml"))
+
   meta <- googledrive::drive_get(
     googledrive::as_id(gdrive_url)
   )

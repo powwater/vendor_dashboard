@@ -1,4 +1,5 @@
 docker_is_running <- function() {
+
   response <- system2("docker", "ps ", stdout = TRUE, stderr = TRUE)
 
   if (length(response) == 1 &&
@@ -8,7 +9,7 @@ docker_is_running <- function() {
 
   if (length(response) == 1)
     return(FALSE)
-
+  
   TRUE
 }
 

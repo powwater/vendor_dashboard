@@ -39,6 +39,7 @@ suppressPackageStartupMessages({
   library(waiter)
   library(shinyscroll)
   library(dialr)
+  # library(logger)
 })
 
 if (packageVersion("shinydashboardPlus") > "0.7.5") {
@@ -65,7 +66,6 @@ is_local <- Sys.getenv('SHINY_PORT') == ""
 
 # run local docker database for development
 docker_db <- TRUE
-# docker_running <- docker_is_running()
 if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
 
 # download latest config.yml file:

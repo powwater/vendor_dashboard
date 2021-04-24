@@ -292,50 +292,6 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
          vendors = vendor_markers_data)
 
   })
-  #     paste0(
-  #     "<div id='bodyContent'>",
-  #     "<h4>", name, "</h4>",
-  #     "<h5>", address, "<h5><hr>",
-  #     "<iframe width='450px' height='250px'",
-  #     "frameborder='0' style = 'border:0'",
-  #     "src=",
-  #     paste0(
-  #       "https://www.google.com/maps/embed/v1/place?q=place_id:",
-  #       place_id,
-  #       "&key=",
-  #       key
-  #     ),
-  #     "></iframe></div>"
-  #   )
-  # )
-
-  # observeEvent(customers(), {
-  #
-  #   dat <- customers() %>%
-  #     filter(!is.na(customer_location_name)) %>%
-  #     mutate(
-  #       # colour = "red",
-  #       title = paste0(customer_name, ": ", customer_location_name),
-  #       info = paste0(
-  #         "<div id='bodyContent'>",
-  #         "<h4>", customer_name, "</h4>",
-  #         "<h5>", customer_location_name, "<h5><hr>",
-  #         "<iframe width='450px' height='250px'",
-  #         "frameborder='0' style = 'border:0'",
-  #         "src=",
-  #         paste0(
-  #           "https://www.google.com/maps/embed/v1/place?q=place_id:",
-  #           customer_location_place_id,
-  #           "&key=",
-  #           key
-  #         ),
-  #         "></iframe></div>"
-  #       )
-  #     )
-  #
-  #   map_data(dat)
-  #
-  # })
 
   output$customer_locations <- renderGoogle_map({
     req(map_data())
