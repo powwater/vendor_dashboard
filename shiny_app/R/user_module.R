@@ -46,18 +46,21 @@ user_module <- function(input, output, session, vendor_info) {
     out
   })
 
-  is_online <- reactive({
-    is_vendor_online(conn, vendor_info()$vendor_uid)
+  is_open <- reactive({
+    TRUE
+    # is_vendor_open(conn, vendor_info()$vendor_uid)
   })
 
   output$user_panel <- renderUI({
 
     img <- image_path()
 
-    if (is_online()) {
-      online_badge <- shinydashboardPlus::dashboardBadge("Online", color = "green")
+    if (is_open()) {
+      online_badge <- shinydashboardPlus::dashboardBadge("Open", color = "green")
+      wifi_color <- paste0("color: ", pow_colors$darkgreen)
     } else {
-      online_badge <- shinydashboardPlus::dashboardBadge("Offline", color = "red")
+      online_badge <- shinydashboardPlus::dashboardBadge("Closed", color = "red")
+      wifi_color <- paste0("color: ", pow_colors$grey)
     }
 
     div(
@@ -65,7 +68,7 @@ user_module <- function(input, output, session, vendor_info) {
       sidebarUserPanel(
         name = paste0("Vendor: ", vendor_info()$vendor_name),
         subtitle = tags$span(
-          icon("wifi"),
+          icon("wifi", style = wifi_color),
           ": ",
           online_badge
         ),
