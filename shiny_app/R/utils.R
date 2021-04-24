@@ -96,6 +96,11 @@ create_link <- function(val, txt = NA) {
   paste0("<a href='", val, "' target='_blank'>", txt, "</a>")
 }
 
+create_link_pull_right <- function(val, txt = NA) {
+  if (is.na(txt)) txt <- val
+  paste0("<a class='pull-right' href='", val, "' target='_blank'>", txt, "</a>")
+}
+
 dt_bttns <- function(data, filename = "data", escape_cols = NULL) {
 
   colvis_cols <- c(1:(ncol(data) - 1))
