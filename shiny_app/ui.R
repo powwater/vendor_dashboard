@@ -41,7 +41,9 @@ sidebar <- dashboardSidebar(
       menuItem(
         text = 'Orders',
         tabName = 'orders_tab',
-        icon = icon('money')
+        icon = icon('money'),
+        badgeLabel = "!",
+        badgeColor = "red"
       ),
       menuItem(
         text = 'Tests',
