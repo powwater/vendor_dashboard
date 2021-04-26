@@ -33,7 +33,7 @@ is_vendor_open <- function(conn,
       stop = convert_time_utc(working_hours_stop)
     )
 
-  interval <- filt$start %--% filt$stop
+  interval <- hours_data_filt_adj$start %--% hours_data_filt_adj$stop
 
   now <- lubridate::ymd_hms(now, tz = "UTC")
 
