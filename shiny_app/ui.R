@@ -17,7 +17,7 @@ header <- dashboardHeaderPlus(
   title = header_title(),
   left_menu = header_left_menu("Vendor Dashboard", app_config$app_version),
   header_contact_menu(),
-  polished::profile_module_ui("polished_profile"),
+  profile_module_ui("polished_profile"),
   enable_rightsidebar = TRUE,
   rightSidebarIcon = "cogs"
 )
