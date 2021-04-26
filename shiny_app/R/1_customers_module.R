@@ -47,7 +47,7 @@ customers_module_ui <- function(id) {
                            "View All",
                            icon = icon("map")) %>% shinyjs::hidden()
             ),
-            googleway::google_mapOutput(ns("customer_locations")),
+            googleway::google_mapOutput(ns("customer_locations"), width = "100%", height = "400px"),
             helpText("Select a customer above to view route information.
                      Click on a marker or line for an information window to appear."),
             uiOutput(ns("map_details"))
