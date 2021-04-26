@@ -71,19 +71,21 @@ body <- dashboardBody(
   shinyjs::useShinyjs(),
   shinyFeedback::useShinyFeedback(),
   tags$head(
-    includeCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"),
-    includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
-    includeCSS("www/stars.css"),
-    includeCSS("www/styles.css"),
+    htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js",
+                           type = "text/javascript",
+                           language = "JavaScript"),
     htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js",
                            type = "text/javascript",
                            language = "JavaScript"),
+    includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
     htmltools::tags$script(src = "custom.js",
                            type = "text/javascript",
                            language = "JavaScript"),
     htmltools::tags$script(src = "js/is_mobile.js",
                            type = "text/javascript",
-                           language = "JavaScript")
+                           language = "JavaScript"),
+    includeCSS("www/stars.css"),
+    includeCSS("www/styles.css")
   ),
   tabItems(
     tabItem(
