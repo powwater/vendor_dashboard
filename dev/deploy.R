@@ -9,23 +9,41 @@ source("dev/sysreqs.R")
 source("dev/pkgdeps.R")
 source("dev/use_template.R")
 
+# create new "build" folder
+fs::dir_delete("build")
+fs::dir_create("build")
+copy_dirs <- c(
+  "shiny_app/R",
+  "shiny_app/config",
+  "shiny_app/www"
+)
+copy_files <- c(
+  "shiny_app/.Rprofile.site",
+  "shiny_app/.dockerignore",
+  "shiny_app/config.yml",
+  fs::dir_ls("shiny_app", type = "file", glob = "*.R")
+)
+
+purrr::walk(copy_dirs, ~ fs::dir_copy(.x, paste0("build/", basename(.x)), overwrite = TRUE))
+purrr::walk(copy_files, fs::file_copy, "build/", overwrite = TRUE)
+# fs::dir_delete("build/R/dev")
+
+# shiny::runApp(appDir = "build")
+
 # gather R package dependencies -------------------------------------------
 optional_pkgs <- c("googledrive", "qs", "dbx", "urltools", "rprojroot", "usethis")
 deps <- polished:::get_package_deps("shiny_app")
 deps <- deps[!(names(deps) %in% c(optional_pkgs, "remotes"))]
-yaml::write_yaml(deps, "shiny_app/deps.yml")
-
-# gather sysreqs ----------------------------------------------------------
-sysreqs <- get_sysreqs(names(deps))
+yaml::write_yaml(deps, "build/deps.yml")
 
 # command strings ---------------------------------------------------------
 cran_install_cmd <- get_cran_deps(deps) %>% cran_packages_cmd()
 gh_install_cmd <- get_gh_deps(deps) %>% gh_packages_cmd()
-sysreqs_cmd <- paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
+sysreqs_cmd <- get_sysreqs_pak(names(deps)) %>% sysreqs_cmd()
 
 # create Dockerfile from template -----------------------------------------
 use_template("dev/templates/Dockerfile_template",
-             "Dockerfile",
+             "build/Dockerfile",
              data = list(
                sysreqs = sysreqs_cmd,
                cran_installs = cran_install_cmd,
@@ -33,12 +51,12 @@ use_template("dev/templates/Dockerfile_template",
              ))
 
 # create .dockerignore ----------------------------------------------------
-write("shiny_app/.dockerignore", ".dockerignore")
-write("shiny_app/Dockerfile", ".dockerignore", append = TRUE)
-write("shiny_app/logs/*", ".dockerignore", append = TRUE)
-write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
-write("shiny_app/README.md", ".dockerignore", append = TRUE)
-write("shiny_app/R/get_config.R", ".dockerignore", append = TRUE)
+# write("shiny_app/.dockerignore", ".dockerignore")
+# write("shiny_app/Dockerfile", ".dockerignore", append = TRUE)
+# write("shiny_app/logs/*", ".dockerignore", append = TRUE)
+# write("shiny_app/deps.yaml", ".dockerignore", append = TRUE)
+# write("shiny_app/README.md", ".dockerignore", append = TRUE)
+# write("shiny_app/R/get_config.R", ".dockerignore", append = TRUE)
 
 # start docker, build local test image and run
 shell.exec("C:/Program Files/Docker/Docker/Docker Desktop.exe")

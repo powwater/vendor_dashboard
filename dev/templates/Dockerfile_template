@@ -1,6 +1,8 @@
 FROM rocker/r-ver:4.0.5 AS sysreqs
 
-EXPOSE 8080
+ENV CRAN_REPO https://packagemanager.rstudio.com/cran/__linux__/focal/latest
+
+RUN R -e "install.packages('remotes', repos = c('CRAN' = Sys.getenv('CRAN_REPO')))"
 
 # System Requirements
 {{{ sysreqs }}}
@@ -8,7 +10,8 @@ EXPOSE 8080
 FROM sysreqs AS rpackages
 
 COPY .Rprofile.site /usr/lib/R/etc/
-RUN R -e "install.packages('remotes')"
+
+RUN R -e "install.packages('remotes', repos = c('CRAN' = Sys.getenv('CRAN_REPO')))"
 
 {{{ cran_installs }}}
 
@@ -16,7 +19,8 @@ RUN R -e "install.packages('remotes')"
 
 FROM rpackages AS shinyapp
 
-# Copy app into shiny server `shiny_app` directory
-COPY 'shiny_app' /srv/shiny-server/shiny_app
+COPY . /srv/shiny-server/shiny_app
+
+EXPOSE 8080
 
 CMD ["Rscript","-e","shiny::runApp(appDir='/srv/shiny-server/shiny_app',port=8080,launch.browser=FALSE,host='0.0.0.0')"]

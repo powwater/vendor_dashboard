@@ -36,7 +36,7 @@ tychobratools:
   Package: tychobratools
   GithubUsername: tychobra
   GithubRepo: tychobratools
-  GithubRef: HEAD
+  GithubRef: c1a24b413363174f1115a0b34d9ae3f8616e5b76
   GithubSHA1: c1a24b413363174f1115a0b34d9ae3f8616e5b76
 htmltools:
   Package: htmltools
@@ -60,10 +60,8 @@ shinydashboardPlus:
   Version: 0.7.5
 shinyFeedback:
   Package: shinyFeedback
-  GithubUsername: merlinoa
-  GithubRepo: shinyFeedback
-  GithubRef: HEAD
-  GithubSHA1: ceb65e02428181a166a8b2cb20aac727c6f261ab
+  Repository: CRAN
+  Version: 0.3.0
 shinyjs:
   Package: shinyjs
   Repository: CRAN
@@ -98,10 +96,8 @@ attempt:
   Version: 0.3.1
 googleway:
   Package: googleway
-  GithubUsername: merlinoa
-  GithubRepo: googleway
-  GithubRef: HEAD
-  GithubSHA1: c35b8edec8721e73df3fbfeb6f2a02e039ae2f7b
+  Repository: CRAN
+  Version: 2.7.3
 shinyFiles:
   Package: shinyFiles
   Repository: CRAN
@@ -127,15 +123,11 @@ config:
 tibble:
   Package: tibble
   Repository: CRAN
-  Version: 3.1.0
+  Version: 3.1.1
 stringr:
   Package: stringr
   Repository: CRAN
   Version: 1.4.0
-scales:
-  Package: scales
-  Repository: CRAN
-  Version: 1.1.1
 fs:
   Package: fs
   Repository: CRAN

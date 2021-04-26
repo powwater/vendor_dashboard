@@ -64,12 +64,12 @@ options(lubridate.week.start = 1)
 is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") %in% c("default", "local")
 is_local <- Sys.getenv('SHINY_PORT') == ""
 
-# run local docker database for development
-docker_db <- TRUE
-if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
-
-# download latest config.yml file:
-if (is_local) source("R/get_config.R"); get_config()
+# # run local docker database for development
+# docker_db <- TRUE
+# if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
+#
+# # download latest config.yml file:
+# if (is_local) source("R/get_config.R"); get_config()
 
 # enable shiny devmode
 if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()

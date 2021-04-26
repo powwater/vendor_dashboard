@@ -68,3 +68,6 @@ dev/R/
 
 README.html
 
+shiny_app/dev
+
+build/*

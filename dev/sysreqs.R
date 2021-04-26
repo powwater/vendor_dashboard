@@ -1,3 +1,22 @@
+get_sysreqs_pak <- function(packages) {
+
+  purrr::map(
+    packages,
+    pak::pkg_system_requirements, os = "ubuntu", os_release = "20.04") %>%
+    purrr::set_names(packages) %>%
+    purrr::flatten_chr() %>%
+    unique() %>%
+    stringr::str_replace_all(., "apt-get install -y ", "")
+
+}
+
+sysreqs_cmd <- function(sysreqs) {
+
+  paste(paste0("RUN ", apt_get_install(sysreqs), collapse = " \\ \n"))
+
+}
+
+
 #' Retrieve a list of system dependencies for the given packages
 #'
 #' @param packages
@@ -88,7 +107,8 @@ apt_get_install <- function(sysreqs = NULL,
     paste(
       paste0("  ", sysreqs),
       collapse = " \\ \n"
-    )
+    ),
+    " \\ \n && rm -rf /var/lib/apt/lists/*"
   )
 
 }
