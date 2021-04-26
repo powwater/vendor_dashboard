@@ -1,4 +1,12 @@
 
+convert_time_utc <- function(time) {
+
+  today <- lubridate::as_date(Sys.time(), tz = "UTC")
+  hold <- paste0(today, " ", time)
+  lubridate::ymd_hms(hold, tz = "UTC")
+
+}
+
 is_vendor_open <- function(conn,
                            vendor,
                            now = Sys.time(),
@@ -35,10 +43,3 @@ is_vendor_open <- function(conn,
 
 }
 
-convert_time_utc <- function(time) {
-
-  today <- lubridate::as_date(Sys.time(), tz = "UTC")
-  hold <- paste0(today, " ", time)
-  lubridate::ymd_hms(hold, tz = "UTC")
-
-}
