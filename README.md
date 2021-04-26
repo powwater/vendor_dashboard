@@ -10,6 +10,42 @@
 [![Lifecycle:Maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
+## Deployment 📦
+
+Deployed via `Docker` using multi-stage builds and pushed to google container registry and 
+further deployed into cloud run.
+
+- Dockerfile Template used for generating deployed container:
+
+```
+FROM rocker/r-ver:4.0.5 AS sysreqs
+
+ENV CRAN_REPO https://packagemanager.rstudio.com/cran/__linux__/focal/latest
+
+RUN R -e "install.packages('remotes', repos = c('CRAN' = Sys.getenv('CRAN_REPO')))"
+
+# System Requirements
+{{{ sysreqs }}}
+
+FROM sysreqs AS rpackages
+
+COPY .Rprofile.site /usr/lib/R/etc/
+
+RUN R -e "install.packages('remotes', repos = c('CRAN' = Sys.getenv('CRAN_REPO')))"
+
+{{{ cran_installs }}}
+
+{{{ gh_installs }}}
+
+FROM rpackages AS shinyapp
+
+COPY . /srv/shiny-server/shiny_app
+
+EXPOSE 8080
+
+CMD ["Rscript","-e","shiny::runApp(appDir='/srv/shiny-server/shiny_app',port=8080,launch.browser=FALSE,host='0.0.0.0')"]
+```
+
 ## Links 🔗
 
 ### Project Management 📋
