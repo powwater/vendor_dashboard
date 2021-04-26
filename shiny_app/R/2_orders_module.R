@@ -434,7 +434,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     observeEvent(input$vendor_response_text, {
       if (is.null(input$vendor_response_text) || input$vendor_response_text == "") {
-        shinyFeedback::showFeedbackDanger("vendor_response_text", text = "Cannot be left blank.", icon = NULL)
+        shinyFeedback::showFeedbackDanger("vendor_response_text", text = "Cannot be left blank.", icon = shiny::icon("ban", lib = "font-awesome"))
         shinyjs::disable("submit")
       } else {
         shinyFeedback::hideFeedback("vendor_response_text")

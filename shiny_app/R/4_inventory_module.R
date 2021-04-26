@@ -297,7 +297,8 @@ inventory_edit_module <- function(input, output, session,
       if (input$capacity == "") {
         shinyFeedback::showFeedbackDanger(
           "capacity",
-          text = "Capacity cannot be blank."
+          text = "Capacity cannot be blank.",
+          icon = shiny::icon("ban", lib = "font-awesome")
         )
         shinyjs::disable("submit")
       } else {
@@ -311,7 +312,8 @@ inventory_edit_module <- function(input, output, session,
       if (input$offer_type == "") {
         shinyFeedback::showFeedbackDanger(
           "offer_type",
-          text = "Offer Type cannot be blank."
+          text = "Offer Type cannot be blank.",
+          icon = shiny::icon("ban", lib = "font-awesome")
         )
         shinyjs::disable("submit")
       } else {
@@ -324,7 +326,8 @@ inventory_edit_module <- function(input, output, session,
       if (is.na(input$price_per_unit) || input$price_per_unit <= 0) {
         shinyFeedback::showFeedbackDanger(
           "price_per_unit",
-          text =  "Price cannot be blank."
+          text =  "Price cannot be blank.",
+          icon = shiny::icon("ban", lib = "font-awesome")
         )
         shinyjs::disable("submit")
       }  else {
@@ -337,7 +340,8 @@ inventory_edit_module <- function(input, output, session,
       if (is.na(input$quantity)) {
         shinyFeedback::showFeedbackDanger(
           "quantity",
-          text = "Quantity cannot be blank."
+          text = "Quantity cannot be blank.",
+          icon = shiny::icon("ban", lib = "font-awesome")
         )
         shinyjs::disable("submit")
       } else {
