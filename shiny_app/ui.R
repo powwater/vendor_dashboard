@@ -4,13 +4,13 @@ waiting_screen <- tagList(
     tags$img(
       src = "spinner.gif",
       alt = 'POWWATER Logo',
-      width = '100%'
+      width = '80%'
     )
   ),
   br(),
   spin_chasing_dots(),
   br(),
-  span("Loading...", style = "color:white;")
+  span("Please wait while we setup the app for you...", style = "color:white;")
 )
 
 header <- dashboardHeaderPlus(
