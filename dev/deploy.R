@@ -34,7 +34,7 @@ purrr::walk(copy_files, fs::file_copy, "build/", overwrite = TRUE)
 optional_pkgs <- c("googledrive", "qs", "dbx", "urltools", "rprojroot", "usethis")
 deps <- polished:::get_package_deps("shiny_app")
 deps <- deps[!(names(deps) %in% c(optional_pkgs, "remotes"))]
-yaml::write_yaml(deps, "build/deps.yml")
+yaml::write_yaml(deps, "shiny_app/deps.yml")
 
 # command strings ---------------------------------------------------------
 cran_install_cmd <- get_cran_deps(deps) %>% cran_packages_cmd()
@@ -43,7 +43,7 @@ sysreqs_cmd <- get_sysreqs_pak(names(deps)) %>% sysreqs_cmd()
 
 # create Dockerfile from template -----------------------------------------
 use_template("dev/templates/Dockerfile_template",
-             "build/Dockerfile",
+             "shiny_app/Dockerfile",
              data = list(
                sysreqs = sysreqs_cmd,
                cran_installs = cran_install_cmd,

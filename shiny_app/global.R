@@ -111,12 +111,12 @@ global_sessions_config(
 
 # assets ---------------------------------------
 
-assets <- yaml::read_yaml("config/assets.yml")
+assets <- yaml::read_yaml("www/assets.yml")
 pow_colors <- assets$colors
 
 # choices -----------------------------------------------------------------
 
-choices <- yaml::read_yaml("config/choices.yml") %>%
+choices <- yaml::read_yaml("choices.yml") %>%
   purrr::map(unlist)
 
 
