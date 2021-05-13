@@ -68,7 +68,7 @@ RUN R -e "remotes::install_github('johncoene/shinyscroll', ref = '98f5d669ab76c9
 
 FROM rpackages AS shinyapp
 
-COPY . /srv/shiny-server/shiny_app
+COPY shiny_app /srv/shiny-server/shiny_app
 
 EXPOSE 8080
 
