@@ -101,16 +101,16 @@ CREATE TYPE public.vehicle_type AS ENUM (
 -- Name: billings; Type: TABLE; Schema: public; Owner: -
 --
 
--- CREATE TABLE public.billings (
---     uid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
---     account_uid uuid,
---     stripe_customer_id text,
---     payment_method_id text,
---     discount_pct real,
---     created_at timestamp with time zone DEFAULT now() NOT NULL,
---     modified_at timestamp with time zone DEFAULT now() NOT NULL,
---     payment_method_first_enabled_at timestamp with time zone
--- );
+CREATE TABLE public.billings (
+    uid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    account_uid uuid,
+    stripe_customer_id text,
+    payment_method_id text,
+    discount_pct real,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    modified_at timestamp with time zone DEFAULT now() NOT NULL,
+    payment_method_first_enabled_at timestamp with time zone
+);
 
 
 --
@@ -174,21 +174,21 @@ CREATE TABLE public.distance_matrix (
 -- Name: email_templates; Type: TABLE; Schema: public; Owner: -
 --
 
--- CREATE TABLE public.email_templates (
---     uid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
---     account_uid uuid,
---     template_type text,
---     sender text,
---     subject text,
---     body text,
---     font text,
---     font_size integer,
---     line_height real,
---     enable_markdown boolean,
---     alignment text,
---     created_at timestamp with time zone DEFAULT now() NOT NULL,
---     modified_at timestamp with time zone DEFAULT now() NOT NULL
--- );
+CREATE TABLE public.email_templates (
+    uid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    account_uid uuid,
+    template_type text,
+    sender text,
+    subject text,
+    body text,
+    font text,
+    font_size integer,
+    line_height real,
+    enable_markdown boolean,
+    alignment text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    modified_at timestamp with time zone DEFAULT now() NOT NULL
+);
 
 
 --

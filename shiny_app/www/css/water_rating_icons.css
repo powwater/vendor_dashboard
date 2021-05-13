@@ -1,0 +1,14 @@
+
+.full {
+  color: blue;
+  vertical-align:text-bottom;
+}
+
+.half {
+  color: blue;
+  width: 5px;
+  overflow: hidden;
+  vertical-align:text-bottom;
+  margin-right: 8px;
+}
+
