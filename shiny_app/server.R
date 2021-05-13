@@ -1,8 +1,5 @@
 server <- function(input, output, session) {
 
-  # logger::log_layout(layout_glue_colors)
-  # logger::log_shiny_input_changes(input = input, level = INFO)
-
   observeEvent(input$waiter_trigger == '1', {
     req(input$waiter_trigger == '1')
     waiter_hide()
@@ -20,14 +17,24 @@ server <- function(input, output, session) {
     }
   })
 
+  user_data <- reactive({
+    user_data <- session$userData$user()
+    user_uid <- user_data$user_uid
+    is_user_admin <- user_data$is_admin
+    list(uid = user_uid, is_admin = is_user_admin, data = user_data)
+  })
+
+  vendor_users <- reactive({
+    usr <- user_data()$uid
+
+    tbl(conn, "vendor_users") %>%
+      filter(.data$user_uid %in% .env$usr) %>%
+      collect()
+  })
+
   logged_in_vendor_info <- reactive({
-    list(
-      vendor_uid = "c401b531-719d-4cad-82e7-71db3ffba166",
-      vendor_location_uid = "702e0732-db29-479a-a2a0-2595392e7280",
-      vendor_name = "Dutch Water",
-      place_id = "ChIJrToahpQJQBgRZ6ukvDc1LO4",
-      region_id = "ChIJ5b0LA6wOQBgRe0sIruEoRCc"
-    )
+    user_vendor <- unique(vendor_users()$vendor_uid) # [match(user_uid, vendor_users()$user_uid)]
+    get_vendor_info(conn = conn, user_vendor)
   })
 
   callModule(
@@ -95,3 +102,9 @@ secure_server(
   server,
   custom_sign_in_server = sign_in_module_2
 )
+
+
+# deprecated --------------------------------------------------------------
+
+# logger::log_layout(layout_glue_colors)
+# logger::log_shiny_input_changes(input = input, level = INFO)

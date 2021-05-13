@@ -1,0 +1,117 @@
+/* Hide default login box */
+.shiny-server-account {
+  display: none;
+}
+
+.mobile-hide {
+  display: none;
+}
+
+.sidebarItemExpanded > ul > li:nth-child(3) > a > small {
+  display: none;
+}
+
+.box.box-solid.box-primary>.box-header {
+    color: #fff;
+    background: #333;
+    background-color: #333;
+}
+
+.box.box-solid.box-primary {
+    border: 1px solid #333;
+}
+
+.dangerdiv {
+  color: red;
+  font-size: 14px;
+  font-style: bold;
+  text-align: center;
+}
+
+#shiny-modal > div > div > div.modal-body > div > img .profile-user-img {
+  width: 150px !important;
+}
+
+.gm-style-iw-d {
+  max-height: 400px !important;
+}
+
+.gm-style img {
+  max-width: 75px;
+}
+
+/* iw-container  .iw-title {
+   font-family: 'Open Sans Condensed', sans-serif;
+   font-size: 22px;
+   font-weight: 400;
+   padding: 10px;
+   background-color: #48b5e9;
+   color: white;
+   margin: 1px;
+   border-radius: 2px 2px 0 0; /* In accordance with the rounding of the default infowindow corners.
+}*/
+
+.gm-style-iw {
+   max-width: 500px !important;
+   max-height: 400px !important;
+   background-color: #fff;
+}
+
+.gm-style-iw-c {
+  max-width: 500px !important;
+  max-height: 400px !important;
+  min-width: 0px !important;
+}
+
+
+
+/*.nav-tabs-custom>.nav-tabs {
+  background-color: #333;
+  color: #fff;
+  background: #333;
+}
+
+.nav-tabs-custom>.nav-tabs>.li>.a>.i {
+  color: #fff;
+}
+
+.header.pull-right.span {
+  color: #fff;
+}
+
+.nav-tabs-custom>.nav-tabs>li.active {
+    border-top-color: rgb(0 0 0 / 20%);
+}*/
+
+/* DT Datatables Styles */
+
+/* nowrap for column widths */
+/* from https://stackoverflow.com/questions/55208855/how-to-set-column-width-in-r-shiny-data-table */
+.nowrap {
+  white-space: nowrap;
+}
+
+.datatables th {
+  text-align: center !important;
+}
+
+/*.dt-col {
+  min-width: 85px;
+}*/
+
+/*.dataTables_length {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: right;
+  float: right;
+}*/
+
+/*.dataTables_length, .dt-buttons {
+  float: left;
+  margin-right: 10px;
+}
+
+input, textarea, button { margin-top:10px }
+/*
+
+

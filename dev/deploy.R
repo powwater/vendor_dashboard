@@ -67,7 +67,7 @@ browseURL("localhost:8080")
 # build production, tag, and push to GCR
 rstudioapi::terminalExecute("gcloud auth configure-docker")
 rstudioapi::terminalExecute("docker build --build-arg R_CONFIG_ACTIVE=production -t powwater_vendorsdashboard .")
-rstudioapi::terminalExecute("docker tag powwater_vendorsdashboard gcr.io/powwater/powwater_vendorsdashboard")
+rstudioapi::terminalExecute("docker tag powwater_vendor_dashboard gcr.io/powwater/powwater_vendor_dashboard")
 rstudioapi::terminalExecute("docker push gcr.io/powwater/powwater_vendorsdashboard")
 
 # deploy to cloud run

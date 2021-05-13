@@ -19,19 +19,23 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       conn %>% dplyr::tbl("customers"),
       by = c("customer_uid" = "uid")
     ) %>%
-    left_join(
-      conn %>% dplyr::tbl("order_routes") %>% dplyr::select(-uid, -order_uid, -c(created_at:modified_by)),
-      by = c("customer_location_uid")
-    ) %>%
     dplyr::left_join(
       conn %>% dplyr::tbl("vendors") %>% select(uid, vendor_name),
       by = c("vendor_uid" = "uid")
     ) %>%
-    left_join(
-      conn %>% dplyr::tbl("vendor_locations") %>% dplyr::select(-c(created_at:modified_by)),
-      by = c("vendor_location_uid" = "uid", "vendor_uid")
+    dplyr::left_join(
+      conn %>% dplyr::tbl("vendor_locations") %>%
+        dplyr::rename(vendor_location_uid = uid) %>%
+        dplyr::select(-c(created_at:modified_by)),
+      by = c("vendor_uid")
     ) %>%
-    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
+    left_join(
+      conn %>% dplyr::tbl("distance_matrix") %>% dplyr::select(-uid, -c(created_at:modified_by)),
+      by = c("customer_location_uid", "vendor_location_uid")
+    ) %>%
+    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name),
+           origin_id = paste0("place_id:", .data$vendor_location_place_id),
+           destination_id = paste0("place_id:", customer_location_place_id)) %>%
     select(
       customer_uid,
       vendor_uid,
@@ -65,9 +69,9 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
 
       origin_id,
       destination_id,
-      estimated_distance,
-      estimated_duration,
-      estimated_polyline
+      estimated_distance = distance_val,
+      estimated_duration = duration_val,
+      estimated_polyline = polyline
     )
 
   if (!collect) return(hold)

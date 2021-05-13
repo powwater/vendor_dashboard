@@ -1,3 +1,9 @@
+menu_info <- function(title, description) {
+  htmlTemplate(filename = "html/menu_info.html",
+               title = title,
+               description = description)
+}
+
 right_sidebar_module_ui <- function(id) {
 
   ns <- NS(id)
@@ -103,27 +109,16 @@ right_sidebar_module_ui <- function(id) {
 
     rightSidebarTabContent(
       id = ns("logs"),
-      title = "Activity Logs",
+      title = tags$div(style = "text-align: center;", icon_text("list", "Activity Logs")),
       icon = "list",
-      shinydashboardPlus::userMessages(
-        width = 12,
-        status = "info",
-        userMessage(
-          author = "User A",
-          date = "2021-03-10 13:45",
-          icon_text("user", "Example Log 1")
-        ),
-        userMessage(
-          author = "User C",
-          date = "2021-03-09 09:15",
-          icon_text("database", "Example Log 2")
-        ),
-        userMessage(
-          author = "User A",
-          date = "2021-03-07 18:20",
-          icon_text("money", "Example Log 3")
-        )
-      )
+      uiOutput(ns("logsUI"))
+    ),
+
+    rightSidebarTabContent(
+      id = ns("usermgmt"),
+      title = tags$div(style = "text-align: center;", icon_text("users", "User Management")),
+      icon = "users"#,
+      # uiOutput(ns("usersUI"))
     )
   )
 
@@ -138,6 +133,38 @@ right_sidebar_module <- function(input, output, session, vendor_info) {
   #          )
   # })
 
+  image_path <- reactive({
+    vend <- vendor_info()$vendor_name
+    out <- switch(tolower(vend),
+                  "dutch water" = "images/profiles/dutch_water.png",
+                  "images/profiles/no_picture.png")
+    out
+  })
+
+  output$logsUI <- renderUI({
+    shinydashboardPlus::userMessages(
+      width = 12,
+      status = "info",
+      userMessage(
+        author = "User A",
+        date = "2021-03-10 13:45",
+        icon_text("user", "Example Log 1"),
+        src = image_path()
+      ),
+      userMessage(
+        author = "User C",
+        date = "2021-03-09 09:15",
+        icon_text("database", "Example Log 2"),
+        src = image_path()
+      ),
+      userMessage(
+        author = "User A",
+        date = "2021-03-07 18:20",
+        icon_text("money", "Example Log 3"),
+        src = image_path()
+      )
+    )
+  })
 
   observeEvent(input$provide_discount, {
     if (input$provide_discount == TRUE) {
