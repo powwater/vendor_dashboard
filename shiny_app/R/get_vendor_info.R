@@ -1,8 +1,3 @@
-vendor_users <- tibble::tribble(
-  ~user_uid, ~vendor_uid,
-  "45d04a30-dba4-45c4-a69e-847c8e7be7f9", "c401b531-719d-4cad-82e7-71db3ffba166"
-)
-
 get_vendor_info <- function(conn, vendor_uid) {
 
   vendor_uid_ <- vendor_uid

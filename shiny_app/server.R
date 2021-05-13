@@ -17,16 +17,24 @@ server <- function(input, output, session) {
     }
   })
 
-  logged_in_vendor_info <- reactive({
-
+  user_data <- reactive({
     user_data <- session$userData$user()
     user_uid <- user_data$user_uid
     is_user_admin <- user_data$is_admin
+    list(uid = user_uid, is_admin = is_user_admin, data = user_data)
+  })
 
-    user_vendor <- vendor_users$vendor_uid[match(user_uid, vendor_users$user_uid)]
+  vendor_users <- reactive({
+    usr <- user_data()$uid
 
+    tbl(conn, "vendor_users") %>%
+      filter(.data$user_uid %in% .env$usr) %>%
+      collect()
+  })
+
+  logged_in_vendor_info <- reactive({
+    user_vendor <- unique(vendor_users()$vendor_uid) # [match(user_uid, vendor_users()$user_uid)]
     get_vendor_info(conn = conn, user_vendor)
-
   })
 
   callModule(
