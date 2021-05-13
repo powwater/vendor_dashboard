@@ -12,6 +12,24 @@
 
 ## Deployment 📦
 
+```bash
+gcloud run deploy powwater-vendorsdashboard \
+--image=gcr.io/powwater/powwater_vendor_dashboard \
+--memory=8192Mi \
+--cpu=2 \
+--max-instances=1 \
+--port 8080 \
+--alow-unauthenticated \
+--platform=managed \
+--region=asia-east1 \
+--project=powwater \
+--add-cloudsql-instances=powwater:asia-south1:powwater \
+--set-env-vars=R_CONFIG_ACTIVE=production,R_CONFIG_FILE=config/config.yml \
+--use-http2
+```
+
+Add a *revision-suffix* via `--revision-suffix=<suffix>`.
+
 Deployed via `Docker` using multi-stage builds and pushed to google container registry and 
 further deployed into cloud run.
 
