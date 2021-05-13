@@ -1,7 +1,0 @@
-local({
-  options(
-  repos = c("https://packagemanager.rstudio.com/cran/__linux__/focal/latest", "http://cran.rstudio.com/"),
-  shiny.port = 8080,
-  shiny.host = "0.0.0.0"
-  )
-})
