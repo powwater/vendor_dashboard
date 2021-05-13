@@ -19,8 +19,6 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 
 FROM sysreqs AS rpackages
 
-COPY .Rprofile.site /usr/lib/R/etc/
-
 RUN R -e "install.packages('remotes', repos = c('CRAN' = Sys.getenv('CRAN_REPO')))"
 
 # CRAN R packages 
