@@ -77,15 +77,15 @@ body <- dashboardBody(
     htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js",
                            type = "text/javascript",
                            language = "JavaScript"),
-    includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
     htmltools::tags$script(src = "custom.js",
                            type = "text/javascript",
                            language = "JavaScript"),
     htmltools::tags$script(src = "js/is_mobile.js",
                            type = "text/javascript",
                            language = "JavaScript"),
-    includeCSS("www/stars.css"),
-    includeCSS("www/styles.css")
+    includeCSS("www/css/stars.css"),
+    includeCSS("www/css/styles.css"),
+    includeCSS("www/css/water_rating_icons.css")
   ),
   tabItems(
     tabItem(
