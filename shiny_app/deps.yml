@@ -13,7 +13,7 @@ dbplyr:
 dplyr:
   Package: dplyr
   Repository: CRAN
-  Version: 1.0.5
+  Version: 1.0.6
 DT:
   Package: DT
   Repository: CRAN
@@ -32,12 +32,6 @@ snakecase:
   Package: snakecase
   Repository: CRAN
   Version: 0.11.0
-tychobratools:
-  Package: tychobratools
-  GithubUsername: tychobra
-  GithubRepo: tychobratools
-  GithubRef: c1a24b413363174f1115a0b34d9ae3f8616e5b76
-  GithubSHA1: c1a24b413363174f1115a0b34d9ae3f8616e5b76
 htmltools:
   Package: htmltools
   Repository: CRAN
@@ -85,11 +79,11 @@ purrr:
 rlang:
   Package: rlang
   Repository: CRAN
-  Version: 0.4.10
+  Version: 0.4.11
 tidyselect:
   Package: tidyselect
   Repository: CRAN
-  Version: 1.1.0
+  Version: 1.1.1
 attempt:
   Package: attempt
   Repository: CRAN
@@ -104,8 +98,10 @@ shinyFiles:
   Version: 0.9.0
 waiter:
   Package: waiter
-  Repository: CRAN
-  Version: 0.2.0
+  GithubUsername: JohnCoene
+  GithubRepo: waiter
+  GithubRef: HEAD
+  GithubSHA1: 477789d177556f9fd11c9120f5b71b72015706c1
 shinyscroll:
   Package: shinyscroll
   GithubUsername: johncoene
@@ -132,9 +128,3 @@ fs:
   Package: fs
   Repository: CRAN
   Version: 1.5.0
-polished:
-  Package: polished
-  GithubUsername: tychobra
-  GithubRepo: polished
-  GithubRef: HEAD
-  GithubSHA1: e4d843ab90ecb0aeb6ee6509ef6f74aa355cd12b

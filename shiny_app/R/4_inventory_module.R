@@ -382,14 +382,14 @@ inventory_edit_module <- function(input, output, session,
     )
 
     if (is.null(hold)) {
-      out$data$created_at = tychobratools::time_now_utc()
+      out$data$created_at = time_now_utc()
       out$data$created_by = session$userData$user()$user_uid
     } else {
       out$data$created_at <- as.character(hold$created_at)
       out$data$created_by <- hold$created_by
     }
 
-    out$data$modified_at = tychobratools::time_now_utc()
+    out$data$modified_at = time_now_utc()
     out$data$modified_by = session$userData$user()$user_uid
 
     out

@@ -19,7 +19,6 @@ suppressPackageStartupMessages({
   library(formattable)
   library(powpolished)
   library(snakecase)
-  library(tychobratools)
   library(htmltools)
   library(shiny)
   library(shinycustomloader)
@@ -39,7 +38,6 @@ suppressPackageStartupMessages({
   library(waiter)
   library(shinyscroll)
   library(dialr)
-  # library(logger)
 })
 
 if (packageVersion("shinydashboardPlus") > "0.7.5") {

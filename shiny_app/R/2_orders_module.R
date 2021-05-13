@@ -348,8 +348,8 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       mutate(
         order_status = "In Progress",
         vendor_response = "Accepted",
-        vendor_response_time = tychobratools::time_now_utc(),
-        modified_at = tychobratools::time_now_utc(),
+        vendor_response_time = time_now_utc(),
+        modified_at = time_now_utc(),
         modified_by = session$userData$user()$user_uid
       )
   })
@@ -454,8 +454,8 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         order_status = "Rejected",
         vendor_response = "Rejected",
         vendor_response_text = input$vendor_response_text,
-        vendor_response_time = tychobratools::time_now_utc(),
-        modified_at = tychobratools::time_now_utc(),
+        vendor_response_time = time_now_utc(),
+        modified_at = time_now_utc(),
         modified_by = session$userData$user()$user_uid
       ) %>%
       select(

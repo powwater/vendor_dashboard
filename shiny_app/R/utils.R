@@ -1,3 +1,7 @@
+time_now_utc <- function() {
+  lubridate::with_tz(Sys.time(), tzone = "UTC")
+}
+
 get_last_updated_date <- function(path = ".") {
   fs::dir_info(path) %>%
     tibble::as_tibble() %>%

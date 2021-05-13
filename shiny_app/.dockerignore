@@ -1,4 +1,6 @@
 logs/*
 deps.yaml
 README.md
-shiny_app/R/get_config.R
+dev/*
+config.yml
+
