@@ -10,12 +10,25 @@ tests_module_ui <- function(id){
         solidHeader = TRUE,
         br(),
         br(),
-        column(
-          offset = 3,
-          width = 6,
-          DT::DTOutput(ns('tests_table')) %>%
-            shinycustomloader::withLoader(),
-          hr()
+        h4("Vendor Water Quality Test Results:"),
+        fluidRow(
+          column(
+            offset = 2,
+            width = 8,
+            DT::DTOutput(ns('tests_table')) %>%
+              shinycustomloader::withLoader()
+          )
+        ),
+        br(),
+        hr(),
+        h4("Rating Tiers for Water Quality Tests:"),
+        fluidRow(
+          column(
+            offset = 4,
+            width = 4,
+            DT::DTOutput(ns("tests_tiers_table")) %>%
+              shinycustomloader::withLoader()
+          )
         )
       )
     )
@@ -24,6 +37,71 @@ tests_module_ui <- function(id){
 
 tests_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
+
+  tests_tiers <- reactive({
+
+    out <- NULL
+
+    tryCatch({
+
+      out <- conn %>%
+        dplyr::tbl("vendor_tests_rating_tiers") %>%
+        dplyr::collect()
+
+    }, error = function(err) {
+      msg <- 'Error collecting tests from database.'
+      print(msg)
+      print(err)
+      shinyFeedback::showToast('error', msg)
+    })
+
+    out
+
+  })
+
+  tests_tiers_prep <- reactive({
+    req(tests_tiers())
+
+    tests_tiers() %>%
+      dplyr::transmute(
+        range_tds = paste0(min_tds, " to ", max_tds, " TDS"),
+        rating = paste0(rating, " / 5"),
+        rating_html = html
+      )
+
+  })
+
+  output$tests_tiers_table <- DT::renderDT({
+
+    req(tests_tiers_prep())
+
+    out <- tests_tiers_prep()
+
+    n_row <- nrow(out)
+    n_col <- ncol(out)
+    cols <- c("Range (TDS)", "Rating", " ")
+    esc_cols <- c(-3)
+    id <- session$ns("tests_tiers_table")
+
+    if (isTRUE(is_mobile())) {
+      tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
+    } else {
+      tbl_class <- "table table-striped table-bordered dt-center dt-compact dt-hover nowrap table"
+    }
+
+    DT::datatable(
+      out,
+      rownames = FALSE,
+      colnames = cols,
+      selection = "none",
+      style = "bootstrap",
+      class = tbl_class,
+      escape = esc_cols,
+      options = list(
+        dom = 't'
+      )
+    )
+  })
 
   tests <- reactive({
 
