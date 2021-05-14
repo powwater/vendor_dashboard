@@ -16,12 +16,12 @@ format_currency_kes <- function(num) {
 
 format_duration_minutes <- function(num) {
   if (is.na(num) || is.nan(num)) num <- 0
-  paste0(num, " Minutes")
+  paste0(round(num / 60, 0), " Minutes")
 }
 
 format_distance_km <- function(num) {
   if (is.na(num) || is.nan(num)) num <- 0
-  paste0(num, " Kilometers")
+  paste0(round(num / 1000, 2), " Kilometers")
 }
 
 format_phone_number <- function(string,
