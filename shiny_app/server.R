@@ -24,15 +24,117 @@ server <- function(input, output, session) {
     list(uid = user_uid, is_admin = is_user_admin, data = user_data)
   })
 
-  vendor_users <- reactive({
-    usr <- user_data()$uid
+  vendor_users <- reactiveVal(NULL)
 
-    tbl(conn, "vendor_users") %>%
-      filter(.data$user_uid %in% .env$usr) %>%
-      collect()
+  observeEvent(session$userData$user(), {
+    user_email <- session$userData$user()$email
+
+    if (is_powwater_admin_user(user_email)) {
+      out <- NULL
+
+      hold_vendors <- tbl(conn, "vendors") %>%
+        select(uid, vendor_name)
+
+      available_vendor_users <- tbl(conn, "vendor_users") %>%
+        window_order(created_at) %>%
+        select(user_uid, vendor_uid) %>%
+        left_join(hold_vendors, by = c("vendor_uid" = "uid")) %>%
+        collect()
+
+      # IFF no Vendor Users, send Admin to Admin Panel to Add first vendor user
+      #   Will only occur for EMPTY app (No vendors OR users)
+
+      # if (nrow(available_vendor_users) == 0) {
+      #   vendor_choices <-  list(hold_vendors$uid)
+      #   names(vendor_choices) <- available_vendor_users$vendor_name
+      #
+      #   shiny::showModal(
+      #     modalDialog(
+      #       shinyWidgets::pickerInput(
+      #         "select_vendor",
+      #         choices = vendor_choices
+      #       ),
+      #       title = "Select Vendor",
+      #       footer = shiny::actionButton(
+      #         "submit_select_vendor",
+      #         "Submit"
+      #       )
+      #     ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999"),
+      #     session
+      #   ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999")
+      #
+      #   observeEvent(input$submit_select_vendor, {
+      #     shiny::updateQueryString(
+      #       queryString = paste0("?page=admin_panel"),
+      #       session = session,
+      #       mode = "push"
+      #     )
+      #
+      #     session$reload()
+      #   })
+      #
+      #
+      # } else {
+      #   vendor_choices <-  list(available_vendor_users$vendor_uid)
+      #   names(vendor_choices) <- available_vendor_users$vendor_name
+      #
+      #   shiny::showModal(
+      #     modalDialog(
+      #       shinyWidgets::pickerInput(
+      #         "select_vendor",
+      #         choices = vendor_choices
+      #       ),
+      #       title = "Select Vendor",
+      #       footer = shiny::actionButton(
+      #         "submit_select_vendor",
+      #         "Submit"
+      #       )
+      #     ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999"),
+      #     session
+      #   ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999")
+      #
+      #   observeEvent(input$submit_select_vendor, {
+      #     out <- list(vendor_uid = input$select_vendor)
+      #     vendor_users(out)
+      #     shiny::removeModal()
+      #   })
+      # }
+
+      vendor_choices <-  list(available_vendor_users$vendor_uid)
+      names(vendor_choices) <- available_vendor_users$vendor_name
+
+      shiny::showModal(
+        modalDialog(
+          shinyWidgets::pickerInput(
+            "select_vendor",
+            choices = vendor_choices
+          ),
+          title = "Select Vendor",
+          footer = shiny::actionButton(
+            "submit_select_vendor",
+            "Submit"
+          )
+        ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999"),
+        session
+      ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999")
+
+      observeEvent(input$submit_select_vendor, {
+        out <- list(vendor_uid = input$select_vendor)
+        vendor_users(out)
+        shiny::removeModal()
+      })
+
+    } else {
+      out <- tbl(conn, "vendor_users") %>%
+        filter(.data$user_uid %in% .env$usr) %>%
+        collect()
+
+      vendor_users(out)
+    }
   })
 
   logged_in_vendor_info <- reactive({
+    req(vendor_users())
     user_vendor <- unique(vendor_users()$vendor_uid) # [match(user_uid, vendor_users()$user_uid)]
     get_vendor_info(conn = conn, user_vendor)
   })
