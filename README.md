@@ -7,18 +7,35 @@
 > Repository for the [Vendors Shiny Web Application Dashboard](https://vendorsdashboard.powwater.org/)
 
 
-## Deployment 📦
+## Deployment Instructions
+
+Step 1: build Docker image
 
 ```
 # terminal
 
+# build the docker image
+docker build -t vendor_dashboard .
 
-
+# run the docker container.  This is useful for local testing.
+docker run --env SHINY_LOG_STDERR=1 --rm -p 8080:8080 vendor_dashboard
 ```
 
-## Links 🔗
+Step 2: push to Google Container Registry
 
-### Project Management 📋
+```
+# terminal
+# tag image for deployment to GCR (Google Container Registry)
+docker tag vendor_dashboard gcr.io/powwater/vendor_dashboard
+
+# push tagged image to GCR
+docker push gcr.io/powwater/vendor_dashboard
+```
+
+Step 3: open Cloud Run in GCP web console and deploy above image
+
+
+### Project Management
 
 - [Powwater Organization Home Page](https://github.com/powwater/)
 - [Shared Google Drive](https://drive.google.com/drive/folders/1phWTOrfO89lJftvpnFn3jnHHdZwxHM7L?usp=sharing)
