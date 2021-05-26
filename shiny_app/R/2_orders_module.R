@@ -122,36 +122,36 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   session$userData$orders_trigger <- reactiveVal(0)
 
   # get row counts for tables used in module
-  check_db_change <- reactivePoll(
-    intervalMillis = 0.25 * 60 * 1000,
-    session = session,
-    checkFunc = function() {
-      # usethis::ui_info("Checking database..")
-      # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
-
-      vend_id <- vendor_info()$vendor_uid
-      hold <- conn %>% tbl("orders") %>% filter(vendor_uid == vend_id)
-      mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
-
-      # message(paste0("Latest modified timestamp: ", mod_stamp))
-
-      return(mod_stamp)
-    },
-    valueFunc = function() {
-      Sys.time()
-    }
-  )
+  # check_db_change <- reactivePoll(
+  #   intervalMillis = 0.25 * 60 * 1000,
+  #   session = session,
+  #   checkFunc = function() {
+  #     # usethis::ui_info("Checking database..")
+  #     # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
+  #
+  #     vend_id <- vendor_info()$vendor_uid
+  #     hold <- conn %>% tbl("orders") %>% filter(vendor_uid == vend_id)
+  #     mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
+  #
+  #     # message(paste0("Latest modified timestamp: ", mod_stamp))
+  #
+  #     return(mod_stamp)
+  #   },
+  #   valueFunc = function() {
+  #     Sys.time()
+  #   }
+  # )
 
   initial_change_check <- TRUE
-  observeEvent(check_db_change(), {
-
-    if (isFALSE(initial_change_check)) {
-      id <- notify("New order's data detected! Reload data table to view.")
-      shinyjs::enable("reload_bttn")
-    }
-    # do not show the reload data button if this is the initial data load
-    initial_change_check <<- FALSE
-  })
+  # observeEvent(check_db_change(), {
+  #
+  #   if (isFALSE(initial_change_check)) {
+  #     id <- notify("New order's data detected! Reload data table to view.")
+  #     shinyjs::enable("reload_bttn")
+  #   }
+  #   # do not show the reload data button if this is the initial data load
+  #   initial_change_check <<- FALSE
+  # })
 
   observeEvent(input$reload_bttn, {
     # req(check_db_change() > 1)
@@ -177,6 +177,8 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     })
     out
   })
+
+
 
   completed_orders <- reactive({
     req(orders())
