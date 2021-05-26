@@ -17,7 +17,7 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(DT)
   library(formattable)
-  library(powpolished)
+  library(polished)
   library(snakecase)
   library(htmltools)
   library(shiny)
@@ -98,15 +98,8 @@ shiny::onStop(function() {
 # setup powpolished -------------------------------------------------------
 
 global_sessions_config(
-  api_url = app_config$powpolished$api_url,
   app_name = app_config$app_name,
-  api_key = app_config$powpolished$api_key,
-  firebase_config = list(
-    apiKey = app_config$firebase$api_key,
-    authDomain = app_config$firebase$auth_domain,
-    projectId = app_config$firebase$project_id
-  ),
-  sign_in_providers = c('email', 'phone', 'google')
+  api_key = app_config$polished$api_key
 )
 
 # assets ---------------------------------------
