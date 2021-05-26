@@ -56,21 +56,7 @@ options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
 options(lubridate.week.start = 1)
 
-# load configuration ------------------------------------------------------
 
-# tell app if in development or not
-is_dev <- Sys.getenv("R_CONFIG_ACTIVE", "default") %in% c("default", "local")
-is_local <- Sys.getenv('SHINY_PORT') == ""
-
-# # run local docker database for development
-# docker_db <- TRUE
-# if (docker_db) Sys.setenv("R_CONFIG_ACTIVE" = "local")
-#
-# # download latest config.yml file:
-# if (is_local) source("R/get_config.R"); get_config()
-
-# enable shiny devmode
-if (is_dev && is_local && packageVersion("shiny") >= "1.6.0") shiny::devmode()
 
 # load config yaml file
 app_config <- config::get()
@@ -79,7 +65,6 @@ app_config <- config::get()
 key <- app_config$gcp$gmaps_api_key
 set_key(key = key)
 
-# setup database connection -----------------------------------------------
 
 conn <- DBI::dbConnect(
   RPostgres::Postgres(),
@@ -89,13 +74,12 @@ conn <- DBI::dbConnect(
   password = app_config$db$password
 )
 
-# disconnect --------------------------------------------------------------
 shiny::onStop(function() {
   DBI::dbDisconnect(conn)
 })
 
 
-# setup powpolished -------------------------------------------------------
+# setup polished -------------------------------------------------------
 
 global_sessions_config(
   app_name = app_config$app_name,
@@ -112,20 +96,3 @@ pow_colors <- assets$colors
 choices <- yaml::read_yaml("choices.yml") %>%
   purrr::map(unlist)
 
-
-# deprecated --------------------------------------------------------------
-
-# library(dbx)
-# library(polished)
-# library(tinytex)
-# library(shinylogs)
-# library(shinytest)
-# library(logger)
-# library(markdown)
-# library(highcharter)
-
-# NOTE
-# For config.yml source R/get_config.R and run get_config() OR pull directly from
-# GCP secret manager via dev/gcloud_secret.(ps1|.sh)
-
-# source("R/docker.R")
