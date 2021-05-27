@@ -296,7 +296,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         vendor_location_lon
       ) %>%
       filter(!is.na(vendor_location_place_id)) %>%
-      left_join(vendors, by = "vendor_uid") %>%
+      left_join(vendor_dat, by = "vendor_uid") %>%
       distinct() %>%
       mutate(
         colour = "blue",
