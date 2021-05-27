@@ -10,6 +10,7 @@ get_last_updated_date <- function(path = ".") {
 }
 
 create_link <- function(val, txt = NA) {
+  if (identical(length(val), 0L)) return(val)
   if (is.na(txt)) txt <- val
   paste0("<a href='", val, "' target='_blank'>", txt, "</a>")
 }
@@ -38,6 +39,8 @@ pull_unique <- function(data, var, sort = TRUE,
 }
 
 create_coords_string <- function(lat, lon) {
+
+  if (identical(length(lat), 0L)) return(character(0))
 
   lat <- round(lat, 3)
   lon <- round(lon, 3)

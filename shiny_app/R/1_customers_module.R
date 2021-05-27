@@ -94,8 +94,9 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
   observeEvent(list(customers(), configs()), {
     req(customers())
+    hold <- customers()
 
-    ids <- customers()$customer_uid
+    ids <- hold$customer_uid
 
     actions <- purrr::map_chr(ids, function(id_) {
       paste0(
@@ -105,12 +106,16 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       )
     })
 
-    out <- customers() %>%
+    out <- hold %>%
       mutate(
         customer_number = row_number(),
         customer_location = Vectorize(create_link)(customer_location_url, customer_location_name),
         customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon),
-        customer_phone_number = Vectorize(format_phone_number)(customer_phone_number, type = configs()$phone_number_format, region = "KE"),
+        customer_phone_number = ifelse(
+          length(customer_phone_number) == 0,
+          character(0),
+          Vectorize(format_phone_number)(customer_phone_number, type = configs()$phone_number_format, region = "KE")
+        ),
         customer_region = Vectorize(create_link)(vendor_region_url, vendor_region_name),
         total_paid = Vectorize(format_currency_kes)(total_paid),
         estimated_duration = Vectorize(format_duration_minutes)(estimated_duration),

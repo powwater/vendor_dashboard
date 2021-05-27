@@ -27,7 +27,10 @@ format_distance_km <- function(num) {
 format_phone_number <- function(string,
                                 type = c("national", "international"),
                                 region = c("KE", "US")) {
-  region <- "KE"
+
+
+  if (identical(length(string), 0L)) return(string)
+
   if (substr(string, 1L, 4L) != "+254")
 
   phone_region <- switch(type,
