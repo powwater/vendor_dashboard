@@ -38,44 +38,23 @@ tests_module_ui <- function(id){
 tests_module <- function(input, output, session, vendor_info, is_mobile) {
   ns <- session$ns
 
-  tests_tiers <- reactive({
+  tests_tiers <- tribble(
+    ~min_tds, ~max_tds, ~rating, ~html,
+    0,        200,      5,       '<div class=rating-tint><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span></div>',
+    201,      350,      4.5,     '<div class=rating-tint><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint half"></span></div>',
+    351,      750,      4,       '<div class=rating-tint><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span></div>',
+    751,      1500,     3.5,     '<div class=rating-tint><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint full"></span><span class="fa fa-tint half"></span></div>'
+  ) %>%
+    dplyr::transmute(
+      range_tds = paste0(min_tds, " to ", max_tds, " TDS"),
+      rating = paste0(rating, " / 5"),
+      rating_html = html
+    )
 
-    out <- NULL
-
-    tryCatch({
-
-      out <- conn %>%
-        dplyr::tbl("vendor_tests_rating_tiers") %>%
-        dplyr::collect()
-
-    }, error = function(err) {
-      msg <- 'Error collecting tests from database.'
-      print(msg)
-      print(err)
-      shinyFeedback::showToast('error', msg)
-    })
-
-    out
-
-  })
-
-  tests_tiers_prep <- reactive({
-    req(tests_tiers())
-
-    tests_tiers() %>%
-      dplyr::transmute(
-        range_tds = paste0(min_tds, " to ", max_tds, " TDS"),
-        rating = paste0(rating, " / 5"),
-        rating_html = html
-      )
-
-  })
 
   output$tests_tiers_table <- DT::renderDT({
 
-    req(tests_tiers_prep())
-
-    out <- tests_tiers_prep()
+    out <- tests_tiers
 
     n_row <- nrow(out)
     n_col <- ncol(out)
