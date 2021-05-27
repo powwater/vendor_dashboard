@@ -1,17 +1,20 @@
+
+star_icon <- function(empty = FALSE, class_) {
+    shiny::icon("star", class = class_,  style = paste("color: ", if (empty) "#edf0f2" else "orange"))
+}
+
+
 rating_stars <- function(rating, max_rating = 5, span = FALSE, class = NULL) {
 
   class_ <- class
 
-  star_icon <- function(empty = FALSE) {
-    tagAppendAttributes(shiny::icon("star", class = class_),
-                        style = paste("color:", if (empty) "#edf0f2" else "orange"),
-                        "aria-hidden" = "true")
-  }
   rounded_rating <- floor(rating + 0.5)  # always round up
   stars <- lapply(seq_len(max_rating), function(i) {
-    if (i <= rounded_rating) star_icon() else star_icon(empty = TRUE)
+    if (i <= rounded_rating) star_icon(empty = FALSE, class_ = class_) else star_icon(empty = TRUE, class_ = class_)
   })
+
   label <- sprintf("%s out of %s", rating, max_rating)
+
   if (!span) {
     out <- div(title = label, "aria-label" = label, role = "img", stars)
     return(out)
