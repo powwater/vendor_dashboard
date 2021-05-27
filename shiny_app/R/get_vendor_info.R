@@ -12,7 +12,7 @@ get_vendor_info <- function(conn, vendor_uid_) {
     pull(vendor_name)
 
   list(
-    vendor_uid = vendor_location_data$vendor_uid,
+    vendor_uid = vendor_uid_,
     vendor_location_uid = vendor_location_data$vendor_location_uid,
     vendor_name = vendor_name,
     place_id = vendor_location_data$vendor_location_place_id,
