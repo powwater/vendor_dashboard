@@ -722,6 +722,9 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     hold <- orders()
 
 
+    hold <- hold %>%
+      filter(!is.na(vendor_rating))
+
     if (length(hold$vendor_rating) == 0) {
       avg_rating <- 0
     } else {
@@ -772,7 +775,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   output$ratings_ui <- renderUI({
 
-    # browser()
+
 
     avg <- formattable::comma(ratings_prep()$avg_rating, 3)
     tot <- paste0(formattable::comma(ratings_prep()$num_orders, 0), " Total Orders")
