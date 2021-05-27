@@ -231,8 +231,12 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
   customers_table_proxy <- DT::dataTableProxy("customers_table")
 
   map_data <- reactive({
+    req(customers(), session$userData$vendor(), nrow(customers()) > 0)
+    hold <- customers()
+    vendor_uid <- session$userData$vendor()$vendor_uid
 
-    customer_markers_data <- customers() %>%
+
+    customer_markers_data <- hold %>%
       filter(!is.na(customer_location_name)) %>%
       mutate(
         title = paste0(customer_name, ": ", customer_location_name),
@@ -253,7 +257,33 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         )
       )
 
-    vendor_markers_data <- customers() %>%
+
+    vendor_dat <- NULL
+    tryCatch({
+
+
+      vendor_dat <- conn %>%
+        tbl("vendors") %>%
+        filter(.data$uid == .env$vendor_uid) %>%
+        select(
+          vendor_uid = uid,
+          website,
+          phone_number,
+          operation_description
+        ) %>%
+          collect()
+
+
+    }, error = function(err) {
+
+      msg <- "unable to get vendor data"
+      print(msg)
+      print(err)
+      showToast("error", msg)
+
+    })
+
+    vendor_markers_data <- hold %>%
       select(
         vendor_uid,
         vendor_location_uid,
@@ -266,14 +296,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
         vendor_location_lon
       ) %>%
       filter(!is.na(vendor_location_place_id)) %>%
-      left_join(
-        conn %>% tbl("vendors") %>%
-          select(vendor_uid = uid,
-                 website,
-                 phone_number,
-                 operation_description) %>%
-          collect(),
-        by = "vendor_uid") %>%
+      left_join(vendors, by = "vendor_uid") %>%
       distinct() %>%
       mutate(
         colour = "blue",
@@ -434,9 +457,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
       )
   })
 
-  observeEvent(input$customer_locations_marker_click, {
-    print(input$customer_locations_marker_click)
-  })
+
 
   output$map_details <- renderUI({
     req(details_txt(), !is.null(details_txt()))
@@ -454,6 +475,4 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
   })
 
   return(customers)
-
-
 }
