@@ -518,8 +518,13 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   observeEvent(completed_orders(), {
     req(orders(), completed_orders())
+
     order_choices <- completed_orders()$order_uid
-    names(order_choices) <- paste0("Order #", completed_orders()$order_number)
+
+    if (length(order_choices) > 0) {
+      names(order_choices) <- paste0("Order #", completed_orders()$order_number)
+    }
+
     updatePickerInput(session, "selected_order", choices = order_choices)
   }, once = TRUE)
 
@@ -714,33 +719,41 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   # ratings -----------------------------------------------------------------
 
   ratings_prep <- reactive({
-    avg_rating <- mean(orders()$vendor_rating, na.rm = TRUE)
+    hold <- orders()
 
-    num_ratings <- orders() %>%
+
+    if (length(hold$vendor_rating) == 0) {
+      avg_rating <- 0
+    } else {
+      avg_rating <- mean(hold$vendor_rating, na.rm = TRUE)
+    }
+
+
+    num_ratings <- hold %>%
       filter(vendor_rating > 0, !is.na(vendor_rating), !is.null(vendor_rating)) %>%
       nrow()
 
-    num_five_star <- orders() %>%
+    num_five_star <- hold %>%
       filter(vendor_rating > 4) %>%
       nrow()
 
-    num_four_star <- orders() %>%
+    num_four_star <- hold %>%
       filter(vendor_rating > 3 & vendor_rating <= 4) %>%
       nrow()
 
-    num_three_star <- orders() %>%
+    num_three_star <- hold %>%
       filter(vendor_rating > 2 & vendor_rating <= 3) %>% # >= 3, vendor_rating <= 4) %>%
       nrow()
 
-    num_two_star <- orders() %>%
+    num_two_star <- hold %>%
       filter(vendor_rating > 1 & vendor_rating <= 2) %>%
       nrow()
 
-    num_one_star <- orders() %>%
+    num_one_star <- hold %>%
       filter(vendor_rating > 0 & vendor_rating <= 1) %>%
       nrow()
 
-    unrated <- orders() %>%
+    unrated <- hold %>%
       filter(is.na(vendor_rating) | is.null(vendor_rating) | vendor_rating == 0) %>%
       nrow()
 
