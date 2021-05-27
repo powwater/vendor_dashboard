@@ -1,6 +1,4 @@
-get_vendor_info <- function(conn, vendor_uid) {
-
-  vendor_uid_ <- vendor_uid
+get_vendor_info <- function(conn, vendor_uid_) {
 
   vendor_location_data <- conn %>%
     tbl("vendor_locations") %>%
