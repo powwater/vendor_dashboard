@@ -896,7 +896,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
 
   routes <- reactive({
-
+    req(vendor_info()$vendor_location_uid)
     # id <- notify("Loading Routes from Database...")
     # on.exit(shinyFeedback::hideToast(), add = TRUE)
 
