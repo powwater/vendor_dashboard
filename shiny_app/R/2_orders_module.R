@@ -3,115 +3,108 @@ orders_module_ui <- function(id){
 
   tagList(
     fluidRow(
-      column(
-        12,
-        shinyFeedback::valueBoxModuleUI(
-          ns("completed_orders"),
-          "Completed Orders",
-          icon = icon("check"),
-          backgroundColor = pow_colors$green,
-          width = 4
-        ),
-        shinyFeedback::valueBoxModuleUI(
-          ns("awaiting_vendor_response"),
-          "Orders Awaiting Vendor Response",
-          icon = icon("hourglass"),
-          backgroundColor = pow_colors$red,
-          width = 4
-        ),
-        shinyFeedback::valueBoxModuleUI(
-          ns("average_rating"),
-          "Average Rating per Order",
-          icon = icon("star"),
-          backgroundColor = pow_colors$yellow,
-          width = 4
-        )
+      shinyFeedback::valueBoxModuleUI(
+        ns("completed_orders"),
+        "Completed Orders",
+        icon = icon("check"),
+        backgroundColor = pow_colors$green,
+        width = 4
+      ),
+      shinyFeedback::valueBoxModuleUI(
+        ns("awaiting_vendor_response"),
+        "Orders Awaiting Vendor Response",
+        icon = icon("hourglass"),
+        backgroundColor = pow_colors$red,
+        width = 4
+      ),
+      shinyFeedback::valueBoxModuleUI(
+        ns("average_rating"),
+        "Average Rating per Order",
+        icon = icon("star"),
+        backgroundColor = pow_colors$yellow,
+        width = 4
       )
     ),
     fluidRow(
-      column(
-        12,
-        box(
-          width = 12,
-          title = icon_text("folder-open", 'Orders'),
-          footer = "Powwater | Tychobra 2021",
-          status = "primary",
-          solidHeader = TRUE,
-          fluidRow(
-            column(
-              12,
-              actionButton(
-                ns("reload_bttn"),
-                "Reload",
-                icon = icon("refresh"),
-                class = "btn-success",
-                style = "float: right;"
-              ) %>%
-                shinyjs::disabled(),
-              h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
-              hr(),
-              DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
-                shinycustomloader::withLoader()
-            )
+      box(
+        width = 12,
+        title = icon_text("folder-open", 'Orders'),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        fluidRow(
+          column(
+            12,
+            actionButton(
+              ns("reload_bttn"),
+              "Reload",
+              icon = icon("refresh"),
+              class = "btn-success",
+              style = "float: right;"
+            ) %>%
+              shinyjs::disabled(),
+            h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
+            hr(),
+            DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
+              shinycustomloader::withLoader()
+          )
+        ),
+        hr(),
+        fluidRow(
+          column(
+            12,
+            h3(icon_text("check", "All Orders:")),
+            hr(),
+            DT::DTOutput(ns('orders_table'), width = "100%") %>%
+              shinycustomloader::withLoader()
+          )
+        )
+      ),
+      hr(),
+      box(
+        width = 12,
+        title = icon_text("road", " Delivery Details:"),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        height = NULL,
+        fluidRow(
+          column(
+            width = 6,
+            h4(icon_text("route", "Delivery Routes:")),
+            uiOutput(ns("directions_iframe")) %>%
+              shinycustomloader::withLoader()
           ),
-          hr(),
-          fluidRow(
-            column(
-              12,
-              h3(icon_text("check", "All Orders:")),
-              hr(),
-              DT::DTOutput(ns('orders_table'), width = "100%") %>%
-                shinycustomloader::withLoader()
-            )
+          column(
+            width = 6,
+            h4(icon_text("info", "Delivery Details")),
+            pickerInput(ns("selected_order"),
+                        "Select an Order to View:",
+                        choices = ""),
+            DT::DTOutput(ns('delivery_details')) %>%
+              shinycustomloader::withLoader()
           )
-        ),
-        hr(),
-        box(
-          width = 12,
-          title = icon_text("road", " Delivery Details:"),
-          footer = "Powwater | Tychobra 2021",
-          status = "primary",
-          solidHeader = TRUE,
-          height = NULL,
-          fluidRow(
-            column(
-              width = 6,
-              h4(icon_text("route", "Delivery Routes:")),
-              uiOutput(ns("directions_iframe")) %>%
-                shinycustomloader::withLoader()
-            ),
-            column(
-              width = 6,
-              h4(icon_text("info", "Delivery Details")),
-              pickerInput(ns("selected_order"),
-                          "Select an Order to View:",
-                          choices = ""),
-              DT::DTOutput(ns('delivery_details')) %>%
-                shinycustomloader::withLoader()
-            )
-          )
-        ),
-        hr(),
-        box(
-          width = 12,
-          title = icon_text("star", " Ratings"),
-          footer = "Powwater | Tychobra 2021",
-          status = "primary",
-          solidHeader = TRUE,
-          height = NULL,
-          fluidRow(
-            column(
-              12,
-              uiOutput(ns("ratings_ui")) %>%
-                shinycustomloader::withLoader()
-            )
+        )
+      ),
+      hr(),
+      box(
+        width = 12,
+        title = icon_text("star", " Ratings"),
+        footer = "Powwater | Tychobra 2021",
+        status = "primary",
+        solidHeader = TRUE,
+        height = NULL,
+        fluidRow(
+          column(
+            12,
+            uiOutput(ns("ratings_ui")) %>%
+              shinycustomloader::withLoader()
           )
         )
       )
     ),
-    htmltools::tags$script(src = "orders_module.js?version=2"),
-    htmltools::tags$script(paste0("orders_table_module_js('", ns(''), "')")),
-    htmltools::tags$script(paste0("awaiting_orders_table_module_js('", ns(''), "')"))
+    htmltools::tags$script(src = "js/orders_module.js?version=3"),
+    htmltools::tags$script(paste0("orders_table_module_js('", ns(''), "')"))
   )
 }
 
@@ -332,12 +325,20 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
           shiny::modalButton('Cancel'),
           shiny::actionButton(
             session$ns('submit'),
-            'Submit',
+            'Accept Order',
             class = "btn btn-primary",
             style = "color: white"
           )
         ),
-        h5("Please confirm your acceptance of this order.")
+        div(
+          style = "padding: 15px;",
+          class = "text-center",
+          h3(
+            style = "line-height: 1.5;",
+            "Confirm order acceptance"
+          )
+        )
+
       )
     )
   })
@@ -545,7 +546,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
 
-      class <- if (id_ %in% disable_ids) "shinyjs-disabled " else NULL
+      class <- NULL#if (id_ %in% disable_ids) "shinyjs-disabled " else NULL
 
       paste0(
         '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons"><button class="',
