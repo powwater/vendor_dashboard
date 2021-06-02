@@ -492,10 +492,10 @@ inventory_delete_module <- function(input, output, session,
   })
 
   observeEvent(input$delete_button, {
-
     req(vendor_inventory_to_delete())
     hold_vendor_inventory <- vendor_inventory_to_delete()
     removeModal()
+
 
     tryCatch({
 
@@ -507,8 +507,8 @@ inventory_delete_module <- function(input, output, session,
         params = c(uid)
       )
 
-      session$userData$vendor_inventory_trigger(
-        session$userData$vendor_inventory_trigger() + 1
+      session$userData$inventory_trigger(
+        session$userData$inventory_trigger() + 1
       )
 
       shinyFeedback::showToast("success", "Vendor Inventory/Offering Successfully Deleted")
