@@ -90,7 +90,7 @@ right_sidebar_module_ui <- function(id) {
             min = 0,
             max = Inf,
             step = 100,
-            icon = icon("money")
+            icon = icon("money-bill-alt")
           ),
           br(),
           shinyWidgets::numericInputIcon(
@@ -160,7 +160,7 @@ right_sidebar_module <- function(input, output, session, vendor_info) {
       userMessage(
         author = "User A",
         date = "2021-03-07 18:20",
-        icon_text("money", "Example Log 3"),
+        icon_text("money-bill-alt", "Example Log 3"),
         src = image_path()
       )
     )
