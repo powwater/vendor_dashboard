@@ -344,35 +344,22 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   })
 
   edit_dat <- eventReactive(input$submit, {
-
+    hold <- order_to_accept()
     removeModal()
 
-    order_to_accept() %>%
-      mutate(
-        order_status = "In Progress",
-        vendor_response = "Accepted",
-        vendor_response_time = time_now_utc(),
-        modified_at = time_now_utc(),
-        modified_by = session$userData$user()$user_uid
-      )
+    list(
+      order_status = "In Progress",
+      vendor_response = "Accepted",
+      vendor_response_time = time_now_utc(),
+      modified_at = time_now_utc(),
+      modified_by = session$userData$user()$user_uid,
+      uid = hold$order_uid
+    )
   })
 
   observeEvent(edit_dat(), {
+    out <- edit_dat()
 
-    hold <- edit_dat() %>%
-      select(
-        order_uid,
-        order_status,
-        vendor_response,
-        vendor_response_time,
-        modified_at,
-        modified_by
-      )
-
-    dat <- list(
-      "data" = hold %>% select(-order_uid),
-      "uid" = hold %>% pull(order_uid)
-    )
 
     tryCatch({
       dbExecute(
@@ -384,8 +371,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
             modified_at=$4,
             modified_by=$5 WHERE uid=$6",
         params = c(
-          unname(dat$data),
-          list(dat$uid)
+          unname(out)
         )
       )
 
