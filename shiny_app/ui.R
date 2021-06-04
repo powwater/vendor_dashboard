@@ -2,19 +2,26 @@ waiting_screen <- tagList(
   tags$div(
     style = 'width: 100%;', # margin-top: 25px; margin-bottom: 40px;',
     tags$img(
-      src = "spinner.gif",
+      src = "images/drop_full_size.png",
       alt = 'POWWATER Logo',
-      width = '80%'
+      width = "230px"
     )
   ),
   br(),
   spin_chasing_dots(),
-  br(),
-  span("Please wait while we setup the app for you...", style = "color:white;")
+  br()
 )
 
 header <- dashboardHeaderPlus(
-  title = header_title(),
+  title = tags$span(
+    htmltools::tags$img(
+      style = "margin-top: -5px",
+      src = "images/logo_text.png",
+      width = 150
+    ),
+    href = "https://powwater.com",
+    target = "_blank"
+  ),
   profile_module_ui("polished_profile"),
   enable_rightsidebar = TRUE,
   rightSidebarIcon = "cogs"
@@ -57,6 +64,16 @@ sidebar <- dashboardSidebar(
         text = 'Riders',
         tabName = 'riders_tab',
         icon = icon("biking")
+      ),
+      tags$div(
+        style = "position: fixed; bottom: 5px; left: 15px;",
+        a(
+          img(
+            src = "images/pow_text_white.png",
+            width = 200
+          ),
+          href = "https://powwater.ord"
+        )
       )
     )
   )
@@ -70,13 +87,7 @@ body <- dashboardBody(
   shinyjs::useShinyjs(),
   shinyFeedback::useShinyFeedback(),
   tags$head(
-    # htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js",
-    #                        type = "text/javascript",
-    #                        language = "JavaScript"),
-    # htmltools::tags$script(src = "https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap.min.js",
-    #                        type = "text/javascript",
-    #                        language = "JavaScript"),
-    # includeCSS("https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css"),
+    tags$link(rel = "shortcut icon", href = "images/drop_32.png"),
     tags$script(
       src = "js/vendor.js?version=1",
       type = "text/javascript",
@@ -137,13 +148,12 @@ secure_ui(
     logo_top = tags$div(
       style = 'width: 100%; margin-top: 25px; margin-bottom: 40px;',
       tags$img(
-        src = 'images/logo_home.png',
+        src = 'images/logo_text.png',
         alt = 'POWWATER Logo',
-        width = '30%'
+        style = "width = 300px; max-width: 100%;"
       )
     ),
-    icon_href = 'images/logo_droplet.png',
+    icon_href = 'images/drop_32.png',
     background_image = "images/power_of_water.png"
-  ),
-  custom_admin_button_ui = admin_button_ui(align = "left", vertical_align = "bottom")
+  )
 )
