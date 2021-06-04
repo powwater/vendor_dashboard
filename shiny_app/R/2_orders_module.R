@@ -181,19 +181,39 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   awaiting_orders <- reactive({
     req(orders())
-    orders() %>%
-      filter(vendor_response ==  "Pending" | is.na(vendor_response)) %>%
-      select(
-        order_uid,
-        order_number,
-        order_datetime,
-        customer_name,
-        order_type,
-        order_status,
-        total_payment_price,
-        vendor_response,
-        vendor_response_text
-      )
+
+    orders_out <- orders() %>%
+      filter(vendor_response ==  "Pending" | is.na(vendor_response))
+
+    out <- NULL
+    tryCatch({
+
+      order_items_out <- conn %>%
+        tbl("order_items") %>%
+        filter(order_uid %in% local(orders_out$order_uid)) %>%
+        select(order_uid, volume, quantity) %>%
+        collect() %>%
+        group_by(order_uid) %>%
+        summarize(
+          volume = sum(volume),
+          quantity = sum(quantity)
+        ) %>%
+        ungroup()
+
+      out <- orders_out %>%
+        left_join(order_items_out, by = "order_uid")
+
+    }, error = function(err) {
+
+      msg <- "unable to get pending order items"
+      print(msg)
+      print(err)
+      showToast("error", msg)
+
+      invisible()
+    })
+
+    out
   })
 
   awaiting_orders_prep <- reactiveVal(NULL)
@@ -210,29 +230,44 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       )
     })
 
-    curr_cols <- c("total_payment_price")
+    curr_cols <- c(
+      "total_payment_price",
+      "price_of_water",
+      "delivery_fee",
+      "discount_amount"
+    )
 
     factor_cols <- c(
       "customer_name",
-      "order_type",
-      "order_status",
-      "vendor_response"
+      "order_type"#,
+      #"vendor_response"
     )
 
     out <- awaiting_orders() %>%
-      mutate_at(vars(all_of(curr_cols)), Vectorize(format_currency_kes)) %>%
-      mutate_at(vars(all_of(factor_cols)), as.factor) %>%
-      mutate_if(is.numeric, coalesce, 0L) %>%
       select(
         order_number,
         order_datetime,
         customer_name,
         order_type,
-        order_status,
+        volume,
+        quantity,
         total_payment_price,
-        vendor_response,
+        price_of_water,
+        delivery_fee,
+        delivery_commission,
+        vendor_commission,
+        discount_amount,
+        time_rider_to_customer,
+        #vendor_response,
         vendor_response_text
       ) %>%
+      mutate(
+        delivery_commission = delivery_commission / 100,
+        vendor_commission = vendor_commission / 100
+      ) %>%
+      mutate_at(vars(all_of(curr_cols)), Vectorize(format_currency_kes)) %>%
+      mutate_at(vars(all_of(factor_cols)), as.factor) %>%
+      mutate_if(is.numeric, coalesce, 0L) %>%
       tibble::add_column(" " = actions, .before = 1)
 
     if (is.null(awaiting_orders_prep())) {
@@ -293,18 +328,23 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         )
       )
     ) %>%
-      formatStyle("order_status",
-                  target = "cell",
-                  fontWeight = "bold",
-                  color = styleEqual(levels = choices$order_status,
-                                     values = assets$order_status_colors,
-                                     default = "black")) %>%
-      formatStyle("vendor_response",
-                  target = "cell",
-                  fontWeight = "bold",
-                  color = styleEqual(levels = choices$vendor_response,
-                                     values = assets$vendor_response_colors,
-                                     default = "black"))
+      formatPercentage(
+        c("delivery_commission", "vendor_commission"),
+        digits = 1
+      )
+    #%>%
+      # formatStyle("order_status",
+      #             target = "cell",
+      #             fontWeight = "bold",
+      #             color = styleEqual(levels = choices$order_status,
+      #                                values = assets$order_status_colors,
+      #                                default = "black")) %>%
+      # formatStyle("vendor_response",
+      #             target = "cell",
+      #             fontWeight = "bold",
+      #             color = styleEqual(levels = choices$vendor_response,
+      #                                values = assets$vendor_response_colors,
+      #                                default = "black"))
 
   })
 
