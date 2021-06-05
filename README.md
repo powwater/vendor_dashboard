@@ -1,6 +1,6 @@
 # Powwater Vendor Dashboard 
 
-A web application for POW vendors to manage their business operations with POW.  This app allows vendors to manage and monitor POW customers, riders, orders, etc.
+A web application for POW vendors to manage their business operations with POW.  This app allows vendors to manage and monitor their POW customers, riders, orders, etc.
 
 [Live App](https://vendor.powwater.org/)
 
