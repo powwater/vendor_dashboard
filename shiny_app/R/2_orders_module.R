@@ -255,11 +255,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         price_of_water,
         delivery_fee,
         delivery_commission,
-        vendor_commission,
-        discount_amount,
-        time_rider_to_customer,
-        #vendor_response,
-        vendor_response_text
+        discount_amount
       ) %>%
       mutate(
         delivery_commission = delivery_commission / 100,
