@@ -579,7 +579,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     curr_cols <- c("delivery_fee",
                    "price_of_water",
                    "delivery_commission",
-                   "vendor_commission",
                    "discount_amount",
                    "total_payment_price")
 
@@ -627,7 +626,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         price_of_water,
         delivery_fee,
         delivery_commission,
-        vendor_commission,
         discount_applied,
         discount_amount,
         total_transaction_payment = total_payment_price,

@@ -72,7 +72,7 @@ sidebar <- dashboardSidebar(
             src = "images/pow_text_white.png",
             width = 200
           ),
-          href = "https://powwater.ord"
+          href = "https://powwater.org"
         )
       )
     )
