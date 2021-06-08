@@ -96,60 +96,63 @@ server <- function(input, output, session) {
     'polished_profile'
   )
 
-  configs <- callModule(
-    right_sidebar_module,
-    "rightbar",
-    vendor_info = logged_in_vendor_info
-  )
+  observeEvent(logged_in_vendor_info(), {
+    configs <- callModule(
+      right_sidebar_module,
+      "rightbar",
+      vendor_info = logged_in_vendor_info
+    )
 
-  callModule(
-    user_module,
-    "user_panel",
-    vendor_info = logged_in_vendor_info
-  )
+    callModule(
+      user_module,
+      "user_panel",
+      vendor_info = logged_in_vendor_info
+    )
 
-  callModule(
-    vendor_dashboard,
-    "vendor_dashboard_module",
-    vendor_info = logged_in_vendor_info,
-    is_mobile = is_mobile_device_rv
-  )
+    callModule(
+      vendor_dashboard,
+      "vendor_dashboard_module",
+      vendor_info = logged_in_vendor_info,
+      is_mobile = is_mobile_device_rv
+    )
 
-  callModule(
-    customers_module,
-    "customers_module",
-    vendor_info = logged_in_vendor_info,
-    configs = configs,
-    is_mobile = is_mobile_device_rv
-  )
+    callModule(
+      customers_module,
+      "customers_module",
+      vendor_info = logged_in_vendor_info,
+      configs = configs,
+      is_mobile = is_mobile_device_rv
+    )
 
-  callModule(
-    orders_module,
-    "orders_module",
-    vendor_info = logged_in_vendor_info,
-    is_mobile = is_mobile_device_rv
-  )
+    callModule(
+      orders_module,
+      "orders_module",
+      vendor_info = logged_in_vendor_info,
+      is_mobile = is_mobile_device_rv
+    )
 
-  callModule(
-    tests_module,
-    "tests_module",
-    vendor_info = logged_in_vendor_info,
-    is_mobile = is_mobile_device_rv
-  )
+    callModule(
+      tests_module,
+      "tests_module",
+      vendor_info = logged_in_vendor_info,
+      is_mobile = is_mobile_device_rv
+    )
 
-  callModule(
-    inventory_module,
-    "inventory_module",
-    vendor_info = logged_in_vendor_info,
-    is_mobile = is_mobile_device_rv
-  )
+    callModule(
+      inventory_module,
+      "inventory_module",
+      vendor_info = logged_in_vendor_info,
+      is_mobile = is_mobile_device_rv
+    )
 
-  callModule(
-    riders_module,
-    "riders_module",
-    vendor_info = logged_in_vendor_info,
-    is_mobile = is_mobile_device_rv
-  )
+    callModule(
+      riders_module,
+      "riders_module",
+      vendor_info = logged_in_vendor_info,
+      is_mobile = is_mobile_device_rv
+    )
+  })
+
 }
 
 secure_server(

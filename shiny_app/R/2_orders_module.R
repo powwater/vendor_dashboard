@@ -41,8 +41,8 @@ orders_module_ui <- function(id){
               icon = icon("refresh"),
               class = "btn-success",
               style = "float: right;"
-            ) %>%
-              shinyjs::disabled(),
+            ), #%>%
+              #shinyjs::disabled(),
             h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
             hr(),
             DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
@@ -115,27 +115,34 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   session$userData$orders_trigger <- reactiveVal(0)
 
   # get row counts for tables used in module
+  orders <- reactiveVal(NULL)
+
+
   # check_db_change <- reactivePoll(
   #   intervalMillis = 0.25 * 60 * 1000,
   #   session = session,
   #   checkFunc = function() {
-  #     # usethis::ui_info("Checking database..")
-  #     # mod_stamp <- RPostgres::dbGetQuery(conn, "SELECT timestamp FROM pg_last_committed_xact()")
   #
-  #     vend_id <- vendor_info()$vendor_uid
-  #     hold <- conn %>% tbl("orders") %>% filter(vendor_uid == vend_id)
-  #     mod_stamp <- hold %>% pull(modified_at) %>% max(na.rm = TRUE)
+  #     browser()
+  #     out <- NULL
+  #     try({
+  #       vend_id <- vendor_info()$vendor_uid
+  #       out <- conn %>%
+  #         tbl("orders") %>%
+  #         filter(
+  #           vendor_uid == vend_id
+  #         ) %>%
+  #         pull(modified_at)
+  #     })
   #
-  #     # message(paste0("Latest modified timestamp: ", mod_stamp))
-  #
-  #     return(mod_stamp)
+  #     return(out)
   #   },
   #   valueFunc = function() {
   #     Sys.time()
   #   }
   # )
 
-  initial_change_check <- TRUE
+  # initial_change_check <- TRUE
   # observeEvent(check_db_change(), {
   #
   #   if (isFALSE(initial_change_check)) {
@@ -147,13 +154,13 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   # })
 
   observeEvent(input$reload_bttn, {
-    # req(check_db_change() > 1)
+    #req(check_db_change())
     session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-    shinyjs::disable("reload_bttn")
+    #shinyjs::disable("reload_bttn")
   })
 
   orders <- reactive({
-
+    req(vendor_info())
     # id <- notify("Loading Orders from Database...")
     # on.exit(shinyFeedback::hideToast(), add = TRUE)
     session$userData$orders_trigger()
