@@ -258,8 +258,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         discount_amount
       ) %>%
       mutate(
-        delivery_commission = delivery_commission / 100,
-        vendor_commission = vendor_commission / 100
+        delivery_commission = delivery_commission / 100
       ) %>%
       mutate_at(vars(all_of(curr_cols)), Vectorize(format_currency_kes)) %>%
       mutate_at(vars(all_of(factor_cols)), as.factor) %>%
@@ -325,7 +324,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       )
     ) %>%
       formatPercentage(
-        c("delivery_commission", "vendor_commission"),
+        c("delivery_commission"),
         digits = 1
       )
     #%>%
@@ -581,7 +580,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     curr_cols <- c("delivery_fee",
                    "price_of_water",
                    "delivery_commission",
-                   "vendor_commission",
                    "discount_amount",
                    "total_payment_price")
 
@@ -629,7 +627,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         price_of_water,
         delivery_fee,
         delivery_commission,
-        vendor_commission,
         discount_applied,
         discount_amount,
         total_transaction_payment = total_payment_price,
