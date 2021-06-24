@@ -33,14 +33,14 @@ order_status:
   "Completed": "Completed"
   "In Progress": "In Progress"
   "Pending": "Pending"
-  "Cancelled": "Cancelled"
+  "Canceled": "Canceled"
   "Rejected": "Rejected"
 order_delivery_status:
   "Pending": "Pending"
   "Awaiting Delivery": "Awaiting Delivery"
   "Out for Delivery": "Out for Delivery"
   "Delivered": "Delivered"
-  "Cancelled": "Cancelled"
+  "Canceled": "Canceled"
   "Rejected": "Rejected"
 order_payment_status:
   "Pending": "payment_pending"

@@ -17,7 +17,7 @@ order_status_colors:
   Completed: green
   "In Progress": lightgreen
   Pending: orange
-  Cancelled: red
+  Canceled: red
   Rejected: red
 
 order_delivery_status_colors:
@@ -25,7 +25,7 @@ order_delivery_status_colors:
   "Awaiting Delivery": orange
   "Out for Delivery": green
   "Delivered": green
-  "Cancelled": red
+  "Canceled": red
   "Rejected": red
 
 vendor_response_colors:
