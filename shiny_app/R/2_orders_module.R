@@ -114,8 +114,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   session$userData$orders_trigger <- reactiveVal(0)
 
-  # get row counts for tables used in module
-  orders <- reactiveVal(NULL)
+
 
 
   # check_db_change <- reactivePoll(
@@ -190,7 +189,9 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     req(orders())
 
     orders_out <- orders() %>%
-      filter(vendor_response ==  "Pending" | is.na(vendor_response))
+      filter(
+        order_status == "Pending"
+      )
 
     out <- NULL
     tryCatch({
