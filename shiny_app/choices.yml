@@ -29,6 +29,7 @@ inventory_capacity:
 inventory_offer_type:
   "New": "new"
   "Swap": "swap"
+  "Refill": "refill"
 order_status:
   "Completed": "Completed"
   "In Progress": "In Progress"
