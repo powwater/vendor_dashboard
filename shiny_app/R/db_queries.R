@@ -154,13 +154,9 @@ get_routes_by_vendor <- function(vendor_location_id, conn, collect = TRUE) {
 
 get_riders_by_vendor <- function(conn, vendor_id) {
 
-  riders <- conn %>%
-    tbl('riders') %>%
-    select(rider_uid = uid, everything())
-
   conn %>%
-    dplyr::tbl("vendor_riders") %>%
-    filter(vendor_uid == vendor_id) %>%
-    left_join(riders, by = "rider_uid") %>%
+    tbl('riders') %>%
+    filter(.data$vendor_uid == .env$vendor_id) %>%
+    rename(rider_uid = uid) %>%
     collect()
 }
