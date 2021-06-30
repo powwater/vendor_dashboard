@@ -1,6 +1,0 @@
-databases:
-  main:
-    url: <%= ENV["DATABASE_URL"] %>
-    gcp_database_id: powwater:powwater
-
-total_connections_threshold: 20
