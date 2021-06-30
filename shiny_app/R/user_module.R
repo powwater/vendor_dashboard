@@ -47,7 +47,21 @@ user_module <- function(input, output, session, vendor_info) {
   })
 
   is_open <- reactive({
-    is_vendor_open(conn, vendor_info()$vendor_uid)
+    out <- FALSE
+
+    tryCatch({
+      out <- is_vendor_open(conn, vendor_info()$vendor_uid)
+    }, error = function(err) {
+
+      msg <- "unable to determine working hours"
+      print(msg)
+      print(err)
+      showToast("error", msg)
+
+      invisible()
+    })
+
+    out
   })
 
   output$user_panel <- renderUI({
