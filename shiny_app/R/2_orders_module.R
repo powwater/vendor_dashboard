@@ -167,12 +167,20 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     out <- NULL
 
     tryCatch({
-      out <- get_orders_by_vendor(vend, conn)
+
+      out <- get_orders_by_vendor(vend, conn) %>%
+        mutate(order_datetime = lubridate::with_tz(Sys.time(), tzone = "Africa/Nairobi"))
+
+    }, error = function(err) {
+
       msg <- 'Error collecting vendor orders from database.'
       print(msg)
       print(err)
       shinyFeedback::showToast('error', msg)
+
+      invisible()
     })
+
     out
   })
 
