@@ -167,9 +167,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     out <- NULL
 
     tryCatch({
-      out <- get_orders_by_vendor(vend, conn) %>%
-        collect()
-    }, error = function(err) {
+      out <- get_orders_by_vendor(vend, conn)
       msg <- 'Error collecting vendor orders from database.'
       print(msg)
       print(err)

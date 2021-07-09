@@ -97,7 +97,8 @@ get_orders_by_vendor <- function(vendor_id, conn) {
       conn %>% tbl("riders") %>%
         select(rider_uid = uid, rider_name),
       by = c("rider_uid")
-    )
+    ) %>%
+    collect()
 }
 
 
