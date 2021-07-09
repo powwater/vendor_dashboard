@@ -1,4 +1,4 @@
-get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+get_customer_details_by_vendor <- function(vendor_id, conn) {
 
   hold <- conn %>%
     dplyr::tbl("orders") %>%
@@ -72,16 +72,12 @@ get_customer_details_by_vendor <- function(vendor_id, conn, collect = TRUE) {
       estimated_distance = distance_val,
       estimated_duration = duration_val,
       estimated_polyline = polyline
-    )
-
-  if (!collect) return(hold)
-
-  hold %>% collect()
-
+    ) %>%
+    collect()
 }
 
 
-get_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
+get_orders_by_vendor <- function(vendor_id, conn) {
   hold <- conn %>%
     dplyr::tbl("orders") %>%
     filter(.data$vendor_uid == vendor_id) %>%
@@ -102,22 +98,11 @@ get_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
         select(rider_uid = uid, rider_name),
       by = c("rider_uid")
     )
-
-  if (!collect) return(hold)
-
-  hold %>% collect()
 }
 
-get_completed_orders_by_vendor <- function(vendor_id, conn, collect = TRUE) {
-  hold <- get_orders_by_vendor(vendor_id, conn, collect = FALSE) %>%
-    filter(order_status == "Completed")
 
-  if (!collect) return(hold)
 
-  hold %>% collect()
-}
-
-get_routes_by_vendor <- function(vendor_location_id, conn, collect = TRUE) {
+get_routes_by_vendor <- function(vendor_location_id, conn) {
 
   hold <- conn %>%
     dplyr::tbl("order_routes") %>%
@@ -145,11 +130,8 @@ get_routes_by_vendor <- function(vendor_location_id, conn, collect = TRUE) {
                customer_location_address,
                customer_location_place_id),
       by = "customer_location_uid"
-    )
-
-  if (!collect) return(hold)
-
-  hold %>% collect()
+    ) %>%
+    collect()
 }
 
 get_riders_by_vendor <- function(conn, vendor_id) {
