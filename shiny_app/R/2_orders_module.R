@@ -201,6 +201,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         select(order_uid, volume, quantity) %>%
         collect() %>%
         group_by(order_uid) %>%
+        mutate(volume = volume * quantity) %>%
         summarize(
           volume = sum(volume),
           quantity = sum(quantity)
