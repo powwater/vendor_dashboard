@@ -25,7 +25,7 @@ RUN R -e "remotes::install_version('config', version = '0.3.1', upgrade = 'never
 RUN R -e "remotes::install_version('DBI', version = '1.1.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('dbplyr', version = '2.1.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('dialr', version = '0.3.2', upgrade = 'never')"
-RUN R -e "remotes::install_version('dplyr', version = '1.0.6', upgrade = 'never')"
+RUN R -e "remotes::install_version('dplyr', version = '1.0.7', upgrade = 'never')"
 RUN R -e "remotes::install_version('DT', version = '0.18', upgrade = 'never')"
 RUN R -e "remotes::install_version('formattable', version = '0.2.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('fs', version = '1.5.0', upgrade = 'never')"
@@ -53,7 +53,7 @@ RUN R -e "remotes::install_version('yaml', version = '2.2.1', upgrade = 'never')
 # GitHub R packages
 RUN R -e "remotes::install_github('tychobra/polished', ref = 'e9edf53bd269c2477f2fe2e9c19a4991aafd3b3e', upgrade='never')"
 RUN R -e "remotes::install_github('tychobra/tychobratools', ref = 'c1a24b413363174f1115a0b34d9ae3f8616e5b76', upgrade='never')"
-RUN R -e "remotes::install_github('JohnCoene/waiter', ref = '477789d177556f9fd11c9120f5b71b72015706c1', upgrade='never')"
+RUN R -e "remotes::install_github('JohnCoene/waiter', ref = '8361840bf04aa56c72531b07f8bef6909505c5df', upgrade='never')"
 RUN R -e "remotes::install_github('johncoene/shinyscroll', ref = '98f5d669ab76c9e44fda798beac4c17dd58f66c9', upgrade='never')"
 RUN R -e "remotes::install_github('r-lib/rlang', ref = '7797cdf422910a4c737263f42bd3ea20e6bafcaa', upgrade='never')"
 RUN R -e "remotes::install_github('rstudio/htmltools', ref = '7fbab163b0badb7f48c2bbafb56a2886fc951976', upgrade='never')"
