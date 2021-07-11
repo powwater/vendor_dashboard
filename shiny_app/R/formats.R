@@ -31,11 +31,9 @@ format_phone_number <- function(string,
 
   if (identical(length(string), 0L)) return(string)
 
-  if (substr(string, 1L, 4L) != "+254")
-
-  phone_region <- switch(type,
-                         "national" = region,
-                         "international" = NA)
+  if (substr(string, 1L, 2L) == "+1") {
+    region <- "US"
+  }
 
   phone <- dialr::phone(string, region)
 
