@@ -23,8 +23,8 @@ inventory_module_ui <- function(id){
           shinycustomloader::withLoader()
       )
     ),
-    htmltools::tags$script(src = "inventory_module.js"),
-    htmltools::tags$script(paste0("inventory_module_js('", ns(''), "')"))
+    shiny::tags$script(src = "inventory_module.js"),
+    shiny::tags$script(paste0("inventory_module_js('", ns(''), "')"))
   )
 }
 

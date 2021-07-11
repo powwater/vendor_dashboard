@@ -24,20 +24,6 @@ notify <- function(msg, id = NULL) {
   shinyFeedback::showToast("info", msg, title = "Please Wait")
 }
 
-pull_unique <- function(data, var, sort = TRUE,
-                        decreasing = FALSE, names = TRUE) {
-
-  hold <- data %>%
-    dplyr::pull(!!rlang::sym(var)) %>%
-    unique()
-
-  if (sort) hold <- hold %>% sort(decreasing = decreasing)
-  if (names) hold <- hold %>% purrr::set_names()
-
-  return(hold)
-
-}
-
 create_coords_string <- function(lat, lon) {
 
   if (identical(length(lat), 0L)) return(character(0))

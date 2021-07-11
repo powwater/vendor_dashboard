@@ -19,7 +19,6 @@ suppressPackageStartupMessages({
   library(yaml)
   library(lubridate)
   library(purrr)
-  library(rlang)
   library(tidyselect)
   library(attempt)
   library(googleway)

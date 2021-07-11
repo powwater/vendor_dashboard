@@ -14,7 +14,7 @@ waiting_screen <- tagList(
 
 header <- dashboardHeaderPlus(
   title = tags$span(
-    htmltools::tags$img(
+    shiny::tags$img(
       style = "margin-top: -5px",
       src = "images/logo_text.png",
       width = 150

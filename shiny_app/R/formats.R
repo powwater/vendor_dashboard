@@ -28,7 +28,6 @@ format_phone_number <- function(string,
                                 type = c("national", "international"),
                                 region = c("KE", "US")) {
 
-
   if (identical(length(string), 0L)) return(string)
 
   if (substr(string, 1L, 2L) == "+1") {
@@ -37,11 +36,11 @@ format_phone_number <- function(string,
 
   phone <- dialr::phone(string, region)
 
-  format(phone,
+  dialr:::format.phone(phone,
          format = toupper(type),
-         home = if (type == "national") toupper(region) else NULL,
+         country = if (type == "national") toupper(region) else NULL,
          clean = TRUE,
-         strict = TRUE) %>%
+         strict = FALSE) %>%
     as.character()
 }
 

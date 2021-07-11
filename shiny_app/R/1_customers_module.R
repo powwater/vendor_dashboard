@@ -55,8 +55,8 @@ customers_module_ui <- function(id) {
         )
       )
     ),
-    htmltools::tags$script(src = "customers_module.js"),
-    htmltools::tags$script(paste0("customers_table_module_js('", ns(''), "')"))
+    shiny::tags$script(src = "customers_module.js"),
+    shiny::tags$script(paste0("customers_table_module_js('", ns(''), "')"))
   )
 
 

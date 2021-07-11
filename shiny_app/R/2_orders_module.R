@@ -103,8 +103,8 @@ orders_module_ui <- function(id){
         )
       )
     ),
-    htmltools::tags$script(src = "js/orders_module.js?version=3"),
-    htmltools::tags$script(paste0("orders_table_module_js('", ns(''), "')"))
+    shiny::tags$script(src = "js/orders_module.js?version=3"),
+    shiny::tags$script(paste0("orders_table_module_js('", ns(''), "')"))
   )
 }
 
