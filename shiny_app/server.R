@@ -27,9 +27,10 @@ server <- function(input, output, session) {
   session$userData$vendor <- reactiveVal(NULL)
 
   observeEvent(session$userData$user(), {
-    user_email <- session$userData$user()$email
+    hold_user <- session$userData$user()
 
-    if (is_powwater_admin_user(user_email)) {
+
+    if (is_powwater_admin_user(hold_user$email)) {
       out <- NULL
 
       hold_vendors <- tbl(conn, "vendors") %>%
@@ -64,7 +65,10 @@ server <- function(input, output, session) {
 
     } else {
       out <- tbl(conn, "vendor_users") %>%
-        filter(.data$user_uid %in% .env$usr) %>%
+        filter(
+          .data$user_uid == local(hold_user$user_uid)
+        ) %>%
+        select(vendor_uid) %>%
         collect()
 
       if (identical(nrow(out), 1L)) {
