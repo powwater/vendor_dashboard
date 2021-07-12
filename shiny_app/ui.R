@@ -154,6 +154,42 @@ secure_ui(
       )
     ),
     icon_href = 'images/drop_32.png',
-    background_image = "images/power_of_water.png"
+    background_image = "images/power_of_water.png",
+    terms_and_privacy_footer = p(
+      style = "margin-bottom: 8px;",
+      tags$div(
+        style = "width: 125px; display: inline-block; margin-right: 15px; text-align: right;",
+        tags$a(
+          style = 'color: #FFF',
+          href = 'https://www.powwater.com/terms-of-service/',
+          target = '_blank',
+          "General Terms"
+        )
+      ),
+      tags$span(
+        "|"
+      ),
+      tags$div(
+        style = "width: 125px; display: inline-block; margin-right: 15px; text-align: right;",
+        tags$a(
+          style = 'color: #FFF',
+          href = 'https://www.powwater.com/terms-conditions-vendors/',
+          target = '_blank',
+          "Additional Terms"
+        )
+      ),
+      tags$span(
+        "|"
+      ),
+      tags$div(
+        style = "width: 125px; display: inline-block; margin-left: 15px; text-align: left;",
+        tags$a(
+          style = 'color: #FFF',
+          href = 'Policy https://www.powwater.com/privacy/',
+          target = '_blank',
+          "Privacy"
+        )
+      )
+    )
   )
 )
