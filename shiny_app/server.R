@@ -161,7 +161,7 @@ server <- function(input, output, session) {
 
 secure_server(
   server,
-  custom_sign_in_server = sign_in_module_2
+  custom_sign_in_server = pow_sign_in_module_2
 )
 
 

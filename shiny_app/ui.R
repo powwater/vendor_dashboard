@@ -142,7 +142,7 @@ ui <- shinydashboardPlus::dashboardPagePlus(
 secure_ui(
   ui,
   sign_in_page_ui = sign_in_ui_default(
-    sign_in_module = sign_in_module_2_ui('sign_in'),
+    sign_in_module = pow_sign_in_module_2_ui('sign_in'),
     color = '#2F3474',
     company_name = 'POWWATER',
     logo_top = tags$div(
@@ -185,7 +185,7 @@ secure_ui(
         style = "width: 125px; display: inline-block; margin-left: 15px; text-align: left;",
         tags$a(
           style = 'color: #FFF',
-          href = 'Policy https://www.powwater.com/privacy/',
+          href = 'https://www.powwater.com/privacy/',
           target = '_blank',
           "Privacy"
         )
