@@ -489,58 +489,37 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
     removeModal()
 
-    order_to_decline() %>%
-      mutate(
-        order_status = "Rejected",
-        vendor_response = "Rejected",
-        vendor_response_text = input$vendor_response_text,
-        vendor_response_time = time_now_utc(),
-        modified_at = time_now_utc(),
-        modified_by = session$userData$user()$user_uid
-      ) %>%
-      select(
-        order_uid,
-        order_status,
-        vendor_response,
-        vendor_response_text,
-        vendor_response_time,
-        modified_at,
-        modified_by
-      )
+    time_now <- time_now_utc()
+    browser()
+    list(
+      order_status = "Rejected",
+      vendor_response = "Rejected",
+      vendor_response_text = input$vendor_response_text,
+      vendor_response_time = time_now,
+      modified_at = time_now_utc(),
+      modified_by = session$userData$user()$user_uid,
+      order_uid = order_to_decline()$order_uid
+    )
   })
 
   observeEvent(edit_dat_(), {
 
-    hold <- edit_dat_() %>%
-      select(
-        order_uid,
-        order_status,
-        vendor_response,
-        vendor_response_text,
-        vendor_response_time,
-        modified_at,
-        modified_by
-      )
+    hold <- edit_dat_()
 
-    dat <- list(
-      "data" = hold %>% select(-order_uid),
-      "uid" = hold %>% pull(order_uid)
-    )
+    dat <-
 
     tryCatch({
       dbExecute(
         conn,
         "UPDATE orders SET
-            order_status=$1,
-            vendor_response=$2,
-            vendor_response_text=$3,
-            vendor_response_time=$4,
-            modified_at=$5,
-            modified_by=$6 WHERE uid=$7",
-        params = c(
-          unname(dat$data),
-          list(dat$uid)
-        )
+          order_status=$1,
+          vendor_response=$2,
+          vendor_response_text=$3,
+          vendor_response_time=$4,
+          modified_at=$5,
+          modified_by=$6
+        WHERE uid=$7",
+        params = unname(hold)
       )
 
       initial_change_check <<- TRUE
