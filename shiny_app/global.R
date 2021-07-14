@@ -16,7 +16,6 @@ suppressPackageStartupMessages({
   library(shinyFeedback)
   library(shinyjs)
   library(shinyWidgets)
-  library(yaml)
   library(lubridate)
   library(purrr)
   library(tidyselect)
@@ -81,6 +80,63 @@ pow_colors <- assets$colors
 
 # choices -----------------------------------------------------------------
 
-choices <- yaml::read_yaml("choices.yml") %>%
-  purrr::map(unlist)
+choices <- list(
+  currency = c(
+    "Kenyan Shillings (KES)" = "kes",
+    "US Dollars (USD)" = "usd"
+  ),
+  timezone = c(
+    "Auto-Detect" = "auto",
+    "East Africa Time (EAT)" = "UTC +3",
+    "Eastern Daylight Time (EDT)" = "UTC -4",
+    "Central Daylight Time (CDT)" = "UTC -5",
+    "Mountain Daylight Time (MDT)" = "UTC -6",
+    "Pacific Daylight Time (PDT)" = "UTC -7",
+    "Mountain Standard Time (MST)" = "UTC -7"
+  ),
+  payment_types = c(
+    "MPesa" = "mpesa",
+    "Credit Card" = "credit_card",
+    "Paypal" = "paypal"
+  ),
+  inventory_capacity = c(
+    "1.5L" = 1.5,
+    "10L" = 10.0,
+    "20L" = 20.0
+  ),
+  inventory_offer_type = c(
+    "New" = "new",
+    "Swap" = "swap",
+    "Refill" = "refill"
+  ),
+  order_status = c(
+    "Completed" = "Completed",
+    "In Progress" = "In Progress",
+    "Pending" = "Pending",
+    "Canceled" = "Canceled",
+    "Rejected" = "Rejected"
+  ),
+  order_delivery_status = c(
+    "Pending" = "Pending",
+    "Awaiting Delivery" = "Awaiting Delivery",
+    "Out for Delivery" = "Out for Delivery",
+    "Delivered" = "Delivered",
+    "Canceled" = "Canceled",
+    "Rejected" = "Rejected"
+  ),
+  order_payment_status = c(
+    "Pending" = "payment_pending",
+    "Confirmed" = "awaiting_vendor_response",
+    "Declined" = "declined"
+  ),
+  vendor_response = c(
+    "Accepted" = "Accepted",
+    "Rejected" = "Rejected",
+    "Pending" = "Pending"
+  ),
+  phone_number_format = c(
+    "National" = "national",
+    "International" = "international"
+  )
+)
 

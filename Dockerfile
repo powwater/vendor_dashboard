@@ -48,7 +48,6 @@ RUN R -e "remotes::install_version('snakecase', version = '0.11.0', upgrade = 'n
 RUN R -e "remotes::install_version('stringr', version = '1.4.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('tibble', version = '3.1.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('tidyselect', version = '1.1.1', upgrade = 'never')"
-RUN R -e "remotes::install_version('yaml', version = '2.2.1', upgrade = 'never')"
 
 # GitHub R packages
 RUN R -e "remotes::install_github('tychobra/polished', ref = 'e9edf53bd269c2477f2fe2e9c19a4991aafd3b3e', upgrade='never')"
