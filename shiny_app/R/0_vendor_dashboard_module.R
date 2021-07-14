@@ -3,13 +3,13 @@ vendor_dashboard_ui <- function(id) {
   ns <- NS(id)
 
   tagList(
-    fluidRow(
-      column(
-        12,
-        h5("Map:"),
-        uiOutput(ns("global_map"))
-      )
-    ),
+    # fluidRow(
+    #   column(
+    #     12,
+    #     h5("Map:"),
+    #     uiOutput(ns("global_map"))
+    #   )
+    # ),
     fluidRow(
       column(
         12,
