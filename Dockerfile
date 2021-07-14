@@ -33,7 +33,7 @@ RUN R -e "remotes::install_version('lubridate', version = '1.7.10', upgrade = 'n
 RUN R -e "remotes::install_version('purrr', version = '0.3.4', upgrade = 'never')"
 RUN R -e "remotes::install_version('RPostgres', version = '1.3.2', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinyFiles', version = '0.9.0', upgrade = 'never')"
-RUN R -e "remotes::install_version('shinycssloader', version = '1.0.0', upgrade = 'never')"
+RUN R -e "remotes::install_version('shinycssloaders', version = '1.0.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinydashboard', version = '0.7.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinydashboardPlus', version = '0.7.5', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinyFeedback', version = '0.3.0', upgrade = 'never')"
