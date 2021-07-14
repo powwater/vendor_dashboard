@@ -27,13 +27,7 @@ suppressPackageStartupMessages({
 })
 
 if (packageVersion("shinydashboardPlus") > "0.7.5") {
-  usethis::ui_stop(
-    paste0(
-      "package `shinydashboardPlus` must use version 0.7.5; run ",
-      usethis::ui_code("remotes::install_version('shinydashboardPlus', '0.7.5')"),
-      " to install."
-    )
-  )
+  stop("package `shinydashboardPlus` must use version 0.7.5")
 }
 
 # set default options -----------------------------------------------------
