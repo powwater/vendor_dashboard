@@ -39,10 +39,10 @@ orders_module_ui <- function(id){
               ns("reload_bttn"),
               "Reload",
               icon = icon("refresh"),
-              class = "btn-success",
-              style = "float: right;"
-            ), #%>%
-              #shinyjs::disabled(),
+              class = "btn-success pull-right",
+              style = "color: #FFF;"
+            ) %>%
+              shinyjs::disabled(),
             h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
             hr(),
             DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
@@ -103,7 +103,7 @@ orders_module_ui <- function(id){
         )
       )
     ),
-    shiny::tags$script(src = "js/orders_module.js?version=3"),
+    shiny::tags$script(src = "js/orders_module.js?version=4"),
     shiny::tags$script(paste0("orders_table_module_js('", ns(''), "')"))
   )
 }
@@ -117,40 +117,42 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
 
 
-  # check_db_change <- reactivePoll(
-  #   intervalMillis = 0.25 * 60 * 1000,
-  #   session = session,
-  #   checkFunc = function() {
-  #
-  #     browser()
-  #     out <- NULL
-  #     try({
-  #       vend_id <- vendor_info()$vendor_uid
-  #       out <- conn %>%
-  #         tbl("orders") %>%
-  #         filter(
-  #           vendor_uid == vend_id
-  #         ) %>%
-  #         pull(modified_at)
-  #     })
-  #
-  #     return(out)
-  #   },
-  #   valueFunc = function() {
-  #     Sys.time()
-  #   }
-  # )
+  check_db_change <- reactivePoll(
+    # checks every minute
+    intervalMillis = 60 * 1000,
+    session = session,
+    checkFunc = function() {
 
-  # initial_change_check <- TRUE
-  # observeEvent(check_db_change(), {
-  #
-  #   if (isFALSE(initial_change_check)) {
-  #     id <- notify("New order's data detected! Reload data table to view.")
-  #     shinyjs::enable("reload_bttn")
-  #   }
-  #   # do not show the reload data button if this is the initial data load
-  #   initial_change_check <<- FALSE
-  # })
+      out <- NULL
+      try({
+        vend_id <- vendor_info()$vendor_uid
+        out <- conn %>%
+          tbl("orders") %>%
+          filter(
+            vendor_uid == vend_id,
+            modified_at == max(modified_at, na.rm = TRUE)
+          ) %>%
+          pull(modified_at)
+      })
+
+      return(out)
+    },
+    valueFunc = function() {
+      Sys.time()
+    }
+  )
+
+  initial_change_check <- TRUE
+  observeEvent(check_db_change(), {
+
+    if (isFALSE(initial_change_check)) {
+      session$sendCustomMessage("ka_ching", message = list())
+      showToast("info", "New order's data detected! Reload data table to view.")
+      shinyjs::enable("reload_bttn")
+    }
+    # do not show the reload data button if this is the initial data load
+    initial_change_check <<- FALSE
+  })
 
   observeEvent(input$reload_bttn, {
     #req(check_db_change())

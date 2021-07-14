@@ -21,4 +21,14 @@ function orders_table_module_js(ns_prefix) {
     $(this).tooltip("hide");
   });
 
+
+  var src = 'ka-ching.mp3';
+  var audio = new Audio(src);
+  Shiny.addCustomMessageHandler(
+    "ka_ching",
+    function(message) {
+      audio.play();
+    }
+  )
+
 }
