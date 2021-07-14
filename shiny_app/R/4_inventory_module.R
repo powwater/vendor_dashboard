@@ -20,7 +20,7 @@ inventory_module_ui <- function(id){
         br(),
         br(),
         DT::DTOutput(ns('inventory_table')) %>%
-          shinycustomloader::withLoader()
+          shinycssloaders::withSpinner()
       )
     ),
     shiny::tags$script(src = "inventory_module.js"),

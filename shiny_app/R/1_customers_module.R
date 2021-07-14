@@ -15,7 +15,7 @@ customers_module_ui <- function(id) {
           column(
             width = 12,
             DT::DTOutput(ns('customers_table')) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         )
       )

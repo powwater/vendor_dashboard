@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
   library(snakecase)
   library(htmltools)
   library(shiny)
-  library(shinycustomloader)
+  library(shinycssloaders)
   library(shinydashboard)
   library(shinydashboardPlus) # v0.7.5!
   library(shinyFeedback)
@@ -38,10 +38,12 @@ if (packageVersion("shinydashboardPlus") > "0.7.5") {
 
 # set default options -----------------------------------------------------
 options(shiny.trace = FALSE) # set to T to print full shiny operations.
+# turn off scientific notation
 options(scipen = 999)
 options(dplyr.summarise.inform = FALSE)
 options(lubridate.week.start = 1)
-
+# set `shinycssloaders` spinner type
+options(spinner.type = 8)
 
 
 # load config yaml file

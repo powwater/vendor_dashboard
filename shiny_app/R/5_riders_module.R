@@ -13,7 +13,7 @@ riders_module_ui <- function(id){
       #       width = 12,
       #       helpText("Powwater rides are assigned to vendors by Powwater to fulfill order deliveries to customers."),
       #       DT::DTOutput(ns('pow_riders_table')) %>%
-      #         shinycustomloader::withLoader()
+      #        shinycssloaders::withSpinner()
       #     )
       #   )
       # ),
@@ -28,7 +28,7 @@ riders_module_ui <- function(id){
             12,
             helpText("Vendor specific riders are employees of the vendor and only deliver for that vendor."),
             DT::DTOutput(ns('vendor_riders_table')) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         )
       )

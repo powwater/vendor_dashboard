@@ -16,7 +16,7 @@ tests_module_ui <- function(id){
             offset = 2,
             width = 8,
             DT::DTOutput(ns('tests_table')) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         ),
         br(),
@@ -27,7 +27,7 @@ tests_module_ui <- function(id){
             offset = 4,
             width = 4,
             DT::DTOutput(ns("tests_tiers_table")) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         )
       )

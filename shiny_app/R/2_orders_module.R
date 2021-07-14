@@ -46,7 +46,7 @@ orders_module_ui <- function(id){
             h3(icon_text("hourglass", "Orders Awaiting Vendor Response:")),
             hr(),
             DT::DTOutput(ns("awaiting_orders_table"), width = "100%") %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         ),
         hr(),
@@ -56,7 +56,7 @@ orders_module_ui <- function(id){
             h3(icon_text("check", "All Orders:")),
             hr(),
             DT::DTOutput(ns('orders_table'), width = "100%") %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         )
       ),
@@ -73,7 +73,7 @@ orders_module_ui <- function(id){
             width = 6,
             h4(icon_text("route", "Delivery Routes:")),
             uiOutput(ns("directions_iframe")) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           ),
           column(
             width = 6,
@@ -82,7 +82,7 @@ orders_module_ui <- function(id){
                         "Select an Order to View:",
                         choices = ""),
             DT::DTOutput(ns('delivery_details')) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         )
       ),
@@ -98,7 +98,7 @@ orders_module_ui <- function(id){
           column(
             12,
             uiOutput(ns("ratings_ui")) %>%
-              shinycustomloader::withLoader()
+              shinycssloaders::withSpinner()
           )
         )
       )
