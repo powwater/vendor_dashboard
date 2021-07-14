@@ -19,7 +19,6 @@ suppressPackageStartupMessages({
   library(lubridate)
   library(purrr)
   library(tidyselect)
-  library(attempt)
   library(googleway)
   library(shinyFiles)
   library(waiter)

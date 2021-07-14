@@ -20,7 +20,6 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 RUN R -e "install.packages('remotes')"
 
 # CRAN R packages
-RUN R -e "remotes::install_version('attempt', version = '0.3.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('config', version = '0.3.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('DBI', version = '1.1.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('dbplyr', version = '2.1.1', upgrade = 'never')"
@@ -28,15 +27,11 @@ RUN R -e "remotes::install_version('dialr', version = '0.3.2', upgrade = 'never'
 RUN R -e "remotes::install_version('dplyr', version = '1.0.7', upgrade = 'never')"
 RUN R -e "remotes::install_version('DT', version = '0.18', upgrade = 'never')"
 RUN R -e "remotes::install_version('formattable', version = '0.2.1', upgrade = 'never')"
-RUN R -e "remotes::install_version('fs', version = '1.5.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('glue', version = '1.4.2', upgrade = 'never')"
 RUN R -e "remotes::install_version('googleway', version = '2.7.3', upgrade = 'never')"
-RUN R -e "remotes::install_version('here', version = '1.0.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('lubridate', version = '1.7.10', upgrade = 'never')"
 RUN R -e "remotes::install_version('purrr', version = '0.3.4', upgrade = 'never')"
-RUN R -e "remotes::install_version('readr', version = '1.4.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('RPostgres', version = '1.3.2', upgrade = 'never')"
-RUN R -e "remotes::install_version('scales', version = '1.1.1', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinyFiles', version = '0.9.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinycustomloader', version = '0.9.0', upgrade = 'never')"
 RUN R -e "remotes::install_version('shinydashboard', version = '0.7.1', upgrade = 'never')"

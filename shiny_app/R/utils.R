@@ -2,12 +2,7 @@ time_now_utc <- function() {
   lubridate::with_tz(Sys.time(), tzone = "UTC")
 }
 
-get_last_updated_date <- function(path = ".") {
-  fs::dir_info(path) %>%
-    tibble::as_tibble() %>%
-    dplyr::pull("modification_time") %>%
-    max(na.rm = TRUE)
-}
+
 
 create_link <- function(val, txt = NA) {
   if (identical(length(val), 0L)) return(val)
