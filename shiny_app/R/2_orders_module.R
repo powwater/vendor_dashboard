@@ -171,7 +171,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     tryCatch({
 
       out <- get_orders_by_vendor(vend, conn) %>%
-        mutate(order_datetime = lubridate::with_tz(Sys.time(), tzone = "Africa/Nairobi"))
+        mutate(order_datetime = lubridate::with_tz(order_datetime, tzone = "Africa/Nairobi"))
 
     }, error = function(err) {
 
