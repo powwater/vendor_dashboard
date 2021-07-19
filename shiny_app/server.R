@@ -75,6 +75,38 @@ server <- function(input, output, session) {
 
         session$userData$vendor(list(vendor_uid = out$vendor_uid))
 
+      } else if (nrow(out) > 1L) {
+
+        hold_vendors <- tbl(conn, "vendors") %>%
+          filter(uid %in% local(out$vendor_uid)) %>%
+          select(uid, vendor_name) %>%
+          collect() %>%
+          arrange(vendor_name)
+
+        vendor_choices <-  hold_vendors$uid
+        names(vendor_choices) <- hold_vendors$vendor_name
+
+        shiny::showModal(
+          modalDialog(
+            size = "s",
+            selectInput(
+              "select_vendor",
+              label = "Vendor",
+              choices = vendor_choices
+            ),
+            title = "Select Vendor",
+            footer = shiny::actionButton(
+              "submit_select_vendor",
+              "Submit"
+            )
+          ) %>% shiny::tagAppendAttributes(style = "z-index: 9999999")
+        )
+
+        observeEvent(input$submit_select_vendor, {
+          out <- list(vendor_uid = input$select_vendor)
+          session$userData$vendor(out)
+          shiny::removeModal()
+        })
       } else {
 
         # sign the user out.  They are not linked up to any particular vendor.
