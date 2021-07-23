@@ -52,7 +52,7 @@ orders_module_ui <- function(id){
         fluidRow(
           column(
             12,
-            h3(icon_text("check", "All Orders:")),
+            h3(icon_text("check", "All Non Pending Orders:")),
             hr(),
             DT::DTOutput(ns('orders_table'), width = "100%") %>%
               shinycssloaders::withSpinner()
@@ -883,7 +883,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   num_awaiting_response <- reactive({
     hold <- orders() %>%
-      filter(vendor_response == "Pending" | is.na(vendor_response)) %>%
+      filter(order_status == "Pending") %>%
       nrow()
 
     paste0(hold, " Awaiting")
