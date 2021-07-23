@@ -113,7 +113,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
 
 
-
+  ring_chime <- reactiveVal(FALSE)
   check_db_change <- reactivePoll(
     # checks every minute
     intervalMillis = 60 * 1000,
@@ -129,8 +129,16 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
             vendor_uid == vend_id,
             modified_at == max(modified_at, na.rm = TRUE)
           ) %>%
-          pull(modified_at)
+          select(created_at, modified_at)
       })
+
+      if (identical(out$create_at, out$modified_at)) {
+        # if created_at != modified_at, then it is not a new order, it is a changed order (e.g.
+        # order status updated from "Pending" to "In Progress"), so we don't want to wr
+        ring_chime(TRUE)
+      } else {
+        ring_chime(FALSE)
+      }
 
       return(out)
     },
@@ -143,8 +151,14 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   observeEvent(check_db_change(), {
 
     if (isFALSE(initial_change_check)) {
-      session$sendCustomMessage("ka_ching", message = list())
-      showToast("info", "New order's data detected! Reload data table to view.")
+      if (ring_chime()) {
+        session$sendCustomMessage("ka_ching", message = list())
+        showToast("info", "New order's data detected! Reload data table to view.")
+        ring_chime(FALSE)
+      } else {
+        showToast("info", "Order changes detected. Reload to see changes.")
+      }
+
       shinyjs::enable("reload_bttn")
     }
     # do not show the reload data button if this is the initial data load
@@ -154,7 +168,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   observeEvent(input$reload_bttn, {
     #req(check_db_change())
     session$userData$orders_trigger(session$userData$orders_trigger() + 1)
-    #shinyjs::disable("reload_bttn")
+    shinyjs::disable("reload_bttn")
   })
 
   orders <- reactive({
