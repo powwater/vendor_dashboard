@@ -129,10 +129,11 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
             vendor_uid == vend_id,
             modified_at == max(modified_at, na.rm = TRUE)
           ) %>%
-          select(created_at, modified_at)
+          select(created_at, modified_at) %>%
+          collect()
       })
 
-      if (identical(out$create_at, out$modified_at)) {
+      if (identical(out$created_at, out$modified_at)) {
         # if created_at != modified_at, then it is not a new order, it is a changed order (e.g.
         # order status updated from "Pending" to "In Progress"), so we don't want to wr
         ring_chime(TRUE)
@@ -151,7 +152,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   observeEvent(check_db_change(), {
 
     if (isFALSE(initial_change_check)) {
-      if (ring_chime()) {
+      if (isTRUE(ring_chime())) {
         session$sendCustomMessage("ka_ching", message = list())
         showToast("info", "New order's data detected! Reload data table to view.")
         ring_chime(FALSE)
@@ -503,7 +504,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     removeModal()
 
     time_now <- time_now_utc()
-    browser()
+
     list(
       order_status = "Rejected",
       vendor_response = "Rejected",
@@ -871,7 +872,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   # valboxes ----------------------------------------------------------------
 
   avg_rating_valbox <- reactive({
-    paste0(formattable::comma(ratings_prep()$avg_rating, 3), " Stars")
+    paste0(formattable::comma(ratings_prep()$avg_rating, 2), " Rating")
   })
 
   callModule(
@@ -885,7 +886,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       filter(vendor_response == "Pending" | is.na(vendor_response)) %>%
       nrow()
 
-    paste0(hold, " Orders")
+    paste0(hold, " Awaiting")
   })
 
   callModule(
@@ -899,7 +900,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       filter(order_status == "Completed") %>%
       nrow()
 
-    paste0(hold, " Orders")
+    paste0(hold, " Completed")
   })
 
   callModule(
