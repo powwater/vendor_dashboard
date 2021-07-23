@@ -29,7 +29,6 @@ orders_module_ui <- function(id){
       box(
         width = 12,
         title = icon_text("folder-open", 'Orders'),
-        footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
         fluidRow(
@@ -64,7 +63,6 @@ orders_module_ui <- function(id){
       box(
         width = 12,
         title = icon_text("road", " Delivery Details:"),
-        footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
         height = NULL,
@@ -90,7 +88,6 @@ orders_module_ui <- function(id){
       box(
         width = 12,
         title = icon_text("star", " Ratings"),
-        footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
         height = NULL,

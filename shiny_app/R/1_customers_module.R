@@ -7,7 +7,6 @@ customers_module_ui <- function(id) {
       box(
         width = 12,
         title = icon_text("user-friends", 'Customers'),
-        footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
         height = NULL,
@@ -24,7 +23,6 @@ customers_module_ui <- function(id) {
       box(
         width = 12,
         title = icon_text("map-marked-alt", "Maps"),
-        footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
         height = NULL,

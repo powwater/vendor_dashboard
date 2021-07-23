@@ -5,7 +5,6 @@ riders_module_ui <- function(id){
       # box(
       #   width = 12,
       #   title = icon_text("car-side", 'Powwater Riders'),
-      #   footer = "Powwater | Tychobra 2021",
       #   status = "primary",
       #   solidHeader = TRUE,
       #   fluidRow(
@@ -20,7 +19,6 @@ riders_module_ui <- function(id){
       box(
         width = 12,
         title = icon_text("car-side", 'Vendor Riders'),
-        footer = "Powwater | Tychobra 2021",
         status = "primary",
         solidHeader = TRUE,
         fluidRow(
