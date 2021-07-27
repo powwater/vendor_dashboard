@@ -59,31 +59,31 @@ orders_module_ui <- function(id){
           )
         )
       ),
-      hr(),
-      box(
-        width = 12,
-        title = icon_text("road", " Delivery Details:"),
-        status = "primary",
-        solidHeader = TRUE,
-        height = NULL,
-        fluidRow(
-          column(
-            width = 6,
-            h4(icon_text("route", "Delivery Routes:")),
-            uiOutput(ns("directions_iframe")) %>%
-              shinycssloaders::withSpinner()
-          ),
-          column(
-            width = 6,
-            h4(icon_text("info", "Delivery Details")),
-            pickerInput(ns("selected_order"),
-                        "Select an Order to View:",
-                        choices = ""),
-            DT::DTOutput(ns('delivery_details')) %>%
-              shinycssloaders::withSpinner()
-          )
-        )
-      )
+      hr()#,
+      # box(
+      #   width = 12,
+      #   title = icon_text("road", " Delivery Details:"),
+      #   status = "primary",
+      #   solidHeader = TRUE,
+      #   height = NULL,
+      #   fluidRow(
+      #     column(
+      #       width = 6,
+      #       h4(icon_text("route", "Delivery Routes:")),
+      #       uiOutput(ns("directions_iframe")) %>%
+      #         shinycssloaders::withSpinner()
+      #     ),
+      #     column(
+      #       width = 6,
+      #       h4(icon_text("info", "Delivery Details")),
+      #       pickerInput(ns("selected_order"),
+      #                   "Select an Order to View:",
+      #                   choices = ""),
+      #       DT::DTOutput(ns('delivery_details')) %>%
+      #         shinycssloaders::withSpinner()
+      #     )
+      #   )
+      # )
     ),
     shiny::tags$script(src = "js/orders_module.js?version=4"),
     shiny::tags$script(paste0("orders_table_module_js('", ns(''), "')"))
@@ -188,13 +188,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     out
   })
 
-
-
-  completed_orders <- reactive({
-    req(orders())
-    orders() %>%
-      filter(order_status == "Completed")
-  })
 
   awaiting_orders <- reactive({
     req(orders())
@@ -537,31 +530,39 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     })
   })
 
-  observeEvent(completed_orders(), {
-    req(orders(), completed_orders())
-
-    order_choices <- completed_orders()$order_uid
+  observeEvent(accepted_orders(), {
+    req(accepted_orders())
+    hold <- accepted_orders()
+    order_choices <- hold$order_uid
 
     if (length(order_choices) > 0) {
-      names(order_choices) <- paste0("Order #", completed_orders()$order_number)
+      names(order_choices) <- paste0("Order #", hold$order_number)
     }
 
-    updatePickerInput(session, "selected_order", choices = order_choices)
+    updatePickerInput(
+      session,
+      "selected_order",
+      choices = order_choices
+    )
+
   }, once = TRUE)
 
-  orders_prep <- reactiveVal(NULL)
-
-  observeEvent(orders(), {
+  accepted_orders <- reactive({
+    req(orders(), awaiting_orders())
 
     hold <- orders() %>%
       filter(!(order_uid %in% awaiting_orders()$order_uid))
+  })
 
-    hold_disable <- hold %>%
-      filter(order_status != "Completed")
+
+  orders_prep <- reactiveVal(NULL)
+
+  observeEvent(accepted_orders(), {
+    hold <- accepted_orders()
 
     ids <- hold$order_uid
 
-    disable_ids <- hold_disable$order_uid
+    #disable_ids <- hold_disable$order_uid
 
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
@@ -569,10 +570,10 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       class <- NULL#if (id_ %in% disable_ids) "shinyjs-disabled " else NULL
 
       paste0(
-        '<div class="btn-group" style="width: 35px;" role="group" aria-label="Order Buttons"><button class="',
+        '<button class="',
         paste0(class, 'btn btn-info btn-sm info_btn" '),
         'data-toggle="tooltip" data-placement="top" title="Details" id="', id_,
-        '" style="margin: 0"><i class="fas fa-id-card"></i></button></div>'
+        '" style="margin: 0" disabled><i class="fas fa-id-card"></i></button></div>'
       )
     })
 
@@ -794,7 +795,13 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   observeEvent(order_to_info(), {
     scroll(session$ns("directions_iframe"))
     sel <- order_to_info()
-    updatePickerInput(session, "selected_order", selected = sel$order_uid)
+
+
+    updatePickerInput(
+      session,
+      "selected_order",
+      selected = sel$order_uid
+    )
     selected_order_for_view(sel)
   })
 
@@ -802,18 +809,20 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   # routes ------------------------------------------------------------------
 
 
-  routes <- reactive({
-    req(vendor_info()$vendor_location_uid)
+  route <- reactive({
+    req(vendor_info()$vendor_location_uid, input$selected_order)
     # id <- notify("Loading Routes from Database...")
     # on.exit(shinyFeedback::hideToast(), add = TRUE)
-
-    vend <- vendor_info()$vendor_location_uid
+    browser()
+    hold <- orders() %>%
+      filter(uid == input$selected_order)
 
     out <- NULL
 
     tryCatch({
 
-      out <- get_routes_by_vendor(vend, conn = conn)
+      # TODO: query Google API for the route
+
 
     }, error = function(err) {
       msg <- 'Error collecting vendor routes from database.'
@@ -826,69 +835,65 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   })
 
-  routes_filt <- reactive({
-    req(routes(), input$selected_order)
-    routes() %>% filter(order_uid == input$selected_order)
-  })
 
   output$directions_iframe <- renderUI({
+    req(route())
     vendor_place_id <- vendor_info()$place_id
     customer_place_id <- routes_filt()$customer_location_place_id
-    browser()
     HTML(create_directions_iframe(key = key, start = vendor_place_id, stop = customer_place_id))
   })
 
-  output$delivery_details <- DT::renderDT({
-    req(routes_filt())
-
-    hold <- routes_filt()
-
-    out <- tibble::tibble(
-      " " = c("Location", "Address", "Coordinates"),
-      "Start (Vendor)" = c(hold$vendor_location_name, hold$vendor_location_address, paste0("(", round(hold$vendor_location_lat, 3), ", ", round(hold$vendor_location_lon, 3), ")")),
-      "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
-    )
-
-    cap <- paste0(
-      "Order #",
-      orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
-      " - Order placed on: ",
-      paste0(orders()$order_date[1], " ", orders()$order_time[1])
-    )
-
-    n_row <- nrow(out)
-    n_col <- ncol(out)
-    id <- session$ns("delivery_details_table")
-
-    if (isTRUE(is_mobile())) {
-      tbl_class <- "table dt-center dt-responsive nowrap table"
-      tbl_exts <- c("Responsive")
-      tbl_filt <- "none"
-      tbl_scroll <- FALSE
-    } else {
-      tbl_class <- "table dt-center nowrap table"
-      tbl_exts <- list()
-      tbl_filt <- "none"
-      tbl_scroll <- TRUE
-    }
-
-    datatable(
-      out,
-      caption = cap,
-      style = "bootstrap",
-      class = tbl_class,
-      rownames = FALSE,
-      selection = "none",
-      extensions = tbl_exts,
-      options = list(
-        scrollX = tbl_scroll,
-        dom = "t",
-        columnDefs = list(
-          list(className = "dt-center dt-col", targets = "_all")
-        )
-      )
-    )
-
-  })
+  # output$delivery_details <- DT::renderDT({
+  #   req(routes_filt())
+  #
+  #   hold <- routes_filt()
+  #
+  #   out <- tibble::tibble(
+  #     " " = c("Location", "Address", "Coordinates"),
+  #     "Start (Vendor)" = c(hold$vendor_location_name, hold$vendor_location_address, paste0("(", round(hold$vendor_location_lat, 3), ", ", round(hold$vendor_location_lon, 3), ")")),
+  #     "Stop (Customer)" = c(hold$customer_location_name, hold$customer_location_address, paste0("(", round(hold$customer_location_lat, 3), ", ", round(hold$customer_location_lon, 3), ")"))
+  #   )
+  #
+  #   cap <- paste0(
+  #     "Order #",
+  #     orders()$order_number[match(input$selected_order, orders()$order_uid)][1],
+  #     " - Order placed on: ",
+  #     paste0(orders()$order_date[1], " ", orders()$order_time[1])
+  #   )
+  #
+  #   n_row <- nrow(out)
+  #   n_col <- ncol(out)
+  #   id <- session$ns("delivery_details_table")
+  #
+  #   if (isTRUE(is_mobile())) {
+  #     tbl_class <- "table dt-center dt-responsive nowrap table"
+  #     tbl_exts <- c("Responsive")
+  #     tbl_filt <- "none"
+  #     tbl_scroll <- FALSE
+  #   } else {
+  #     tbl_class <- "table dt-center nowrap table"
+  #     tbl_exts <- list()
+  #     tbl_filt <- "none"
+  #     tbl_scroll <- TRUE
+  #   }
+  #
+  #   datatable(
+  #     out,
+  #     caption = cap,
+  #     style = "bootstrap",
+  #     class = tbl_class,
+  #     rownames = FALSE,
+  #     selection = "none",
+  #     extensions = tbl_exts,
+  #     options = list(
+  #       scrollX = tbl_scroll,
+  #       dom = "t",
+  #       columnDefs = list(
+  #         list(className = "dt-center dt-col", targets = "_all")
+  #       )
+  #     )
+  #   )
+  #
+  # })
 
 }

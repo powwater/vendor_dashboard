@@ -127,40 +127,6 @@ get_orders_by_vendor <- function(vendor_id, conn) {
     collect()
 }
 
-
-
-get_routes_by_vendor <- function(vendor_location_id, conn) {
-
-  hold <- conn %>%
-    dplyr::tbl("order_routes") %>%
-    dplyr::filter(vendor_location_uid == vendor_location_id) %>%
-    left_join(
-      conn %>%
-        tbl('vendor_locations') %>%
-        select(vendor_location_uid = uid,
-               vendor_uid,
-               vendor_location_lat,
-               vendor_location_lon,
-               vendor_location_name,
-               vendor_location_address,
-               vendor_location_place_id),
-      by = "vendor_location_uid"
-    ) %>%
-    left_join(
-      conn %>%
-        tbl('customer_locations') %>%
-        select(customer_location_uid = uid,
-               customer_uid,
-               customer_location_lat,
-               customer_location_lon,
-               customer_location_name,
-               customer_location_address,
-               customer_location_place_id),
-      by = "customer_location_uid"
-    ) %>%
-    collect()
-}
-
 get_riders_by_vendor <- function(conn, vendor_id) {
 
   conn %>%

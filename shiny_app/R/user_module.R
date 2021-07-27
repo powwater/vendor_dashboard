@@ -25,10 +25,6 @@ user_module <- function(input, output, session, vendor_info) {
                   session = session,
                   defaultRoot = "Home")
 
-  observe({
-    cat("\ninput$file value:\n\n")
-    print(input$file)
-  })
 
   output$filepaths <- renderPrint({
     if (is.integer(input$document)) {
