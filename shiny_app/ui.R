@@ -32,11 +32,11 @@ sidebar <- dashboardSidebar(
     user_module_ui("user_panel"),
     sidebarMenu(
       id = 'sidebar_menu',
-      menuItem(
-        text = "Dashboard",
-        tabName = "vendor_dash",
-        icon = icon("dashboard")
-      ),
+      # menuItem(
+      #   text = "Dashboard",
+      #   tabName = "vendor_dash",
+      #   icon = icon("dashboard")
+      # ),
       menuItem(
         text = 'Customers',
         tabName = 'customers_tab',
@@ -103,10 +103,10 @@ body <- dashboardBody(
     tags$link(rel = "stylesheet", href = "css/water_rating_icons.css?version=1")
   ),
   tabItems(
-    tabItem(
-      tabName = "vendor_dash",
-      vendor_dashboard_ui("vendor_dashboard_module")
-    ),
+    # tabItem(
+    #   tabName = "vendor_dash",
+    #   vendor_dashboard_ui("vendor_dashboard_module")
+    # ),
     tabItem(
       tabName = 'customers_tab',
       customers_module_ui("customers_module")

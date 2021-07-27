@@ -134,6 +134,7 @@ right_sidebar_module <- function(input, output, session, vendor_info) {
   # })
 
   image_path <- reactive({
+    req(vendor_info())
     vend <- vendor_info()$vendor_name
     out <- switch(tolower(vend),
                   "dutch water" = "images/profiles/dutch_water.png",

@@ -124,7 +124,21 @@ server <- function(input, output, session) {
     req(session$userData$vendor())
 
     user_vendor <- session$userData$vendor()$vendor_uid
-    get_vendor_info(conn = conn, user_vendor)
+    out <- NULL
+
+    tryCatch({
+      out <- get_vendor_info(conn = conn, user_vendor)
+    }, error = function(err) {
+
+      msg <- "unable to get vendor info"
+      print(msg)
+      print(err)
+      showToast("error", msg)
+
+      invisible()
+    })
+
+    out
   })
 
   callModule(
@@ -145,12 +159,12 @@ server <- function(input, output, session) {
       vendor_info = logged_in_vendor_info
     )
 
-    callModule(
-      vendor_dashboard,
-      "vendor_dashboard_module",
-      vendor_info = logged_in_vendor_info,
-      is_mobile = is_mobile_device_rv
-    )
+    # callModule(
+    #   vendor_dashboard,
+    #   "vendor_dashboard_module",
+    #   vendor_info = logged_in_vendor_info,
+    #   is_mobile = is_mobile_device_rv
+    # )
 
     callModule(
       customers_module,

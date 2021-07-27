@@ -104,7 +104,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     intervalMillis = 60 * 1000,
     session = session,
     checkFunc = function() {
-
+      if (is.null(vendor_info())) return(NULL)
       out <- NULL
       try({
         vend_id <- vendor_info()$vendor_uid

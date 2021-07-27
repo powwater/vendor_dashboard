@@ -35,6 +35,7 @@ user_module <- function(input, output, session, vendor_info) {
   })
 
   image_path <- reactive({
+    req(vendor_info())
     vend <- vendor_info()$vendor_name
     out <- switch(tolower(vend),
                   "dutch water" = "images/profiles/dutch_water.png",
@@ -43,6 +44,7 @@ user_module <- function(input, output, session, vendor_info) {
   })
 
   is_open <- reactive({
+    req(vendor_info())
     out <- FALSE
 
     tryCatch({
@@ -61,7 +63,7 @@ user_module <- function(input, output, session, vendor_info) {
   })
 
   output$user_panel <- renderUI({
-
+    req(vendor_info())
     img <- image_path()
 
     if (is_open()) {
