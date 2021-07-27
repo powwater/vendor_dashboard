@@ -83,21 +83,6 @@ orders_module_ui <- function(id){
               shinycssloaders::withSpinner()
           )
         )
-      ),
-      hr(),
-      box(
-        width = 12,
-        title = icon_text("star", " Ratings"),
-        status = "primary",
-        solidHeader = TRUE,
-        height = NULL,
-        fluidRow(
-          column(
-            12,
-            uiOutput(ns("ratings_ui")) %>%
-              shinycssloaders::withSpinner()
-          )
-        )
       )
     ),
     shiny::tags$script(src = "js/orders_module.js?version=4"),
@@ -644,6 +629,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         time_vendor_prep,
         time_rider_to_vendor,
         time_rider_to_customer,
+        rider_rating,
         vendor_rating
       )
 
@@ -746,134 +732,22 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
 
   orders_table_proxy <- DT::dataTableProxy("orders_table")
 
-  # ratings -----------------------------------------------------------------
-
-  ratings_prep <- reactive({
-    hold <- orders()
-
-
-    hold <- hold %>%
-      filter(!is.na(vendor_rating))
-
-    if (length(hold$vendor_rating) == 0) {
-      avg_rating <- 0
-    } else {
-      avg_rating <- mean(hold$vendor_rating, na.rm = TRUE)
-    }
-
-
-    num_ratings <- hold %>%
-      filter(vendor_rating > 0, !is.na(vendor_rating), !is.null(vendor_rating)) %>%
-      nrow()
-
-    num_five_star <- hold %>%
-      filter(vendor_rating > 4) %>%
-      nrow()
-
-    num_four_star <- hold %>%
-      filter(vendor_rating > 3 & vendor_rating <= 4) %>%
-      nrow()
-
-    num_three_star <- hold %>%
-      filter(vendor_rating > 2 & vendor_rating <= 3) %>% # >= 3, vendor_rating <= 4) %>%
-      nrow()
-
-    num_two_star <- hold %>%
-      filter(vendor_rating > 1 & vendor_rating <= 2) %>%
-      nrow()
-
-    num_one_star <- hold %>%
-      filter(vendor_rating > 0 & vendor_rating <= 1) %>%
-      nrow()
-
-    unrated <- hold %>%
-      filter(is.na(vendor_rating) | is.null(vendor_rating) | vendor_rating == 0) %>%
-      nrow()
-
-    list(
-      avg_rating = avg_rating,
-      num_ratings = num_ratings,
-      num_orders = num_ratings + unrated,
-      num_five_star = num_five_star,
-      num_four_star = num_four_star,
-      num_three_star = num_three_star,
-      num_two_star = num_two_star,
-      num_one_star = num_one_star,
-      num_unrated = unrated
-    )
-  })
-
-  output$ratings_ui <- renderUI({
 
 
 
-    avg <- formattable::comma(ratings_prep()$avg_rating, 3)
-    tot <- paste0(formattable::comma(ratings_prep()$num_orders, 0), " Total Orders")
-    tot_ratings <- paste0(formattable::comma(ratings_prep()$num_ratings, 0), " total reviewed orders")
-    five <- paste0(formattable::comma(ratings_prep()$num_five_star, 0), " Reviews")
-    four <- paste0(formattable::comma(ratings_prep()$num_four_star, 0), " Reviews")
-    three <- paste0(formattable::comma(ratings_prep()$num_three_star, 0), " Reviews")
-    two <- paste0(formattable::comma(ratings_prep()$num_two_star, 0), " Reviews")
-    one <- paste0(formattable::comma(ratings_prep()$num_one_star, 0), " Reviews")
-    unrated = paste0(formattable::comma(ratings_prep()$num_unrated, 0), " Unrated Orders")
-
-    percents <- c("one_pct", "two_pct", "three_pct", "four_pct", "five_pct", "unrated_pct")
-
-    pcts <- purrr::map_dbl(percents,
-                           function(x) {
-
-                             hold <- switch(x,
-                                            "five_pct" = ratings_prep()$num_five_star,
-                                            "four_pct" = ratings_prep()$num_four_star,
-                                            "three_pct" = ratings_prep()$num_three_star,
-                                            "two_pct" = ratings_prep()$num_two_star,
-                                            "one_pct" = ratings_prep()$num_one_star,
-                                            "unrated_pct" = ratings_prep()$num_unrated)
-
-                             out <- hold / ratings_prep()$num_orders
-
-                             out
-                           }) %>% set_names(percents)
-
-    pct_widths <- map_chr(pcts, function(x) {
-      paste0(as.character(round(x * 100, 2)), "%")
-    }) %>%
-      set_names(percents)
-
-    fluidRow(
-      column(
-        width = 8,
-        offset = 2,
-        div(
-          htmlTemplate(
-            filename = "www/html/ratings_card.html",
-            header = paste(vendor_info()$vendor_name, ": Average Vendor Rating"),
-            header_stars = rating_stars(ratings_prep()$avg_rating, span = TRUE, class = "ratings-fa"),
-            average_rating = avg,
-            number_of_reviews = tot_ratings,
-            num_five_star = five,
-            num_four_star = four,
-            num_three_star = three,
-            num_two_star = two,
-            num_one_star = one,
-            num_unrated = unrated,
-            five_pct = pct_widths["five_pct"],
-            four_pct = pct_widths["four_pct"],
-            three_pct = pct_widths["three_pct"],
-            two_pct = pct_widths["two_pct"],
-            one_pct = pct_widths["one_pct"],
-            unrated_pct = pct_widths["unrated_pct"]
-          )
-        )
-      )
-    )
-
-  })
 
   # valboxes ----------------------------------------------------------------
 
   avg_rating_valbox <- reactive({
-    paste0(formattable::comma(ratings_prep()$avg_rating, 2), " Rating")
+    req(orders())
+
+    # only have rider rating, so using that for now
+    order_rating <- orders() %>%
+      filter(order_status == "Completed") %>%
+      pull("rider_rating") %>%
+      mean(na.rm = TRUE)
+
+    paste0(formattable::comma(order_rating, 2), " Rating")
   })
 
   callModule(
@@ -960,6 +834,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
   output$directions_iframe <- renderUI({
     vendor_place_id <- vendor_info()$place_id
     customer_place_id <- routes_filt()$customer_location_place_id
+    browser()
     HTML(create_directions_iframe(key = key, start = vendor_place_id, stop = customer_place_id))
   })
 
