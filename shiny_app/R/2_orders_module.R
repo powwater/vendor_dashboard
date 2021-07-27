@@ -183,7 +183,12 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     tryCatch({
 
       out <- get_orders_by_vendor(vend, conn) %>%
-        mutate(order_datetime = lubridate::with_tz(order_datetime, tzone = "Africa/Nairobi"))
+        mutate(
+          order_datetime = as.character(lubridate::with_tz(order_datetime, tzone = "Africa/Nairobi")),
+          # remove seconds
+          order_datetime = substr(order_datetime, 1, nchar(order_datetime) - 3),
+          order_datetime = paste0(order_datetime, " EAT")
+        )
 
     }, error = function(err) {
 
@@ -602,9 +607,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       "rider_name",
       "order_type",
       "order_status",
-      "order_delivery_status",
-      "vendor_response",
-      "payment_type"
+      "vendor_response"
     )
 
     logical_cols <- c("discount_applied")
@@ -623,8 +626,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       select(
         " ",
         order_number,
-        order_date,
-        order_time,
+        order_datetime,
         customer_name,
         rider_name,
         order_type,
@@ -632,7 +634,6 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         # order_delivery_status,
         vendor_response,
         vendor_response_text,
-        payment_type,
         price_of_water,
         delivery_fee,
         delivery_commission,

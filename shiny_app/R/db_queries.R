@@ -81,7 +81,33 @@ get_orders_by_vendor <- function(vendor_id, conn) {
   hold <- conn %>%
     dplyr::tbl("orders") %>%
     filter(.data$vendor_uid == vendor_id) %>%
-    rename(order_uid = uid) %>%
+    select(
+      order_uid = uid,
+      customer_uid,
+      vendor_uid,
+      rider_uid,
+      order_number,
+      order_datetime = created_at,
+      order_type,
+      order_status,
+      vendor_response,
+      vendor_response_text,
+      price_of_water,
+      delivery_fee,
+      delivery_commission,
+      vendor_commission,
+      discount_applied,
+      discount_amount,
+      total_payment_price,
+      time_vendor_prep,
+      time_rider_to_vendor,
+      time_rider_to_customer,
+      total_delivery_time,
+      vendor_rating,
+      rider_rating,
+      order_rating,
+      modified_at
+    ) %>%
     left_join(
       conn %>% tbl("customers") %>%
         mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
