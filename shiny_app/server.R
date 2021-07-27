@@ -8,7 +8,7 @@ server <- function(input, output, session) {
   is_mobile_device_rv <- reactiveVal(NULL)
 
   observeEvent(input$is_mobile_device, {
-    print(list("Mobile Device Detected: " = isTRUE(input$is_mobile_device)))
+
     if (isTRUE(input$is_mobile_device)) {
       is_mobile_device_rv(TRUE)
       shinyjs::addCssClass(selector = "nav > div:nth-child(3)", class = "mobile-hide")
