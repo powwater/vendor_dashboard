@@ -95,8 +95,8 @@ choices <- list(
     "Paypal" = "paypal"
   ),
   inventory_capacity = c(
-    "1.5L" = 1.5,
-    "10L" = 10.0,
+    "10L" = 10,
+    "18.9L" = 18.9,
     "20L" = 20.0
   ),
   inventory_offer_type = c(
