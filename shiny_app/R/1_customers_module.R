@@ -115,7 +115,7 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
         estimated_duration = Vectorize(format_duration_minutes)(estimated_duration),
         estimated_distance = Vectorize(format_distance_km)(estimated_distance)
       ) %>%
-      ratings_to_stars(cols = "average_rating") %>%
+      #ratings_to_stars(cols = "average_rating") %>%
       tibble::add_column(" " = actions, .before = 1) %>%
       select(
         " ",
@@ -125,7 +125,7 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
         number_of_orders,
         last_order_date,
         total_paid,
-        average_rating,
+        #average_rating,
         estimated_distance,
         estimated_duration,
         customer_location,
@@ -143,23 +143,20 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
   })
 
   output$customers_table <- DT::renderDT({
-
     req(customers_prep())
-
     out <- customers_prep()
 
-    n_row <- nrow(out)
-    n_col <- ncol(out)
     cols <- c(" ",  "Customer Name", "Phone Number", "# Orders",
-              "Last Order Date", "Total Paid", "Average Rating",
+              "Last Order Date", "Total Paid",
               "Distance", "Duration",
               "Location", "City", "Coordinates")
-    esc_col_names <- c(" ", "average_rating", "customer_location", "customer_region")
+    esc_col_names <- c(" ", "customer_location", "customer_region")
     esc_cols <- purrr::map_dbl(esc_col_names, function(x) {
       -1 * match(x, colnames(out))
     })
     id <- session$ns("customers_table")
 
+    n_col <- length(out)
     dt_js <- paste0(
       "function(settings, json) {
       var filters = $('#", id, " td .form-group');

@@ -4,10 +4,12 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
     dplyr::tbl("orders") %>%
     dplyr::filter(.data$vendor_uid == vendor_id) %>%
     dplyr::group_by(customer_uid, vendor_uid) %>%
-    dplyr::summarize(number_of_orders = n(),
-                     last_order_date = max(order_date, na.rm = TRUE),
-                     total_paid = sum(total_payment_price, na.rm = TRUE),
-                     average_rating = mean(vendor_rating, na.rm = TRUE)) %>%
+    dplyr::summarize(
+      number_of_orders = n(),
+      last_order_date = max(order_date, na.rm = TRUE),
+      total_paid = sum(total_payment_price, na.rm = TRUE)#,
+      #average_rating = mean(vendor_rating, na.rm = TRUE)
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::left_join(
       conn %>% dplyr::tbl("customer_locations") %>%
@@ -42,7 +44,7 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
       number_of_orders,
       last_order_date,
       total_paid,
-      average_rating,
+      #average_rating,
 
       customer_location_uid,
       customer_location_place_id,
