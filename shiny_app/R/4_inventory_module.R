@@ -4,11 +4,9 @@ inventory_module_ui <- function(id){
     fluidRow(
       box(
         width = 12,
-        title = icon_text("boxes", "Inventory and Sales Mix"),
+        title = icon_text("boxes", "Inventory"),
         status = "primary",
         solidHeader = TRUE,
-        uiOutput(ns("vendor_info_ui"), inline = TRUE),
-        hr(),
         shiny::actionButton(
           ns("add_offering"),
           "Add New Offering",
@@ -62,24 +60,6 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
 
   })
 
-  output$vendor_info_ui <- renderUI({
-    req(inventory(), vendor_info())
-
-    sales_mix <- inventory() %>%
-      mutate(sales_mix = paste0(offer_type, " - ", capacity, " Liters: ", price_per_unit, " KES")) %>%
-      pull(sales_mix) %>%
-      unique() %>%
-      paste(collapse = "; ")
-
-    n_offerings <- nrow(inventory())
-
-    txt <- paste0("Currently offering ", n_offerings, " various options: ", sales_mix)
-
-    div(
-      h3(paste0(vendor_info()$vendor_name, " - Offerings:")),
-      h5(paste0("Sales Mix: ", txt))
-    )
-  })
 
   inventory_prep <- reactiveVal(NULL)
 
