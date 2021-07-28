@@ -147,11 +147,11 @@ server <- function(input, output, session) {
   )
 
   observeEvent(logged_in_vendor_info(), {
-    configs <- callModule(
-      right_sidebar_module,
-      "rightbar",
-      vendor_info = logged_in_vendor_info
-    )
+    # configs <- callModule(
+    #   right_sidebar_module,
+    #   "rightbar",
+    #   vendor_info = logged_in_vendor_info
+    # )
 
     callModule(
       user_module,
@@ -170,7 +170,6 @@ server <- function(input, output, session) {
       customers_module,
       "customers_module",
       vendor_info = logged_in_vendor_info,
-      configs = configs,
       is_mobile = is_mobile_device_rv
     )
 

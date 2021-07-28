@@ -190,5 +190,4 @@ right_sidebar_module <- function(input, output, session, vendor_info) {
   })
 
   configs
-
 }

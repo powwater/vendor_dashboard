@@ -60,7 +60,7 @@ customers_module_ui <- function(id) {
 
 }
 
-customers_module <- function(input, output, session, vendor_info, configs, is_mobile) {
+customers_module <- function(input, output, session, vendor_info, is_mobile) {
 
   ns <- session$ns
 
@@ -90,7 +90,7 @@ customers_module <- function(input, output, session, vendor_info, configs, is_mo
 
   customers_prep <- reactiveVal(NULL)
 
-  observeEvent(list(customers(), configs()), {
+  observeEvent(customers(), {
     req(customers())
     hold <- customers()
 

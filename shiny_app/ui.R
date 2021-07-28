@@ -22,9 +22,9 @@ header <- dashboardHeaderPlus(
     href = "https://powwater.com",
     target = "_blank"
   ),
-  profile_module_ui("polished_profile"),
-  enable_rightsidebar = TRUE,
-  rightSidebarIcon = "cogs"
+  profile_module_ui("polished_profile")#,
+  #enable_rightsidebar = TRUE,
+  #rightSidebarIcon = "cogs"
 )
 
 sidebar <- dashboardSidebar(
@@ -134,7 +134,7 @@ ui <- shinydashboardPlus::dashboardPagePlus(
   header,
   sidebar,
   body,
-  rightsidebar = right_sidebar_module_ui("rightbar"),
+  #rightsidebar = right_sidebar_module_ui("rightbar"),
   title = 'Powwater Vendor Dashboard',
   skin = 'black'
 )
