@@ -112,29 +112,13 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
   })
 
   output$inventory_table <- DT::renderDT({
-
     req(inventory_prep())
 
     out <- inventory_prep()
 
-    n_row <- nrow(out)
-    n_col <- ncol(out)
     cols <- snakecase::to_title_case(colnames(out))
     esc_cols <- c(-1)
-    id <- session$ns("inventory_table")
 
-    dt_js <- paste0(
-      "function(settings, json) {
-        var filters = $('#", id, " td .form-group');
-        // columns that should have visible filters
-        var cols = [", paste(2:n_col, collapse = ", "), "];
-        // hide certain column filters
-        for (var i = 1; i <= filters.length; i++) {
-          if (!cols.includes(i))
-            filters.eq(i - 1).css('visibility', 'hidden');
-          filters.eq(i - 1).css('position', 'static');
-        }
-      }")
 
     if (isTRUE(is_mobile())) {
       tbl_class <- "table table-striped table-bordered dt-center dt-responsive dt-compact dt-hover nowrap table"
@@ -168,7 +152,6 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
           list(className = "dt-center dt-col", targets = "_all")
         ),
         buttons = dt_bttns(out, "vendor-inventory-table", esc_cols),
-        initComplete = DT::JS(dt_js),
         drawCallback = JS("function(settings) {
           // removes any lingering tooltips
           $('.tooltip').remove()
@@ -264,24 +247,32 @@ inventory_edit_module <- function(input, output, session,
         fluidRow(
           column(
             width = 12,
-            shinyWidgets::pickerInput(ns("capacity"),
-                                      icon_text("box", "Capacity in Liters:"),
-                                      choices = choices$inventory_capacity,
-                                      selected = if (is.null(hold)) choices$inventory_capacity[2] else hold$capacity),
-            shinyWidgets::pickerInput(ns("offer_type"),
-                                      icon_text("archive", "Order Type Offered:"),
-                                      choices = choices$inventory_offer_type,
-                                      selected = if (is.null(hold)) choices$inventory_offer_type[1] else hold$offer_type),
-            shiny::numericInput(ns("price_per_unit"),
-                                icon_text("money", "Price per Unit (KES):"),
-                                value = if (is.null(hold)) "" else hold$price_per_unit,
-                                min = 1,
-                                step = 25),
-            shiny::numericInput(ns("quantity"),
-                                icon_text("sort-amount-up-alt", "Quantity:"),
-                                value = if (is.null(hold)) "" else hold$quantity,
-                                min = 0,
-                                step = 1)
+            shinyWidgets::pickerInput(
+              ns("capacity"),
+              icon_text("box", "Capacity in Liters:"),
+              choices = choices$inventory_capacity,
+              selected = if (is.null(hold)) choices$inventory_capacity[2] else hold$capacity
+            ),
+            shinyWidgets::pickerInput(
+              ns("offer_type"),
+              icon_text("archive", "Order Type Offered:"),
+              choices = choices$inventory_offer_type,
+              selected = if (is.null(hold)) choices$inventory_offer_type[1] else hold$offer_type
+            ),
+            shiny::numericInput(
+              ns("price_per_unit"),
+              icon_text("money", "Price per Unit (KES):"),
+              value = if (is.null(hold)) "" else hold$price_per_unit,
+              min = 1,
+              step = 25
+            ),
+            shiny::numericInput(
+              ns("quantity"),
+              icon_text("sort-amount-up-alt", "Quantity:"),
+              value = if (is.null(hold)) "" else hold$quantity,
+              min = 0,
+              step = 1
+            )
           ),
           div(
             id = ns("danger"),
@@ -374,7 +365,7 @@ inventory_edit_module <- function(input, output, session,
       data = list(
         vendor_uid = vendor_info()$vendor_uid,
         capacity = input$capacity,
-        offer_type = stringr::str_to_title(input$offer_type),
+        offer_type = input$offer_type,
         price_per_unit = input$price_per_unit,
         quantity = input$quantity
       )
