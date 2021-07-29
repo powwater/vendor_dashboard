@@ -102,10 +102,12 @@ choices <- list(
   inventory_offer_type = c(
     "New",
     "Swap",
-    "Refill",
-    "Dispenser Bottle",
-    "PET Bottle",
-    "Jerrycan Bottle"
+    "Refill"
+  ),
+  inventory_bottle_type = c(
+    "Dispenser",
+    "PET",
+    "Jerrycan"
   ),
   order_status = c(
     "Completed" = "Completed",

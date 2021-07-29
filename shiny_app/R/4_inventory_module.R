@@ -239,6 +239,12 @@ inventory_edit_module <- function(input, output, session,
               choices = choices$inventory_offer_type,
               selected = if (is.null(hold)) choices$inventory_offer_type[1] else hold$offer_type
             ),
+            shinyWidgets::pickerInput(
+              ns("bottle_type"),
+              icon_text("wine-bottle", "Bottle Type Offered:"),
+              choices = choices$inventory_bottle_type,
+              selected = if (is.null(hold)) choices$inventory_bottle_type[1] else hold$bottle_type
+            ),
             shiny::numericInput(
               ns("price_per_unit"),
               icon_text("money", "Price per Unit (KES):"),
@@ -292,6 +298,21 @@ inventory_edit_module <- function(input, output, session,
       }
     })
 
+    observeEvent(input$bottle_type, {
+
+      if (input$bottle_type == "") {
+        shinyFeedback::showFeedbackDanger(
+          "bottle_type",
+          text = "Offer Type cannot be blank.",
+          icon = shiny::icon("ban", lib = "font-awesome")
+        )
+        shinyjs::disable("submit")
+      } else {
+        shinyFeedback::hideFeedback("bottle_type")
+        shinyjs::enable("submit")
+      }
+    })
+
     observeEvent(input$price_per_unit, {
       if (is.na(input$price_per_unit) || input$price_per_unit <= 0) {
         shinyFeedback::showFeedbackDanger(
@@ -323,7 +344,7 @@ inventory_edit_module <- function(input, output, session,
     observe({
       req(is.null(hold), input$capacity, input$offer_type)
       # browser()
-      offer <- paste0(input$offer_type, ": ", input$capacity, " Liters") %>%
+      offer <- paste0(input$offer_type, "(", input$bottle_type, ")", ": ", input$capacity, " Liters") %>%
         stringr::str_to_title()
       if (offer %in% offerings()) {
         shinyjs::show("danger")
@@ -346,6 +367,7 @@ inventory_edit_module <- function(input, output, session,
         vendor_uid = vendor_info()$vendor_uid,
         capacity = input$capacity,
         offer_type = input$offer_type,
+        bottle_type = input$bottle_type,
         price_per_unit = input$price_per_unit,
         quantity = input$quantity
       )
@@ -384,13 +406,14 @@ inventory_edit_module <- function(input, output, session,
             vendor_uid,
             capacity,
             offer_type,
+            bottle_type,
             price_per_unit,
             quantity,
             created_at,
             created_by,
             modified_at,
             modified_by)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
           params = c(
             unname(dat$data)
           )
@@ -402,12 +425,13 @@ inventory_edit_module <- function(input, output, session,
             vendor_uid=$1,
             capacity=$2,
             offer_type=$3,
-            price_per_unit=$4,
-            quantity = $5,
-            created_at=$6,
-            created_by=$7,
-            modified_at=$8,
-            modified_by=$9 WHERE uid=$10",
+            bottle_type=$4
+            price_per_unit=$5,
+            quantity = $6,
+            created_at=$7,
+            created_by=$8,
+            modified_at=$9,
+            modified_by=$10 WHERE uid=$11",
           params = c(
             unname(dat$data),
             list(dat$uid)
