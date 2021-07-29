@@ -107,7 +107,6 @@ get_orders_by_vendor <- function(vendor_id, conn) {
       total_delivery_time,
       vendor_rating,
       rider_rating,
-      order_rating,
       modified_at
     ) %>%
     left_join(
