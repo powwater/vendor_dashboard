@@ -24,25 +24,7 @@ format_distance_km <- function(num) {
   paste0(round(num / 1000, 2), " Kilometers")
 }
 
-format_phone_number <- function(string,
-                                type = c("national", "international"),
-                                region = c("KE", "US")) {
 
-  if (identical(length(string), 0L)) return(string)
-
-  if (substr(string, 1L, 2L) == "+1") {
-    region <- "US"
-  }
-
-  phone <- dialr::phone(string, region)
-
-  dialr:::format.phone(phone,
-         format = toupper(type),
-         country = if (type == "national") toupper(region) else NULL,
-         clean = TRUE,
-         strict = FALSE) %>%
-    as.character()
-}
 
 true_false_formatter <- formattable::formatter(
   "span",

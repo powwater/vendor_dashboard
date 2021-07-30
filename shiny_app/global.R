@@ -23,7 +23,6 @@ suppressPackageStartupMessages({
   library(shinyFiles)
   library(waiter)
   library(shinyscroll)
-  library(dialr)
 })
 
 if (packageVersion("shinydashboardPlus") > "0.7.5") {
