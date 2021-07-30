@@ -251,7 +251,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     )
 
     factor_cols <- c(
-      "customer_name",
+      #"customer_name",
       "order_type"
     )
 
@@ -259,7 +259,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
       select(
         order_number,
         order_datetime,
-        customer_name,
+        customer_first_name,
         order_type,
         volume,
         quantity,
@@ -589,11 +589,11 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
                        "total_delivery_time")
 
     factor_cols <- c(
-      "customer_name",
-      "rider_name",
+      #"customer_first_name",
+      #"rider_name",
       "order_type",
-      "order_status",
-      "vendor_response"
+      "order_status"#,
+      #"vendor_response"
     )
 
     logical_cols <- c("discount_applied")
@@ -613,7 +613,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
         " ",
         order_number,
         order_datetime,
-        customer_name,
+        customer_first_name,
         rider_name,
         order_type,
         order_status,

@@ -106,7 +106,6 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
 
     out <- hold %>%
       mutate(
-        customer_number = row_number(),
         customer_location = Vectorize(create_link)(customer_location_url, customer_location_name),
         customer_coordinates = create_coords_string(customer_location_lat, customer_location_lon),
         customer_region = Vectorize(create_link)(vendor_region_url, vendor_region_name),
@@ -118,9 +117,8 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
       tibble::add_column(" " = actions, .before = 1) %>%
       select(
         " ",
-        # customer_number,
-        customer_name,
-        customer_phone_number,
+        customer_first_name,
+        #customer_phone_number,
         number_of_orders,
         last_order_date,
         total_paid,
@@ -145,7 +143,7 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
     req(customers_prep())
     out <- customers_prep()
 
-    cols <- c(" ",  "Customer Name", "Phone Number", "# Orders",
+    cols <- c(" ",  "Customer Name", "# Orders",
               "Last Order Date", "Total Paid",
               "Distance", "Duration",
               "Location", "City", "Coordinates")
@@ -229,10 +227,10 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
     customer_markers_data <- hold %>%
       filter(!is.na(customer_location_name)) %>%
       mutate(
-        title = paste0(customer_name, ": ", customer_location_name),
+        title = paste0(customer_first_name, ": ", customer_location_name),
         info_box = paste0(
           "<div id='bodyContent'>",
-          "<h4>", customer_name, "</h4>",
+          "<h4>", customer_first_name, "</h4>",
           "<h5>", customer_location_name, "<h5><hr>",
           "<iframe width='450px' height='250px'",
           "frameborder='0' style = 'border:0'",
@@ -382,7 +380,7 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
         tags$span(icon("road"), h4("Customer Vendor Locations",
                                    style = "display:inline-block;")),
         hr(),
-        h5(paste0("Customer: ", sel$customer_name)),
+        h5(paste0("Customer: ", sel$customer_first_name)),
         h5(paste0("Vendor: ", sel$vendor_name)),
         hr(),
         p("Distance from Customer to Vendor: ",

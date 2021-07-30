@@ -35,9 +35,10 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
       conn %>% dplyr::tbl("distance_matrix") %>% dplyr::select(-uid, -c(created_at:modified_by)),
       by = c("customer_location_uid", "vendor_location_uid")
     ) %>%
-    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name),
-           origin_id = paste0("place_id:", .data$vendor_location_place_id),
-           destination_id = paste0("place_id:", customer_location_place_id)) %>%
+    mutate(
+      origin_id = paste0("place_id:", .data$vendor_location_place_id),
+      destination_id = paste0("place_id:", customer_location_place_id)
+    ) %>%
     select(
       customer_uid,
       vendor_uid,
@@ -48,7 +49,7 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
 
       customer_location_uid,
       customer_location_place_id,
-      customer_name,
+      customer_first_name,
       customer_phone_number,
       customer_location_name,
       customer_location_address,
@@ -112,8 +113,7 @@ get_orders_by_vendor <- function(vendor_id, conn) {
     ) %>%
     left_join(
       conn %>% tbl("customers") %>%
-        mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
-        select(customer_uid = uid, customer_name),
+        select(customer_uid = uid, customer_first_name),
       by = c("customer_uid")
     ) %>%
     left_join(
