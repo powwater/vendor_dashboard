@@ -1,0 +1,50 @@
+steps:
+  # Add the config secret to the Container
+  - id: add-config-secret
+    name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args: [
+      "-c",
+      "gcloud secrets --project=powwater versions access latest --secret=pow_vendor_config --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/config.yml",
+    ]
+  # Build the container image
+  - id: build-image
+    name: "gcr.io/cloud-builders/docker"
+    args: [
+      "build",
+      "-t",
+      "gcr.io/powwater/pow-vendor:$COMMIT_SHA",
+      "."
+    ]
+  # Push the Container Image to GCR
+  - id: push-image
+    name: "gcr.io/cloud-builders/docker"
+    args: [
+      "push",
+      "gcr.io/powwater/pow-vendor:$COMMIT_SHA"
+    ]
+  - id: deploy-image
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args: [
+      "run",
+      "deploy",
+      "$TRIGGER_NAME",
+      "--image",
+      "gcr.io/powwater/pow-vendor:$COMMIT_SHA",
+      "--add-cloudsql-instances",
+      "powwater:asia-south1:powwater",
+      "--region",
+      "asia-east1",
+      "--platform",
+      "managed",
+      "--port=8080",
+      "--timeout=3600",
+      "--concurrency=1000",
+      "--min-instances=0",
+      "--allow-unauthenticated",
+      "--set-env-vars=R_CONFIG_ACTIVE=${_R_CONFIG_ACTIVE}"
+    ]
+timeout: 1800s
+images:
+  - "gcr.io/powwater/pow-vendor:$COMMIT_SHA"
