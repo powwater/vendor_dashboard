@@ -77,7 +77,8 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
     })
 
     out <- inventory() %>%
-      select(-c(uid:vendor_uid, created_at:modified_by)) %>%
+      select(capacity, offer_type, bottle_type, price_per_unit, quantity) %>%
+      arrange(capacity, offer_type, bottle_type) %>%
       tibble::add_column(" " = actions, .before = 1)
 
     if (is.null(inventory_prep())) {
