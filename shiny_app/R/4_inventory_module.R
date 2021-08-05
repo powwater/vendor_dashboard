@@ -425,7 +425,7 @@ inventory_edit_module <- function(input, output, session,
             vendor_uid=$1,
             capacity=$2,
             offer_type=$3,
-            bottle_type=$4
+            bottle_type=$4,
             price_per_unit=$5,
             quantity = $6,
             created_at=$7,
