@@ -6,7 +6,7 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
     dplyr::group_by(customer_uid, vendor_uid) %>%
     dplyr::summarize(
       number_of_orders = n(),
-      last_order_date = max(order_date, na.rm = TRUE),
+      last_order_date = max(created_at, na.rm = TRUE),
       total_paid = sum(total_payment_price, na.rm = TRUE)#,
       #average_rating = mean(vendor_rating, na.rm = TRUE)
     ) %>%
@@ -108,7 +108,6 @@ get_orders_by_vendor <- function(vendor_id, conn) {
       total_delivery_time,
       vendor_rating,
       rider_rating,
-      order_rating,
       modified_at
     ) %>%
     left_join(
