@@ -12,6 +12,8 @@ steps:
     name: "gcr.io/cloud-builders/docker"
     args: [
       "build",
+      "--file",
+      "./CloudBuildDockerfile",
       "-t",
       "gcr.io/powwater/pow-vendor:$COMMIT_SHA",
       "."
