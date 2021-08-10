@@ -94,6 +94,7 @@ get_orders_by_vendor <- function(vendor_id, conn) {
       rider_uid,
       order_number,
       order_datetime = created_at,
+      order_address,
       order_type,
       order_status,
       vendor_response,
