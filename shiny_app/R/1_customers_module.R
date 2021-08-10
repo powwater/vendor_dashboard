@@ -117,7 +117,7 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
       tibble::add_column(" " = actions, .before = 1) %>%
       select(
         " ",
-        customer_first_name,
+        customer_name,
         #customer_phone_number,
         number_of_orders,
         last_order_date,
@@ -227,10 +227,10 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
     customer_markers_data <- hold %>%
       filter(!is.na(customer_location_name)) %>%
       mutate(
-        title = paste0(customer_first_name, ": ", customer_location_name),
+        title = paste0(customer_name, ": ", customer_location_name),
         info_box = paste0(
           "<div id='bodyContent'>",
-          "<h4>", customer_first_name, "</h4>",
+          "<h4>", customer_name, "</h4>",
           "<h5>", customer_location_name, "<h5><hr>",
           "<iframe width='450px' height='250px'",
           "frameborder='0' style = 'border:0'",
@@ -380,7 +380,7 @@ customers_module <- function(input, output, session, vendor_info, is_mobile) {
         tags$span(icon("road"), h4("Customer Vendor Locations",
                                    style = "display:inline-block;")),
         hr(),
-        h5(paste0("Customer: ", sel$customer_first_name)),
+        h5(paste0("Customer: ", sel$customer_name)),
         h5(paste0("Vendor: ", sel$vendor_name)),
         hr(),
         p("Distance from Customer to Vendor: ",

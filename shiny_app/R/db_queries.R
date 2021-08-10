@@ -50,6 +50,7 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
       customer_location_uid,
       customer_location_place_id,
       customer_first_name,
+      customer_last_name,
       customer_phone_number,
       customer_location_name,
       customer_location_address,
@@ -76,7 +77,9 @@ get_customer_details_by_vendor <- function(vendor_id, conn) {
       estimated_duration = duration_val,
       estimated_polyline = polyline
     ) %>%
-    collect()
+    collect() %>%
+    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
+    select(-c(customer_first_name, customer_last_name))
 }
 
 
@@ -112,7 +115,7 @@ get_orders_by_vendor <- function(vendor_id, conn) {
     ) %>%
     left_join(
       conn %>% tbl("customers") %>%
-        select(customer_uid = uid, customer_first_name),
+        select(customer_uid = uid, customer_first_name, customer_last_name),
       by = c("customer_uid")
     ) %>%
     left_join(
@@ -125,7 +128,9 @@ get_orders_by_vendor <- function(vendor_id, conn) {
         select(rider_uid = uid, rider_name),
       by = c("rider_uid")
     ) %>%
-    collect()
+    collect() %>%
+    mutate(customer_name = paste0(customer_first_name, " ", customer_last_name)) %>%
+    select(-c(customer_first_name, customer_last_name))
 }
 
 get_riders_by_vendor <- function(conn, vendor_id) {
