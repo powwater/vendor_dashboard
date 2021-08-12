@@ -6,6 +6,11 @@ A web application for POW vendors to manage their business operations with POW. 
 
 ## Deployment Instructions
 
+### Cloud Build
+- Commands & configuration notes for Cloud Build deployment in [CloudBuild.md](https://github.com/powwater/pow_vendor/blob/main/CloudBuild.md)
+
+### Local (Docker Desktop)
+
 Step 1: build Docker image
 
 ```
