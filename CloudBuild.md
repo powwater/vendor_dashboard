@@ -26,10 +26,10 @@ git push origin dev-v<VERSION_NUMBER>
     - `CloudBuildDockerfile`
       - Contains 1 additional line compared to `Dockerfile` to add `config.yml` from GCP
   - Build Steps:
-    - 1) Add `config.yml` from GCP Secret Manager
-    - 2) Build Docker image
-    - 3) Push Docker image to Google Cloud Registry (`gcr.io`)
-    - 4) Deploy Docker image to Cloud Run
+    - (1) Add `config.yml` from GCP Secret Manager
+    - (2) Build Docker image
+    - (3) Push Docker image to Google Cloud Registry (`gcr.io`)
+    - (4) Deploy Docker image to Cloud Run
 
 
 ### Delete Existing Tag
