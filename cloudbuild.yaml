@@ -25,6 +25,7 @@ steps:
       "push",
       "gcr.io/powwater/pow-vendor:$COMMIT_SHA"
     ]
+  # Deploy the Container Image to Cloud Run
   - id: deploy-image
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
@@ -43,7 +44,8 @@ steps:
       "--port=8080",
       "--timeout=3600",
       "--concurrency=1000",
-      "--min-instances=0",
+      "--min-instances=${_MIN_INSTANCES}",
+      "--max-instances=1",
       "--allow-unauthenticated",
       "--set-env-vars=R_CONFIG_ACTIVE=${_R_CONFIG_ACTIVE}"
     ]
