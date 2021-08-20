@@ -150,9 +150,7 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
 
   offerings <- reactive({
     inventory() %>%
-      select(capacity, offer_type) %>%
-      mutate(offering = paste0(offer_type, ": ", capacity, " Liters")) %>%
-      pull(offering)
+      select(capacity, offer_type, bottle_type)
   })
 
   shiny::callModule(
@@ -215,6 +213,36 @@ inventory_edit_module <- function(input, output, session,
 
     hold <- vendor_inventory_to_edit()
 
+    if (!is.null(hold)) {
+      if (hold$offer_type == "Refill") {
+        capacity_choices <- c(
+          "10L" = 10,
+          "20L" = 20.0
+        )
+
+        bottle_type_choices <- ""
+
+        offer_type_choices <- choices$inventory_offer_type
+
+      } else {
+        if (hold$capacity == 18.9) {
+          capacity_choices <- choices$inventory_capacity
+          bottle_type_choices <- "Dispenser"
+          offer_type_choices <- c("New", "Swap")
+
+        } else if (hold$capacity == 20) {
+          capacity_choices <- choices$inventory_capacity
+          bottle_type_choices <- c("Jerrycan", "PET")
+          offer_type_choices <- choices$inventory_offer_type
+        } else {
+          capacity_choices <- choices$inventory_capacity
+          bottle_type_choices <- choices$inventory_bottle_type
+          offer_type_choices <- choices$inventory_offer_type
+        }
+      }
+    }
+
+
     shiny::showModal(
       shiny::modalDialog(
         title = "Add/Edit Vendor Inventory and Offerings:",
@@ -234,20 +262,20 @@ inventory_edit_module <- function(input, output, session,
             shinyWidgets::pickerInput(
               ns("capacity"),
               icon_text("box", "Capacity in Liters:"),
-              choices = choices$inventory_capacity,
-              selected = if (is.null(hold)) choices$inventory_capacity[2] else hold$capacity
+              choices = if (is.null(hold)) choices$inventory_capacity else capacity_choices,
+              selected = if (is.null(hold)) choices$inventory_capacity[1] else hold$capacity
             ),
             shinyWidgets::pickerInput(
               ns("offer_type"),
               icon_text("archive", "Order Type Offered:"),
-              choices = choices$inventory_offer_type,
+              choices = if (is.null(hold)) choices$inventory_offer_type else offer_type_choices,
               selected = if (is.null(hold)) choices$inventory_offer_type[1] else hold$offer_type
             ),
             shinyWidgets::pickerInput(
               ns("bottle_type"),
               icon_text("wine-bottle", "Bottle Type Offered:"),
-              choices = choices$inventory_bottle_type,
-              selected = if (is.null(hold)) choices$inventory_bottle_type[1] else hold$bottle_type
+              choices = if (is.null(hold)) choices$inventory_bottle_type else bottle_type_choices,
+              selected = if (is.null(hold)) choices$inventory_bottle_type[2] else hold$bottle_type
             ),
             shiny::numericInput(
               ns("price_per_unit"),
@@ -273,51 +301,9 @@ inventory_edit_module <- function(input, output, session,
       )
     )
 
-    observeEvent(input$capacity, {
-      if (input$capacity == "") {
-        shinyFeedback::showFeedbackDanger(
-          "capacity",
-          text = "Capacity cannot be blank.",
-          icon = shiny::icon("ban", lib = "font-awesome")
-        )
-        shinyjs::disable("submit")
-      } else {
-        shinyFeedback::hideFeedback("capacity")
-        shinyjs::enable("submit")
-      }
-    })
-
-    observeEvent(input$offer_type, {
-
-      if (input$offer_type == "") {
-        shinyFeedback::showFeedbackDanger(
-          "offer_type",
-          text = "Offer Type cannot be blank.",
-          icon = shiny::icon("ban", lib = "font-awesome")
-        )
-        shinyjs::disable("submit")
-      } else {
-        shinyFeedback::hideFeedback("offer_type")
-        shinyjs::enable("submit")
-      }
-    })
-
-    observeEvent(input$bottle_type, {
-
-      if (input$bottle_type == "") {
-        shinyFeedback::showFeedbackDanger(
-          "bottle_type",
-          text = "Offer Type cannot be blank.",
-          icon = shiny::icon("ban", lib = "font-awesome")
-        )
-        shinyjs::disable("submit")
-      } else {
-        shinyFeedback::hideFeedback("bottle_type")
-        shinyjs::enable("submit")
-      }
-    })
-
+    ## Inventory Validation ##
     observeEvent(input$price_per_unit, {
+
       if (is.na(input$price_per_unit) || input$price_per_unit <= 0) {
         shinyFeedback::showFeedbackDanger(
           "price_per_unit",
@@ -327,11 +313,11 @@ inventory_edit_module <- function(input, output, session,
         shinyjs::disable("submit")
       }  else {
         shinyFeedback::hideFeedback("price_per_unit")
-        shinyjs::enable("submit")
       }
     })
 
     observeEvent(input$quantity, {
+
       if (is.na(input$quantity)) {
         shinyFeedback::showFeedbackDanger(
           "quantity",
@@ -341,28 +327,183 @@ inventory_edit_module <- function(input, output, session,
         shinyjs::disable("submit")
       } else {
         shinyFeedback::hideFeedback("quantity")
-        shinyjs::enable("submit")
       }
     })
 
-    observe({
-      req(is.null(hold), input$capacity, input$offer_type)
-      # browser()
-      offer <- paste0(input$offer_type, "(", input$bottle_type, ")", ": ", input$capacity, " Liters") %>%
-        stringr::str_to_title()
-      if (offer %in% offerings()) {
+    observeEvent(c(
+      input$offer_type,
+      input$capacity,
+      input$bottle_type,
+      input$price_per_unit,
+      input$quantity
+    ), {
+
+      hold_offer_type <- input$offer_type
+      hold_capacity <- input$capacity
+      hold_bottle_type <- input$bottle_type
+
+      ### Update Picker Choices ###
+      if (input$capacity == 20.0) {
+        if (input$offer_type == "Refill") {
+          shinyWidgets::updatePickerInput(
+            session,
+            'capacity',
+            choices = c(
+              "10L" = 10,
+              "20L" = 20.0
+            ),
+            selected = 20.0
+          )
+
+          shinyWidgets::updatePickerInput(
+            session,
+            'bottle_type',
+            choices = ""
+          )
+
+          shinyjs::hide("bottle_type")
+        } else {
+          shinyWidgets::updatePickerInput(
+            session,
+            'capacity',
+            choices = choices$inventory_capacity,
+            selected = 20.0
+          )
+
+          shinyWidgets::updatePickerInput(
+            session,
+            'bottle_type',
+            choices = c("Jerrycan", "PET"),
+            selected = if (!(hold_bottle_type %in% c("Dispenser", ""))) hold_bottle_type else "PET"
+          )
+
+          shinyjs::show("bottle_type")
+
+          shinyWidgets::updatePickerInput(
+            session,
+            "offer_type",
+            choices = choices$inventory_offer_type,
+            selected = hold_offer_type
+          )
+        }
+
+      } else if (input$capacity == 18.9) {
+        shinyWidgets::updatePickerInput(
+          session,
+          'bottle_type',
+          choices = "Dispenser"
+        )
+
+        shinyWidgets::updatePickerInput(
+          session,
+          "offer_type",
+          choices = c("New", "Swap"),
+          selected = if (hold_offer_type != "Refill") hold_offer_type else "New"
+        )
+      } else {
+        if (input$offer_type == "Refill") {
+          shinyWidgets::updatePickerInput(
+            session,
+            'capacity',
+            choices = c(
+              "10L" = 10,
+              "20L" = 20.0
+            ),
+            selected = 10
+          )
+
+          shinyWidgets::updatePickerInput(
+            session,
+            'bottle_type',
+            choices = ""
+          )
+
+          shinyjs::hide("bottle_type")
+        } else {
+
+          shinyWidgets::updatePickerInput(
+            session,
+            'capacity',
+            choices = choices$inventory_capacity,
+            selected = 10
+          )
+
+          shinyWidgets::updatePickerInput(
+            session,
+            'bottle_type',
+            choices = choices$inventory_bottle_type,
+            selected = if (hold_bottle_type != "") hold_bottle_type else choices$inventory_bottle_type[2]
+          )
+
+          shinyjs::show("bottle_type")
+
+          shinyWidgets::updatePickerInput(
+            session,
+            "offer_type",
+            choices = choices$inventory_offer_type,
+            selected = hold_offer_type
+          )
+        }
+
+      }
+
+      ### Check for Existing Inventory ###
+
+      # Add: Can't already exist
+      if (is.null(hold)) {
+        hold_offerings <- offerings()
+
+      # Edit: Remove existing entry
+      } else {
+
+        #' NO `Bottle Type` for `Refill` offering
+        if (input$offer_type == "Refill") {
+          hold_offerings <- offerings() %>%
+            select(-bottle_type) %>%
+            filter(
+              .data$offer_type != hold$offer_type |
+                .data$capacity != hold$capacity
+            )
+        } else {
+          hold_offerings <- offerings() %>%
+            filter(
+              .data$offer_type != hold$offer_type |
+                .data$capacity != hold$capacity |
+                .data$bottle_type != hold$bottle_type
+            )
+        }
+      }
+
+      existing_offering <- hold_offerings %>%
+        filter(
+          .data$offer_type == input$offer_type,
+          .data$capacity == input$capacity
+        )
+
+      #' NO `Bottle Type` for `Refill` offering
+      if (input$offer_type != "Refill" && nrow(existing_offering) > 0) {
+        existing_offering <- existing_offering %>%
+          filter(.data$bottle_type == input$bottle_type)
+      }
+
+      if (nrow(existing_offering) > 0) {
         shinyjs::show("danger")
         shinyjs::disable("submit")
       } else {
         shinyjs::hide("danger")
-        shinyjs::enable("submit")
-      }
-    })
 
+        #' Validate `price` & `quantity`
+        if (!is.na(input$price_per_unit) && !is.na(input$quantity)) {
+          shinyjs::enable("submit")
+        } else {
+          shinyjs::disable("submit")
+        }
+      }
+
+    }, ignoreInit = TRUE)
   })
 
   edit_inventory_dat <- reactive({
-
     hold <- vendor_inventory_to_edit()
 
     out <- list(
@@ -371,7 +512,7 @@ inventory_edit_module <- function(input, output, session,
         vendor_uid = vendor_info()$vendor_uid,
         capacity = input$capacity,
         offer_type = input$offer_type,
-        bottle_type = input$bottle_type,
+        bottle_type = if (input$offer_type == "Refill") '' else input$bottle_type,
         price_per_unit = input$price_per_unit,
         quantity = input$quantity
       )
