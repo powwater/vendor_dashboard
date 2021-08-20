@@ -64,7 +64,11 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
   inventory_prep <- reactiveVal(NULL)
 
   observeEvent(inventory(), {
-    ids <- inventory()$uid
+
+    hold_inventory <- inventory() %>%
+      arrange(capacity, offer_type, bottle_type)
+
+    ids <- hold_inventory$uid
 
     # Edit/Delete buttons
     actions <- purrr::map_chr(ids, function(id_) {
@@ -76,9 +80,8 @@ inventory_module <- function(input, output, session, vendor_info, is_mobile) {
       )
     })
 
-    out <- inventory() %>%
+    out <- hold_inventory %>%
       select(capacity, offer_type, bottle_type, price_per_unit, quantity) %>%
-      arrange(capacity, offer_type, bottle_type) %>%
       tibble::add_column(" " = actions, .before = 1)
 
     if (is.null(inventory_prep())) {
