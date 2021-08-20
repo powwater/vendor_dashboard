@@ -815,7 +815,7 @@ orders_module <- function(input, output, session, vendor_info, is_mobile) {
     req(vendor_info()$vendor_location_uid, input$selected_order)
     # id <- notify("Loading Routes from Database...")
     # on.exit(shinyFeedback::hideToast(), add = TRUE)
-    browser()
+
     hold <- orders() %>%
       filter(uid == input$selected_order)
 
